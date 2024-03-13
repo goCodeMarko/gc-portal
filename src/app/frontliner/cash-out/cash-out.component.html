@@ -9,11 +9,9 @@
       [width]="500"
       [trigger]="triggerObservable"
       (imageCapture)="handleImage($event)"
-      *ngIf="showWebcam"
       [allowCameraSwitch]="allowCameraSwitch"
       [switchCamera]="nextWebcamObservable"
       [videoOptions]="videoOptions"
-      [imageQuality]="1"
       (cameraSwitched)="cameraWasSwitched($event)"
       (initError)="handleInitError($event)"
     ></webcam>
@@ -63,14 +61,14 @@
     <input type="radio" value="" name="facingMode" [(ngModel)]="facingMode" />
     No preference
   </div>
-</div>
 
-<div class="snapshot" *ngIf="webcamImage">
-  <h2>Nice one!</h2>
-  <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
-</div>
+  <div class="snapshot" *ngIf="webcamImage">
+    <h2>Nice one!</h2>
+    <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+  </div>
 
-<h4 *ngIf="messages.length > 0">Messages:</h4>
-<ul *ngFor="let msg of messages">
-  <li>{{ msg | json }}</li>
-</ul>
+  <h4 *ngIf="messages.length > 0">Messages:</h4>
+  <ul *ngFor="let msg of messages">
+    <li>{{ msg | json }}</li>
+  </ul>
+</div>

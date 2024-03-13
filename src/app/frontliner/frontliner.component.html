@@ -1,0 +1,8 @@
+<h1 (click)="view('cashout')">Cash-out</h1>
+<h1 (click)="view('cashin')">Cash-in</h1>
+
+<div *ngIf="this.viewType === 'cashout'; else cashin">
+  <app-cash-out></app-cash-out>
+</div>
+
+<ng-template #cashin> <app-cash-in></app-cash-in> </ng-template>

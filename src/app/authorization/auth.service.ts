@@ -68,7 +68,8 @@ export class AuthService {
   }
 
   navigate(role: string) {
-    this.router.navigate([role]);
+    // this.router.navigate([role]);
+    this.router.navigate(["frontliner"]);
   }
 
   logout(): void {

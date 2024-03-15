@@ -6,10 +6,11 @@
 
 .snapshot {
   text-align: center;
-  img {
-    max-width: 800px;
-    max-height: 800px;
-  }
+}
+
+.snapshot img {
+  max-width: 800px;
+  max-height: 800px;
 }
 
 ul.links {

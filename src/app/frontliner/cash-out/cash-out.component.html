@@ -1,74 +1,27 @@
-<p>cash-out works!</p>
-
 <div style="text-align: center">
-  <h1>ngx-webcam Demo</h1>
-
   <div>
     <webcam
       [height]="500"
       [width]="500"
       [trigger]="triggerObservable"
       (imageCapture)="handleImage($event)"
-      [allowCameraSwitch]="allowCameraSwitch"
+      [allowCameraSwitch]="true"
       [switchCamera]="nextWebcamObservable"
       [videoOptions]="videoOptions"
       (cameraSwitched)="cameraWasSwitched($event)"
       (initError)="handleInitError($event)"
+      *ngIf="!webcamImage"
     ></webcam>
+    <div class="snapshot" *ngIf="webcamImage">
+      <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+    </div>
     <br />
-    <button class="actionBtn" (click)="triggerSnapshot()">
-      Take A Snapshot
+    <button class="actionBtn" (click)="triggerSnapshot()" *ngIf="!webcamImage">
+      Capture
     </button>
-    <button class="actionBtn" (click)="toggleWebcam()">Toggle Webcam</button>
-    <br />
-    <button
-      class="actionBtn"
-      (click)="showNextWebcam(true)"
-      [disabled]="!multipleWebcamsAvailable"
-    >
-      Next Webcam
+    <button class="actionBtn" (click)="recapture()" *ngIf="webcamImage">
+      Recapture
     </button>
-    <input
-      id="cameraSwitchCheckbox"
-      type="checkbox"
-      [(ngModel)]="allowCameraSwitch"
-    /><label for="cameraSwitchCheckbox">Allow Camera Switch</label>
-    <br />
-    DeviceId:
-    <input
-      id="deviceId"
-      type="text"
-      [(ngModel)]="deviceId"
-      style="width: 500px"
-    />
-    <button (click)="showNextWebcam(deviceId)">Activate</button>
-    <br />
-    Preferred facing mode:
-    <input
-      type="radio"
-      value="user"
-      name="facingMode"
-      [(ngModel)]="facingMode"
-    />
-    User
-    <input
-      type="radio"
-      value="environment"
-      name="facingMode"
-      [(ngModel)]="facingMode"
-    />
-    Environment
-    <input type="radio" value="" name="facingMode" [(ngModel)]="facingMode" />
-    No preference
+    <button class="actionBtn" (click)="send()" *ngIf="webcamImage">Send</button>
   </div>
-
-  <div class="snapshot" *ngIf="webcamImage">
-    <h2>Nice one!</h2>
-    <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
-  </div>
-
-  <h4 *ngIf="messages.length > 0">Messages:</h4>
-  <ul *ngFor="let msg of messages">
-    <li>{{ msg | json }}</li>
-  </ul>
 </div>

@@ -25,7 +25,7 @@ export class FrontlinerGuard implements CanActivate {
     | UrlTree {
     return (async (): Promise<boolean> => {
       const role = await this.auth.checkRole();
-      if (role == "user") {
+      if (role == "frontliner") {
         return true;
       } else {
         this.router.navigate([role]);

@@ -1,2 +1,85 @@
-<p>cash-in works!</p>
-<input type="file" name="" id="" />
+<form [formGroup]="this.cashinForm">
+  <!-- PHONE NUMBER -->
+  <mat-form-field style="display: block; margin-bottom: 1em" appearance="fill">
+    <mat-label>Phone number</mat-label>
+    <input
+      type="text"
+      matInput
+      formControlName="phone_number"
+      (paste)="phoneNumberStrict($event)"
+      (keypress)="phoneNumberStrict($event)"
+    />
+    <mat-error *ngIf="checkFormControlErrors('phone_number')">
+      <div *ngIf="cashinForm.get('phone_number')?.hasError('required')">
+        Phone number is required
+      </div>
+      <div *ngIf="cashinForm.get('phone_number')?.hasError('pattern')">
+        Invalid phone number format
+      </div>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- AMOUNT -->
+  <mat-form-field style="display: block; margin-bottom: 1em" appearance="fill">
+    <mat-label>Amount</mat-label>
+    <input
+      type="number"
+      min="0"
+      step=".25"
+      matInput
+      formControlName="amount"
+      (paste)="currencyStrict($event)"
+      (keypress)="currencyStrict($event)"
+    />
+    <mat-error *ngIf="checkFormControlErrors('amount')">
+      <div *ngIf="cashinForm.get('amount')?.hasError('required')">
+        Amount is required
+      </div>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- FEE -->
+  <mat-form-field style="display: block" appearance="fill">
+    <mat-label>Fee</mat-label>
+    <input
+      type="number"
+      min="0"
+      step=".25"
+      matInput
+      formControlName="fee"
+      (paste)="currencyStrict($event)"
+      (keypress)="currencyStrict($event)"
+    />
+    <mat-error *ngIf="checkFormControlErrors('fee')">
+      <div *ngIf="cashinForm.get('fee')?.hasError('required')">
+        Fee is required
+      </div>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- FEE PAYMENT IS GCASH -->
+  <div style="margin-bottom: 2em">
+    <mat-label style="margin-right: 1em">Payment Fee</mat-label>
+    <mat-radio-group formControlName="fee_payment_is_gcash">
+      <mat-radio-button value="true" style="margin-right: 1em"
+        >Gcash</mat-radio-button
+      >
+      <mat-radio-button value="false">Cash</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- NOTE -->
+  <mat-form-field style="display: block; margin-bottom: 1em" appearance="fill">
+    <mat-label>Note</mat-label>
+    <input type="text" matInput formControlName="note" />
+  </mat-form-field>
+
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="sendRequest()"
+    [disabled]="this.cashinForm.invalid"
+  >
+    Send Request
+  </button>
+</form>

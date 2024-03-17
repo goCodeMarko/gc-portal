@@ -1,0 +1,54 @@
+.tab-container {
+  padding: 40px;
+  position: relative;
+  max-width: 400px;
+}
+
+.tab-group {
+  background-color: #90ac8e;
+  padding: 20px;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  position: relative;
+  padding-top: 20px;
+  border-radius: 15px;
+}
+
+.tab-cashout {
+  position: absolute;
+  left: 15%;
+  top: 7px;
+  z-index: 2;
+}
+
+.tab-cashin {
+  position: absolute;
+  right: 15%;
+  top: 7px;
+  z-index: 2;
+}
+
+.active-cashin {
+  position: absolute;
+  padding: 60px;
+  background-color: #90ac8e;
+  right: 15%;
+  top: 0px;
+  z-index: 1;
+  border-radius: 60px;
+}
+
+.active-cashout {
+  position: absolute;
+  padding: 60px;
+  background-color: #90ac8e;
+  left: 17%;
+  top: 0px;
+  z-index: 1;
+  border-radius: 60px;
+}
+
+.space {
+  margin-top: 3em;
+}

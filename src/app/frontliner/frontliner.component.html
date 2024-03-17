@@ -1,8 +1,15 @@
-<h1 (click)="view('cashout')">Cash-out</h1>
-<h1 (click)="view('cashin')">Cash-in</h1>
-
-<div *ngIf="this.viewType === 'cashout'; else cashin">
-  <app-cash-out></app-cash-out>
+<div class="tab-container">
+  <div class="tab-group">
+    <b class="tab-cashout" (click)="view('cashout')">Cash-out</b>
+    <b class="tab-cashin" (click)="view('cashin')">Cash-in</b>
+  </div>
+  <div [class.active-cashout]="tabActiveCashout"></div>
+  <div [class.active-cashin]="tabActiveCashin"></div>
 </div>
+<div class="space">
+  <div *ngIf="this.viewType === 'cashout'; else cashin">
+    <app-cash-out></app-cash-out>
+  </div>
 
-<ng-template #cashin> <app-cash-in></app-cash-in> </ng-template>
+  <ng-template #cashin> <app-cash-in></app-cash-in> </ng-template>
+</div>

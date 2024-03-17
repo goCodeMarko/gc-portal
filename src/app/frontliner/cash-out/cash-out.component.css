@@ -16,3 +16,7 @@
 ul.links {
   padding-bottom: 20px;
 }
+
+.buttons {
+  display: inline-flex;
+}

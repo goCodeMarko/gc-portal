@@ -5,8 +5,12 @@ import { CashOutComponent } from "./cash-out/cash-out.component";
 import { RouterModule } from "@angular/router";
 import { FrontlinerRoutes } from "./frontliner-routing";
 import { CashInComponent } from "./cash-in/cash-in.component";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { WebcamModule } from "ngx-webcam";
+import { MatButtonModule } from "@angular/material/button";
+import { MatInputModule } from "@angular/material/input";
+import { MatCardModule } from "@angular/material/card";
+import { MatRadioModule } from "@angular/material/radio";
 
 @NgModule({
   declarations: [FrontlinerComponent, CashOutComponent, CashInComponent],
@@ -14,6 +18,11 @@ import { WebcamModule } from "ngx-webcam";
     CommonModule,
     FormsModule,
     WebcamModule,
+    MatButtonModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatRadioModule,
     RouterModule.forChild(FrontlinerRoutes),
   ],
 })

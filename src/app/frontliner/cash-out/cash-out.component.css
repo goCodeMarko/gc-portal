@@ -9,8 +9,7 @@
 }
 
 .snapshot img {
-  max-width: 380px;
-  max-height: 380px;
+  width: 100%;
 }
 
 ul.links {

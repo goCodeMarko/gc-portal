@@ -113,6 +113,9 @@ export class CashOutComponent implements OnInit {
   }
 
   public recapture(): void {
+    this.cashoutForm.patchValue({
+      snapshot: "",
+    });
     this.webcamImage = null;
   }
 

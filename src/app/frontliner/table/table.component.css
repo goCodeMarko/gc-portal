@@ -1,0 +1,63 @@
+.footer-left {
+  width: 100%;
+  float: left;
+}
+
+.footer-right {
+  width: 100%;
+  float: left;
+  text-align: right;
+}
+
+.disabled {
+  pointer-events: none;
+  color: rgba(235, 235, 235, 0.8) !important;
+}
+
+table {
+  padding: 1em;
+}
+
+tfoot {
+  margin-top: 1em;
+}
+
+.button {
+  display: inline-flex;
+}
+
+::ng-deep .mat-menu-panel {
+  min-width: 0px !important;
+  min-height: 0px !important;
+}
+.mat-menu-content {
+  position: relative;
+}
+.custom-mat-panel {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  min-height: 300px;
+  min-width: 600px;
+  padding: 20px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+table {
+  table-layout: fixed !important;
+}
+
+td {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-wrap: break-word !important;
+}
+
+@media only screen and (max-width: 480px) {
+  /* horizontal scrollbar for tables if mobile screen */
+  .tablemobile {
+    overflow-x: auto !important;
+    display: block !important;
+  }
+}

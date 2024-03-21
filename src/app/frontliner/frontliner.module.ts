@@ -11,9 +11,15 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
 import { MatRadioModule } from "@angular/material/radio";
+import { TableComponent } from "./table/table.component";
 
 @NgModule({
-  declarations: [FrontlinerComponent, CashOutComponent, CashInComponent],
+  declarations: [
+    FrontlinerComponent,
+    CashOutComponent,
+    CashInComponent,
+    TableComponent,
+  ],
   imports: [
     CommonModule,
     FormsModule,

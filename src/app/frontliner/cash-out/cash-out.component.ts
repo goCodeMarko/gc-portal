@@ -4,13 +4,66 @@ import { WebcamImage, WebcamInitError, WebcamUtil } from "ngx-webcam";
 import { Subject } from "rxjs";
 import { Observable } from "rxjs-compat";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
+import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
+import { MatDialog } from "@angular/material/dialog";
+import { animate, style, transition, trigger } from "@angular/animations";
 
+interface ICashOuts {
+  _id: string;
+  amount: number;
+  fee: number;
+  fee_payment_is_gcash: boolean;
+  snapshot: string;
+  status: number;
+  type: number;
+  phone_number: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+interface IResponse {
+  success: string;
+  data: {
+    items: ICashOuts[];
+    meta: {
+      total: number;
+      limit: number;
+      page: number;
+      pages: number;
+    };
+  };
+  code: number;
+  message: string;
+}
 @Component({
   selector: "app-cash-out",
   templateUrl: "./cash-out.component.html",
   styleUrls: ["./cash-out.component.css"],
+  animations: [
+    trigger("fade", [
+      transition("void => *", [
+        style({ opacity: 0 }),
+        animate(300, style({ opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class CashOutComponent implements OnInit {
+  //tables
+  cashOuts: ICashOuts[] = [];
+  viewType = "table";
+  counts = 0;
+  pages = 0;
+  currentPage = 0;
+  filters = {
+    search: "",
+    skip: 3,
+    dateStart: "",
+    dateEnd: "",
+    skipCount: 0,
+    limit: 3,
+  };
+
   // toggle webcam on/off
   public showWebcam = true;
   public multipleWebcamsAvailable = false;
@@ -25,7 +78,11 @@ export class CashOutComponent implements OnInit {
     boolean | string
   >();
   public cashoutForm: FormGroup;
-  constructor(private fb: FormBuilder, private hrs: HttpRequestService) {
+  constructor(
+    private fb: FormBuilder,
+    private hrs: HttpRequestService,
+    private dialog: MatDialog
+  ) {
     this.cashoutForm = this.fb.group({
       type: [2],
       fee_payment_is_gcash: ["false"],
@@ -34,12 +91,45 @@ export class CashOutComponent implements OnInit {
       fee: ["", Validators.required],
       note: [""],
     });
-
-    console.log(2);
   }
 
   ngOnInit(): void {
+    this.getCashOuts();
+
     this.readAvailableVideoInputs();
+  }
+
+  public getCashOuts() {
+    this.hrs.request(
+      "get",
+      "transaction/getCashOuts",
+      this.filters,
+      async (res: IResponse) => {
+        const { total, page, pages } = res.data.meta;
+        this.cashOuts = res.data.items;
+        this.currentPage = page;
+        this.counts = total;
+        this.pages = pages;
+
+        console.log(121321, this.cashOuts);
+      }
+    );
+  }
+
+  emittedButton(type: string) {
+    if (type == "cashoutFormView") {
+      this.viewType = "addCashout";
+    }
+  }
+
+  cancel() {
+    this.viewType = "table";
+    this.resetCashoutForm();
+  }
+
+  resetCashoutForm() {
+    this.cashoutForm.reset();
+    this.webcamImage = null;
   }
 
   public currencyStrict(event: any) {
@@ -81,29 +171,45 @@ export class CashOutComponent implements OnInit {
   }
 
   sendRequest() {
-    console.log(this.cashoutForm.value);
-
     this.hrs.request(
       "post",
       `transaction/addTransaction`,
       this.cashoutForm.value,
       async (data: any) => {
-        console.log(data);
-        // if (data.success) {
-        //   this.editCurrentBookInTable(oldData._id, newData);
-        // } else {
-        //   if (data.message == "Restricted") {
-        //     this.dialog.open(PopUpModalComponent, {
-        //       width: "500px",
-        //       data: {
-        //         deletebutton: false,
-        //         title: "Access Denied",
-        //         message:
-        //           "Oops, It looks like you <b>dont have access</b> on this feature.",
-        //       },
-        //     });
-        //   }
-        // }
+        if (data.success) {
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Success!",
+              message: "Cashout Request <b>has been sent</b>.",
+            },
+          });
+          this.viewType = "table";
+          this.resetCashoutForm();
+          this.getCashOuts();
+        } else {
+          if (data.message == "Restricted") {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Access Denied",
+                message:
+                  "Oops, It looks like you <b>dont have access</b> on this feature.",
+              },
+            });
+          }
+
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Server Error",
+              message: data?.error?.message,
+            },
+          });
+        }
       }
     );
   }

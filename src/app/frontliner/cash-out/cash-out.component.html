@@ -1,118 +1,155 @@
-<form [formGroup]="this.cashoutForm">
-  <!-- AMOUNT -->
-  <mat-form-field style="display: block; margin-bottom: 1em" appearance="fill">
-    <mat-label>Amount</mat-label>
-    <input
-      type="number"
-      min="0"
-      step=".25"
-      matInput
-      formControlName="amount"
-      (paste)="currencyStrict($event)"
-      (keypress)="currencyStrict($event)"
-    />
-    <mat-error *ngIf="checkFormControlErrors('amount')">
-      <div *ngIf="cashoutForm.get('amount')?.hasError('required')">
-        Amount is required
-      </div>
-    </mat-error>
-  </mat-form-field>
-
-  <!-- FEE -->
-  <mat-form-field style="display: block" appearance="fill">
-    <mat-label>Fee</mat-label>
-    <input
-      type="number"
-      min="0"
-      step=".25"
-      matInput
-      formControlName="fee"
-      (paste)="currencyStrict($event)"
-      (keypress)="currencyStrict($event)"
-    />
-    <mat-error *ngIf="checkFormControlErrors('fee')">
-      <div *ngIf="cashoutForm.get('fee')?.hasError('required')">
-        Fee is required
-      </div>
-    </mat-error>
-  </mat-form-field>
-
-  <!-- FEE PAYMENT IS GCASH -->
-  <div style="margin-bottom: 2em">
-    <mat-label style="margin-right: 1em">Payment Fee</mat-label>
-    <mat-radio-group formControlName="fee_payment_is_gcash">
-      <mat-radio-button value="true" style="margin-right: 1em"
-        >Gcash</mat-radio-button
+<div *ngIf="this.viewType === 'addCashout'; else table">
+  <mat-card style="padding: 10px !important">
+    <form [formGroup]="this.cashoutForm">
+      <!-- AMOUNT -->
+      <mat-form-field
+        style="display: block; margin-bottom: 1em"
+        appearance="outline"
       >
-      <mat-radio-button value="false">Cash</mat-radio-button>
-    </mat-radio-group>
-  </div>
+        <mat-label>Amount</mat-label>
+        <input
+          type="number"
+          min="0"
+          step=".25"
+          matInput
+          formControlName="amount"
+          (paste)="currencyStrict($event)"
+          (keypress)="currencyStrict($event)"
+        />
 
-  <!-- NOTE -->
-  <mat-form-field style="display: block; margin-bottom: 1em" appearance="fill">
-    <mat-label>Note</mat-label>
-    <input type="text" matInput formControlName="note" />
-  </mat-form-field>
+        <mat-error *ngIf="checkFormControlErrors('amount')">
+          <div *ngIf="cashoutForm.get('amount')?.hasError('required')">
+            Amount is required
+          </div>
+        </mat-error>
+      </mat-form-field>
 
-  <!-- SNAPSHOT -->
-  <mat-form-field style="display: none">
-    <input type="text" matInput formControlName="snapshot" />
-  </mat-form-field>
-  <div style="margin-top: 1em">
-    <div>
-      <webcam
-        [height]="367"
-        [width]="367"
-        [trigger]="triggerObservable"
-        (imageCapture)="handleImage($event)"
-        [allowCameraSwitch]="true"
-        [switchCamera]="nextWebcamObservable"
-        [videoOptions]="videoOptions"
-        (cameraSwitched)="cameraWasSwitched($event)"
-        (initError)="handleInitError($event)"
-        *ngIf="!webcamImage"
-      ></webcam>
-      <div class="snapshot" *ngIf="webcamImage">
-        <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+      <!-- FEE -->
+      <mat-form-field style="display: block" appearance="outline">
+        <mat-label>Fee</mat-label>
+        <input
+          type="number"
+          min="0"
+          step=".25"
+          matInput
+          formControlName="fee"
+          (paste)="currencyStrict($event)"
+          (keypress)="currencyStrict($event)"
+        />
+        <mat-error *ngIf="checkFormControlErrors('fee')">
+          <div *ngIf="cashoutForm.get('fee')?.hasError('required')">
+            Fee is required
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- FEE PAYMENT IS GCASH -->
+      <div style="margin-bottom: 2em">
+        <mat-label style="margin-right: 1em">Payment Fee</mat-label>
+        <mat-radio-group formControlName="fee_payment_is_gcash">
+          <mat-radio-button value="true" style="margin-right: 1em"
+            >Gcash</mat-radio-button
+          >
+          <mat-radio-button value="false">Cash</mat-radio-button>
+        </mat-radio-group>
       </div>
-      <br />
-      <div class="buttons">
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="triggerSnapshot()"
-          *ngIf="!webcamImage"
-        >
-          Capture
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="recapture()"
-          *ngIf="webcamImage"
-        >
-          Recapture
-        </button>
 
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="sendRequest()"
-          [disabled]="this.cashoutForm.invalid"
-        >
-          Send Request
-        </button>
+      <!-- NOTE -->
+      <mat-form-field
+        style="display: block; margin-bottom: 1em"
+        appearance="outline"
+      >
+        <mat-label>Note</mat-label>
+        <input type="text" matInput formControlName="note" />
+      </mat-form-field>
+
+      <!-- SNAPSHOT -->
+      <mat-form-field style="display: none">
+        <input type="text" matInput formControlName="snapshot" />
+      </mat-form-field>
+      <div style="margin-top: 1em">
+        <div>
+          <webcam
+            [height]="367"
+            [width]="367"
+            [trigger]="triggerObservable"
+            (imageCapture)="handleImage($event)"
+            [allowCameraSwitch]="true"
+            [switchCamera]="nextWebcamObservable"
+            [videoOptions]="videoOptions"
+            (cameraSwitched)="cameraWasSwitched($event)"
+            (initError)="handleInitError($event)"
+            *ngIf="!webcamImage"
+          ></webcam>
+          <div class="snapshot" *ngIf="webcamImage">
+            <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+          </div>
+          <br />
+          <div class="buttons">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="triggerSnapshot()"
+              *ngIf="!webcamImage"
+            >
+              <span class="material-symbols-outlined"> photo_camera </span>
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="recapture()"
+              *ngIf="webcamImage"
+            >
+              <span class="material-symbols-outlined"> cameraswitch </span>
+            </button>
+          </div>
+          <div class="main-buttons">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="sendRequest()"
+              [disabled]="this.cashoutForm.invalid"
+              class="btn-block"
+            >
+              Send Request
+            </button>
+            <button
+              mat-flat-button
+              (click)="cancel()"
+              color="primary"
+              class="btn-block"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <mat-error *ngIf="checkFormControlErrors('snapshot')">
-    <div
-      *ngIf="
-        cashoutForm.get('snapshot')?.errors &&
-        cashoutForm.get('snapshot')?.hasError('required')
-      "
-    >
-      Snapshot is required
-    </div>
-  </mat-error>
-</form>
+      <mat-error *ngIf="checkFormControlErrors('snapshot')">
+        <div
+          *ngIf="
+            cashoutForm.get('snapshot')?.errors &&
+            cashoutForm.get('snapshot')?.hasError('required')
+          "
+        >
+          Snapshot is required
+        </div>
+      </mat-error>
+    </form>
+  </mat-card>
+</div>
+
+<ng-template #table>
+  <app-table
+    [headers]="['Status', 'Amount', 'Date']"
+    [data]="this.cashOuts"
+    [dataNames]="['status', 'amount', 'createdAt']"
+    [totalCount]="counts"
+    [filters]="this.filters"
+    [currentPage]="currentPage"
+    [totalPages]="pages"
+    (next)="this.getCashOuts($event)"
+    (emitButtonClick)="this.emittedButton($event)"
+    (previous)="this.getCashOuts($event)"
+    @fade
+  ></app-table
+></ng-template>

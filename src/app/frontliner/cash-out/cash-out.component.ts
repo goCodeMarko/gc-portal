@@ -130,6 +130,11 @@ export class CashOutComponent implements OnInit {
   resetCashoutForm() {
     this.cashoutForm.reset();
     this.webcamImage = null;
+
+    this.cashoutForm.patchValue({
+      type: 2,
+      fee_payment_is_gcash: "false",
+    });
   }
 
   public currencyStrict(event: any) {

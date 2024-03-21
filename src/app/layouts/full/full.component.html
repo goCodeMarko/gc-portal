@@ -5,59 +5,7 @@
   <!-- ============================================================== -->
   <!-- Topbar - style you can find in header.scss -->
   <!-- ============================================================== -->
-  <mat-toolbar class="topbar telative">
-    <!-- ============================================================== -->
-    <!-- sidebar toggle -->
-    <!-- ============================================================== -->
-    <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
-      <mat-icon style="color: #90ac8e">menu</mat-icon>
-    </button>
 
-    <!-- Logo - style you can find in header.scss -->
-    <!-- ============================================================== -->
-    <div class="navbar-header">
-      <a class="navbar-brand" href="index.html">
-        <!-- Logo icon --><b>
-          <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-          <!-- Dark Logo icon -->
-          <img
-            src="assets/images/logo-icon.png"
-            alt="homepage"
-            class="dark-logo"
-          />
-          <!-- Light Logo icon -->
-          <!-- <img
-            src="assets/images/logo-light-icon.png"
-            alt="homepage"
-            class="light-logo"
-          /> -->
-        </b>
-        <!--End Logo icon -->
-        <!-- Logo text -->
-        <span fxShow="false" fxShow.gt-xs>
-          <!-- dark Logo text -->
-          <img
-            src="assets/images/logo-text.png"
-            alt="homepage"
-            class="dark-logo"
-          />
-          <!-- Light Logo text -->
-          <img
-            src="assets/images/light-logo.png"
-            class="light-logo"
-            style="width: 180px"
-            alt="homepage"
-          />
-        </span>
-      </a>
-    </div>
-
-    <span fxFlex></span>
-    <!-- ============================================================== -->
-    <!-- app header component - style you can find in header.scss / header.component.ts-->
-    <!-- ============================================================== -->
-    <app-header></app-header>
-  </mat-toolbar>
   <!-- ============================================================== -->
   <!-- End Topbar - style you can find in pages.scss -->
   <!-- ============================================================== -->
@@ -68,17 +16,7 @@
     <!-- ============================================================== -->
     <!-- Sidebar - style you can find in sidebar.scss -->
     <!-- ============================================================== -->
-    <mat-sidenav
-      #snav
-      id="snav"
-      class="dark-sidebar pl-xs"
-      [mode]="mobileQuery.matches ? 'side' : 'over'"
-      fixedTopGap="0"
-      [opened]="mobileQuery.matches"
-      [disableClose]="mobileQuery.matches"
-    >
-      <app-sidebar></app-sidebar>
-    </mat-sidenav>
+
     <!-- ============================================================== -->
     <!-- Sidebar - style you can find in sidebar.scss -->
     <!-- ============================================================== -->

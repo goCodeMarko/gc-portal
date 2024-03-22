@@ -2,6 +2,13 @@
   padding: 40px;
   position: relative;
   max-width: 400px;
+  font-size: larger;
+}
+
+.logout-container {
+  padding: 40px;
+  position: relative;
+  max-width: 400px;
 }
 
 .tab-group {
@@ -17,9 +24,10 @@
 
 .tab-cashout {
   position: absolute;
-  left: 15%;
+  left: 12%;
   top: 7px;
   z-index: 2;
+  cursor: pointer;
 }
 
 .tab-cashin {
@@ -27,13 +35,14 @@
   right: 15%;
   top: 7px;
   z-index: 2;
+  cursor: pointer;
 }
 
 .active-cashin {
   position: absolute;
   padding: 60px;
   background-color: #90ac8e;
-  right: 15%;
+  right: 17%;
   top: 0px;
   z-index: 1;
   border-radius: 60px;
@@ -51,4 +60,11 @@
 
 .space {
   margin-top: 3em;
+}
+
+::ng-deep .main-buttons {
+  margin-top: 20px;
+}
+::ng-deep .main-buttons button {
+  margin-top: 10px;
 }

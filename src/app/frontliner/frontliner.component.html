@@ -1,15 +1,28 @@
 <div class="tab-container">
   <div class="tab-group">
-    <b class="tab-cashout" (click)="view('cashout')">Cash-out</b>
-    <b class="tab-cashin" (click)="view('cashin')">Cash-in</b>
+    <b class="tab-cashout fw-bold" (click)="view('cashout')">CASH OUT</b>
+    <b class="tab-cashin fw-bold" (click)="view('cashin')">CASH IN</b>
   </div>
   <div [class.active-cashout]="tabActiveCashout"></div>
   <div [class.active-cashin]="tabActiveCashin"></div>
 </div>
 <div class="space">
   <div *ngIf="this.viewType === 'cashout'; else cashin">
-    <app-cash-out></app-cash-out>
+    <app-cash-out (hideLogoutButton)="logoutButton($event)"></app-cash-out>
   </div>
 
-  <ng-template #cashin> <app-cash-in></app-cash-in> </ng-template>
+  <ng-template #cashin>
+    <app-cash-in (hideLogoutButton)="logoutButton($event)"></app-cash-in>
+  </ng-template>
+</div>
+
+<div *ngIf="!hideLogoutButton" class="logout-container">
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="logout()"
+    class="btn-block fw-bold"
+  >
+    LOG OUT
+  </button>
 </div>

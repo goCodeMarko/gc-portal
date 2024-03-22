@@ -1,5 +1,5 @@
 <div *ngIf="this.viewType === 'addCashout'; else table">
-  <mat-card style="padding: 10px !important">
+  <mat-card class="mat-card-custom">
     <form [formGroup]="this.cashoutForm">
       <!-- AMOUNT -->
       <mat-form-field
@@ -109,17 +109,17 @@
               color="primary"
               (click)="sendRequest()"
               [disabled]="this.cashoutForm.invalid"
-              class="btn-block"
+              class="btn-block fw-bold"
             >
-              Send Request
+              SEND REQUEST
             </button>
             <button
               mat-flat-button
               (click)="cancel()"
               color="primary"
-              class="btn-block"
+              class="btn-block fw-bold"
             >
-              Cancel
+              CANCEL
             </button>
           </div>
         </div>
@@ -140,7 +140,8 @@
 
 <ng-template #table>
   <app-table
-    [headers]="['Status', 'Amount', 'Date']"
+    [componentName]="'cashout'"
+    [headers]="['STATUS', 'AMOUNT', 'DATE']"
     [data]="this.cashOuts"
     [dataNames]="['status', 'amount', 'createdAt']"
     [totalCount]="counts"

@@ -19,7 +19,3 @@ ul.links {
 .buttons {
   display: inline-flex;
 }
-
-.main-buttons button {
-  margin-top: 10px;
-}

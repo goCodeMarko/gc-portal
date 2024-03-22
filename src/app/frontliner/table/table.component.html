@@ -1,11 +1,6 @@
 <mat-card>
   <div
-    style="
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 10px;
-    "
+    style="display: flex; justify-content: space-between; align-items: baseline"
   >
     <!-- search box -->
     <div>
@@ -136,9 +131,22 @@
         <span class="material-symbols-outlined"> border_left </span>
       </button> -->
 
-      <button mat-button (click)="this.buttonClicked('cashoutFormView')">
-        Cashout Request
-        <span class="material-symbols-outlined"> payments </span>
+      <button
+        mat-button
+        class="fw-bold"
+        *ngIf="componentName === 'cashout'"
+        (click)="this.buttonClicked('cashoutFormView')"
+      >
+        REQUEST CASH OUT
+      </button>
+
+      <button
+        mat-button
+        class="fw-bold"
+        *ngIf="componentName === 'cashin'"
+        (click)="this.buttonClicked('cashinFormView')"
+      >
+        REQUEST CASH IN
       </button>
     </div>
   </div>
@@ -147,8 +155,8 @@
   <table class="table table-responsive tablemobile">
     <thead>
       <tr>
-        <th>#</th>
-        <th *ngFor="let head of headers; let i = index">{{ head }}</th>
+        <th></th>
+        <th *ngFor="let head of headers; let i = index"></th>
 
         <th style="text-align: center"></th>
       </tr>
@@ -168,8 +176,12 @@
               {{ data[dataName] | currency : "₱" : "symbol" }}
             </ng-container>
             <ng-container *ngSwitchCase="'createdAt' === dataName">
-              {{ data[dataName] | date }}
+              {{ data[dataName] | date : "M-d-yy h:mma" }}
             </ng-container>
+            <ng-container *ngSwitchCase="'status' === dataName">
+              <div [innerHTML]="data[dataName] | transactionStatus"></div>
+            </ng-container>
+
             <ng-container *ngSwitchDefault> {{ data[dataName] }} </ng-container>
           </ng-container>
         </td>

@@ -42,7 +42,7 @@ interface IResponse {
   styleUrls: ["./table.component.css"],
 })
 export class TableComponent implements OnInit, OnChanges {
-  // @Input() componentName: string = "";
+  @Input() componentName: string = "";
   @Input() filters:
     | {
         search: string;
@@ -73,9 +73,7 @@ export class TableComponent implements OnInit, OnChanges {
 
   constructor(private dialog: MatDialog, private hrs: HttpRequestService) {}
 
-  ngOnInit(): void {
-    console.log(34343, this.data);
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {}
 
@@ -94,7 +92,6 @@ export class TableComponent implements OnInit, OnChanges {
   emitPrev() {
     if (this.filters.skipCount > 0) {
       this.filters.skipCount -= this.filters.skip;
-
       this.previous.emit(this.getFilters);
     }
   }

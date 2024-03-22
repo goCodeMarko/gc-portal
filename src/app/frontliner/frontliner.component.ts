@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { AuthService } from "../authorization/auth.service";
 
 @Component({
   selector: "app-frontliner",
@@ -7,11 +8,11 @@ import { Component, OnInit } from "@angular/core";
 })
 export class FrontlinerComponent implements OnInit {
   viewType: "cashout" | "cashin" = "cashout";
-
+  public hideLogoutButton = false;
   public tabActiveCashout = true;
   public tabActiveCashin = false;
 
-  constructor() {}
+  constructor(private auth: AuthService) {}
 
   ngOnInit(): void {}
 
@@ -27,5 +28,13 @@ export class FrontlinerComponent implements OnInit {
     }
 
     console.log(this.viewType);
+  }
+
+  logoutButton(event: boolean) {
+    this.hideLogoutButton = event;
+  }
+
+  public logout() {
+    this.auth.logout();
   }
 }

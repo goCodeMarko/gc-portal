@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { WebcamImage, WebcamInitError, WebcamUtil } from "ngx-webcam";
 import { Subject } from "rxjs";
@@ -49,6 +49,8 @@ interface IResponse {
   ],
 })
 export class CashOutComponent implements OnInit {
+  @Output() hideLogoutButton = new EventEmitter<boolean>();
+
   //tables
   cashOuts: ICashOuts[] = [];
   viewType = "table";
@@ -57,11 +59,11 @@ export class CashOutComponent implements OnInit {
   currentPage = 0;
   filters = {
     search: "",
-    skip: 3,
+    skip: 5,
     dateStart: "",
     dateEnd: "",
     skipCount: 0,
-    limit: 3,
+    limit: 5,
   };
 
   // toggle webcam on/off
@@ -95,7 +97,6 @@ export class CashOutComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCashOuts();
-
     this.readAvailableVideoInputs();
   }
 
@@ -118,6 +119,7 @@ export class CashOutComponent implements OnInit {
 
   emittedButton(type: string) {
     if (type == "cashoutFormView") {
+      this.hideLogoutButton.emit(true);
       this.viewType = "addCashout";
     }
   }
@@ -125,6 +127,7 @@ export class CashOutComponent implements OnInit {
   cancel() {
     this.viewType = "table";
     this.resetCashoutForm();
+    this.hideLogoutButton.emit(false);
   }
 
   resetCashoutForm() {
@@ -193,6 +196,7 @@ export class CashOutComponent implements OnInit {
           this.viewType = "table";
           this.resetCashoutForm();
           this.getCashOuts();
+          this.hideLogoutButton.emit(false);
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {

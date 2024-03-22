@@ -12,6 +12,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
 import { MatRadioModule } from "@angular/material/radio";
 import { TableComponent } from "./table/table.component";
+import { TransactionStatusPipe } from "../shared/pipes/transaction-status.pipe";
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { TableComponent } from "./table/table.component";
     CashOutComponent,
     CashInComponent,
     TableComponent,
+    TransactionStatusPipe,
   ],
   imports: [
     CommonModule,

@@ -12,7 +12,7 @@ import { AuthService } from "../authorization/auth.service";
 @Injectable({
   providedIn: "root",
 })
-export class FrontlinerGuard implements CanActivate {
+export class SecurityGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(
@@ -24,11 +24,12 @@ export class FrontlinerGuard implements CanActivate {
     | boolean
     | UrlTree {
     return (async (): Promise<boolean> => {
-      const role = await this.auth.checkRole();
-      if (role == "frontliner") {
+      const role: string = await this.auth.checkRole();
+      console.log(1231312312312, role);
+      if (["frontliner", "admin"].includes(role)) {
         return true;
       } else {
-        this.router.navigate([role]);
+        this.router.navigate(["transaction"]);
         return false;
       }
     })();

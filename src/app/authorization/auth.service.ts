@@ -42,10 +42,11 @@ export class AuthService {
     });
   }
 
-  async checkRole() {
+  async checkRole(): Promise<string> {
     return new Promise((resolve) => {
       this.hrs.request("get", "user/getAuthUser", {}, (response: IResponse) => {
         const { role } = response.data;
+        console.log(1231312312312, role);
         if (response.success) resolve(role);
         else this.router.navigate(["login"]);
       });
@@ -67,8 +68,8 @@ export class AuthService {
     return account ? account : "";
   }
 
-  navigate(role: string) {
-    this.router.navigate([role]);
+  navigate(path: string) {
+    this.router.navigate([path]);
   }
 
   logout(): void {

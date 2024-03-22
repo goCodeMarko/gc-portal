@@ -1,7 +1,6 @@
 import { Routes } from "@angular/router";
 import { FullComponent } from "./layouts/full/full.component";
-import { AdminGuard } from "./guards/admin.guard";
-import { FrontlinerGuard } from "./guards/frontliner.guard";
+import { SecurityGuard } from "./guards/security.guard";
 import { LoginComponent } from "./login/login.component";
 
 export const AppRoutes: Routes = [
@@ -14,18 +13,12 @@ export const AppRoutes: Routes = [
     component: FullComponent,
     children: [
       {
-        path: "frontliner",
+        path: "transaction",
         loadChildren: () =>
-          import("./frontliner/frontliner.module").then(
-            (m) => m.FrontlinerModule
+          import("./transaction/transaction.module").then(
+            (m) => m.TransactionModule
           ),
-        canActivate: [FrontlinerGuard],
-      },
-      {
-        path: "admin",
-        loadChildren: () =>
-          import("./admin/admin.module").then((m) => m.AdminModule),
-        canActivate: [AdminGuard],
+        canActivate: [SecurityGuard],
       },
     ],
   },

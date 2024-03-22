@@ -137,7 +137,8 @@
         *ngIf="componentName === 'cashout'"
         (click)="this.buttonClicked('cashoutFormView')"
       >
-        REQUEST CASH OUT
+        <p *ngIf="role === 'admin'; else otherTemplate">ADD CASH OUT</p>
+        <ng-template #otherTemplate><p>REQUEST CASH OUT</p></ng-template>
       </button>
 
       <button
@@ -146,13 +147,14 @@
         *ngIf="componentName === 'cashin'"
         (click)="this.buttonClicked('cashinFormView')"
       >
-        REQUEST CASH IN
+        <p *ngIf="role === 'admin'; else otherTemplate">ADD CASH IN</p>
+        <ng-template #otherTemplate><p>REQUEST CASH IN</p></ng-template>
       </button>
     </div>
   </div>
 
   <!-- table -->
-  <table class="table table-responsive tablemobile">
+  <table class="table table-responsive">
     <thead>
       <tr>
         <th></th>
@@ -208,15 +210,26 @@
               <mat-icon class="material-symbols-outlined">edit</mat-icon>
             </button> -->
 
+            <button mat-button class="fw-bold" (click)="emitViewCashout(data)">
+              <p class="fw-bold text-warning">VIEW</p>
+            </button>
+
             <button
-              mat-icon-button
-              matTooltip="Next"
-              matTooltipPosition="after"
+              *ngIf="role === 'admin'"
+              mat-button
               (click)="emitViewCashout(data)"
-              matTooltip="Edit"
-              matTooltipPosition="above"
             >
-              <mat-icon class="material-symbols-outlined">pageview</mat-icon>
+              <p class="fw-bold text-info">APPROVE</p>
+            </button>
+            <button
+              *ngIf="role === 'admin'"
+              mat-button
+              (click)="emitViewCashout(data)"
+            >
+              <p class="fw-bold text-danger">FAIL</p>
+            </button>
+            <button mat-button (click)="emitViewCashout(data)">
+              <p class="fw-bold text-secondary">CANCEL</p>
             </button>
           </div>
         </td>

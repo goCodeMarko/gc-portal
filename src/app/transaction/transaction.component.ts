@@ -2,11 +2,11 @@ import { Component, OnInit } from "@angular/core";
 import { AuthService } from "../authorization/auth.service";
 
 @Component({
-  selector: "app-frontliner",
-  templateUrl: "./frontliner.component.html",
-  styleUrls: ["./frontliner.component.css"],
+  selector: "app-transaction",
+  templateUrl: "./transaction.component.html",
+  styleUrls: ["./transaction.component.css"],
 })
-export class FrontlinerComponent implements OnInit {
+export class TransactionComponent implements OnInit {
   viewType: "cashout" | "cashin" = "cashout";
   public hideLogoutButton = false;
   public tabActiveCashout = true;

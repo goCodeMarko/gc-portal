@@ -1,9 +1,9 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FrontlinerComponent } from "./frontliner.component";
+import { TransactionComponent } from "./transaction.component";
 import { CashOutComponent } from "./cash-out/cash-out.component";
 import { RouterModule } from "@angular/router";
-import { FrontlinerRoutes } from "./frontliner-routing";
+import { TransactionRoutes } from "./transaction-routing";
 import { CashInComponent } from "./cash-in/cash-in.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { WebcamModule } from "ngx-webcam";
@@ -16,7 +16,7 @@ import { TransactionStatusPipe } from "../shared/pipes/transaction-status.pipe";
 
 @NgModule({
   declarations: [
-    FrontlinerComponent,
+    TransactionComponent,
     CashOutComponent,
     CashInComponent,
     TableComponent,
@@ -31,7 +31,7 @@ import { TransactionStatusPipe } from "../shared/pipes/transaction-status.pipe";
     ReactiveFormsModule,
     MatCardModule,
     MatRadioModule,
-    RouterModule.forChild(FrontlinerRoutes),
+    RouterModule.forChild(TransactionRoutes),
   ],
 })
-export class FrontlinerModule {}
+export class TransactionModule {}

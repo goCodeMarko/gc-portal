@@ -30,6 +30,7 @@ import { AuthService } from "./authorization/auth.service";
 import { TokenInterceptorServiceService } from "./token-interceptor/token-interceptor-service.service";
 import { LoginComponent } from "./login/login.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { TransactionModule } from "./transaction/transaction.module";
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     ReactiveFormsModule,
     MatInputModule,
     MatTooltipModule,
+    TransactionModule,
     RouterModule.forRoot(AppRoutes),
   ],
   providers: [

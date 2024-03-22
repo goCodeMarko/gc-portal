@@ -12,6 +12,7 @@ import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.comp
 import { HttpRequestService } from "../../http-request/http-request.service";
 import { EditBookComponent } from "../../modals/edit-book/edit-book.component";
 import { saveAs } from "file-saver";
+import { AuthService } from "src/app/authorization/auth.service";
 interface IBooks {
   author: string;
   stocks: number;
@@ -69,13 +70,25 @@ export class TableComponent implements OnInit, OnChanges {
   checked = false;
   indeterminate = false;
 
+  public role: string = "";
+
   // value1: number = this.filters.limit;
 
-  constructor(private dialog: MatDialog, private hrs: HttpRequestService) {}
+  constructor(
+    private dialog: MatDialog,
+    private hrs: HttpRequestService,
+    private auth: AuthService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.checkRole();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {}
+
+  async checkRole() {
+    this.role = await this.auth.checkRole();
+  }
 
   emitNext() {
     if (this.currentPage < this.totalPages) {

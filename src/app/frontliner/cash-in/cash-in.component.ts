@@ -50,11 +50,11 @@ export class CashInComponent implements OnInit {
   public currentPage = 0;
   public filters = {
     search: "",
-    skip: 5,
+    skip: 3,
     dateStart: "",
     dateEnd: "",
     skipCount: 0,
-    limit: 5,
+    limit: 3,
   };
   // End
 

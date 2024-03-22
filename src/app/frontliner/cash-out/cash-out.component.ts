@@ -59,11 +59,11 @@ export class CashOutComponent implements OnInit {
   currentPage = 0;
   filters = {
     search: "",
-    skip: 5,
+    skip: 3,
     dateStart: "",
     dateEnd: "",
     skipCount: 0,
-    limit: 5,
+    limit: 3,
   };
 
   // toggle webcam on/off

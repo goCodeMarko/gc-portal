@@ -4,6 +4,7 @@ import { HttpRequestService } from "src/app/http-request/http-request.service";
 import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
+import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
 
 interface ICashIns {
   _id: string;
@@ -42,6 +43,11 @@ export class CashInComponent implements OnInit {
 
   public cashinForm: FormGroup;
 
+  //screenshot file
+  public approveCashinForm: FormGroup;
+  public screenshotFile: any;
+  public approveTransactionDetails: any;
+
   // Table Props
   public viewType = "table";
   public cashIns: ICashIns[] = [];
@@ -74,10 +80,21 @@ export class CashInComponent implements OnInit {
       fee: ["", Validators.required],
       note: [""],
     });
+
+    this.approveCashinForm = this.fb.group({
+      screenshot: ["", Validators.required],
+    });
   }
 
   ngOnInit(): void {
     this.getCashIns();
+  }
+
+  screenshotUploadHandler(event: any) {
+    this.approveCashinForm.patchValue({
+      screenshot: event.target.files[0].name,
+    });
+    this.screenshotFile = event.target.files[0];
   }
 
   public getCashIns() {
@@ -97,11 +114,103 @@ export class CashInComponent implements OnInit {
     );
   }
 
-  emittedButton(type: string) {
-    if (type == "cashinFormView") {
-      this.hideLogoutButton.emit(true);
-      this.viewType = "addCashin";
+  emittedButton(event: { type: string; data: any }) {
+    switch (event.type) {
+      case "approve":
+        this.viewType = "approveCashin";
+        this.hideLogoutButton.emit(true);
+        this.approveTransactionDetails = event.data;
+        break;
+      case "cancel":
+        this.updateTransactionStatus(
+          TransactionStatus.Cancelled,
+          event.data?.trans_id
+        );
+        break;
+      case "fail":
+        this.updateTransactionStatus(
+          TransactionStatus.Failed,
+          event.data?.trans_id
+        );
+        break;
+      case "cashinFormView":
+        this.hideLogoutButton.emit(true);
+        this.viewType = "addCashin";
+        break;
     }
+  }
+
+  public approveRequest() {
+    const formData = new FormData();
+    formData.append("status", "2");
+    formData.append("type", "1");
+    formData.append("screenshot", this.screenshotFile);
+    this.updateTransactionStatus(
+      2,
+      this.approveTransactionDetails.trans_id,
+      formData
+    );
+  }
+
+  public updateTransactionStatus(
+    status: number,
+    trans_id: any,
+    formData?: any
+  ) {
+    this.hrs.request(
+      "put",
+      `transaction/updateTransactionStatus?trans_id=${trans_id}`,
+      formData ? formData : { status: status },
+      async (data: any) => {
+        if (data.success) {
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Success!",
+              message: "Transaction status <b>has been updated</b>.",
+            },
+          });
+
+          if (formData) {
+            this.getCashIns();
+            this.viewType = "table";
+            this.resetApproveCashinForm();
+            this.hideLogoutButton.emit(false);
+            this.approveTransactionDetails = {};
+          } else {
+            this.cashIns = this.cashIns.map((cashout) => {
+              if (cashout._id === trans_id) {
+                cashout.status = status;
+              }
+
+              return { ...cashout };
+            });
+          }
+        } else {
+          if (data.error.message == "Restricted") {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Access Denied",
+                message:
+                  "Oops, It looks like you <b>dont have access</b> on this feature.",
+              },
+            });
+          } else {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Server Error",
+                message: data?.error?.message,
+              },
+            });
+          }
+        }
+      }
+    );
   }
 
   public currencyStrict(event: any) {
@@ -214,6 +323,7 @@ export class CashInComponent implements OnInit {
   cancel() {
     this.viewType = "table";
     this.resetCashoutForm();
+    this.resetApproveCashinForm();
     this.hideLogoutButton.emit(false);
   }
 
@@ -222,6 +332,13 @@ export class CashInComponent implements OnInit {
     this.cashinForm.patchValue({
       type: 1,
       fee_payment_is_gcash: "true",
+    });
+  }
+
+  resetApproveCashinForm() {
+    this.approveCashinForm.reset();
+    this.approveCashinForm.patchValue({
+      screenshot: "",
     });
   }
 }

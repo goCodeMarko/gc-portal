@@ -135,7 +135,7 @@
         mat-button
         class="fw-bold"
         *ngIf="componentName === 'cashout'"
-        (click)="this.buttonClicked('cashoutFormView')"
+        (click)="this.buttonClicked({ type: 'cashoutFormView' })"
       >
         <p *ngIf="role === 'admin'; else otherTemplate">ADD CASH OUT</p>
         <ng-template #otherTemplate><p>REQUEST CASH OUT</p></ng-template>
@@ -145,7 +145,7 @@
         mat-button
         class="fw-bold"
         *ngIf="componentName === 'cashin'"
-        (click)="this.buttonClicked('cashinFormView')"
+        (click)="this.buttonClicked({ type: 'cashinFormView' })"
       >
         <p *ngIf="role === 'admin'; else otherTemplate">ADD CASH IN</p>
         <ng-template #otherTemplate><p>REQUEST CASH IN</p></ng-template>
@@ -210,26 +210,42 @@
               <mat-icon class="material-symbols-outlined">edit</mat-icon>
             </button> -->
 
-            <button mat-button class="fw-bold" (click)="emitViewCashout(data)">
-              <p class="fw-bold text-warning">VIEW</p>
+            <button
+              mat-button
+              class="fw-bold"
+              color="primary"
+              (click)="emitViewCashout(data)"
+            >
+              <p class="fw-bold">VIEW</p>
             </button>
 
             <button
               *ngIf="role === 'admin'"
               mat-button
-              (click)="emitViewCashout(data)"
+              (click)="
+                buttonClicked({ type: 'approve', data: { trans_id: data._id } })
+              "
+              color="primary"
             >
-              <p class="fw-bold text-info">APPROVE</p>
+              <p class="fw-bold">APPROVE</p>
             </button>
             <button
               *ngIf="role === 'admin'"
               mat-button
-              (click)="emitViewCashout(data)"
+              (click)="
+                buttonClicked({ type: 'fail', data: { trans_id: data._id } })
+              "
             >
-              <p class="fw-bold text-danger">FAIL</p>
+              <p class="fw-bold">FAIL</p>
             </button>
-            <button mat-button (click)="emitViewCashout(data)">
-              <p class="fw-bold text-secondary">CANCEL</p>
+            <button
+              mat-button
+              color="primary"
+              (click)="
+                buttonClicked({ type: 'cancel', data: { trans_id: data._id } })
+              "
+            >
+              <p class="fw-bold">CANCEL</p>
             </button>
           </div>
         </td>

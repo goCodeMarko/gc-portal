@@ -7,6 +7,7 @@ import { HttpRequestService } from "src/app/http-request/http-request.service";
 import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
+import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
 
 interface ICashOuts {
   _id: string;
@@ -117,10 +118,31 @@ export class CashOutComponent implements OnInit {
     );
   }
 
-  emittedButton(type: string) {
-    if (type == "cashoutFormView") {
-      this.hideLogoutButton.emit(true);
-      this.viewType = "addCashout";
+  emittedButton(event: { type: string; data: any }) {
+    console.log("cash out component:updateTransactionStatus ", event);
+    switch (event.type) {
+      case "approve":
+        this.updateTransactionStatus(
+          TransactionStatus.Approved,
+          event.data?.trans_id
+        );
+        break;
+      case "cancel":
+        this.updateTransactionStatus(
+          TransactionStatus.Cancelled,
+          event.data?.trans_id
+        );
+        break;
+      case "fail":
+        this.updateTransactionStatus(
+          TransactionStatus.Failed,
+          event.data?.trans_id
+        );
+        break;
+      case "cashoutFormView":
+        this.hideLogoutButton.emit(true);
+        this.viewType = "addCashout";
+        break;
     }
   }
 
@@ -176,6 +198,58 @@ export class CashOutComponent implements OnInit {
     }
 
     return result;
+  }
+
+  public updateTransactionStatus(status: number, trans_id: any) {
+    console.log("cash out component: ", status);
+    console.log("cash out component: ", trans_id);
+    this.hrs.request(
+      "put",
+      `transaction/updateTransactionStatus?trans_id=${trans_id}`,
+      { status: status },
+      async (data: any) => {
+        console.log("cashout component: updateTransactionStatus", data);
+        if (data.success) {
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Success!",
+              message: "Transaction status <b>has been updated</b>.",
+            },
+          });
+
+          this.cashOuts = this.cashOuts.map((cashout) => {
+            if (cashout._id === trans_id) {
+              cashout.status = status;
+            }
+
+            return { ...cashout };
+          });
+        } else {
+          if (data.error.message == "Restricted") {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Access Denied",
+                message:
+                  "Oops, It looks like you <b>dont have access</b> on this feature.",
+              },
+            });
+          } else {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Server Error",
+                message: data?.error?.message,
+              },
+            });
+          }
+        }
+      }
+    );
   }
 
   sendRequest() {

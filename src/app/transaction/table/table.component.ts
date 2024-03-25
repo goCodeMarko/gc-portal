@@ -13,6 +13,7 @@ import { HttpRequestService } from "../../http-request/http-request.service";
 import { EditBookComponent } from "../../modals/edit-book/edit-book.component";
 import { saveAs } from "file-saver";
 import { AuthService } from "src/app/authorization/auth.service";
+
 interface IBooks {
   author: string;
   stocks: number;
@@ -64,7 +65,10 @@ export class TableComponent implements OnInit, OnChanges {
   @Output() next = new EventEmitter<object>();
   @Output() previous = new EventEmitter<object>();
 
-  @Output() emitButtonClick = new EventEmitter<string>();
+  @Output() emitButtonClick = new EventEmitter<{
+    type: string;
+    data: object | string | number;
+  }>();
   pdfbtn = false;
   excelbtn = false;
   checked = false;
@@ -98,8 +102,8 @@ export class TableComponent implements OnInit, OnChanges {
     }
   }
 
-  buttonClicked(type: string) {
-    this.emitButtonClick.emit(type);
+  buttonClicked(event: { type: string; data: any }) {
+    this.emitButtonClick.emit(event);
   }
 
   emitPrev() {

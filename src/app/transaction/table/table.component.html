@@ -154,7 +154,7 @@
   </div>
 
   <!-- table -->
-  <table class="table table-responsive">
+  <table *ngIf="!tableOnLoad" class="table table-responsive">
     <thead>
       <tr>
         <th></th>
@@ -189,27 +189,6 @@
         </td>
         <td style="text-align: center">
           <div class="buttons">
-            <!-- <button
-              mat-icon-button
-              matTooltip="Next"
-              matTooltipPosition="after"
-              (click)="openDeleteModal(data._id)"
-              matTooltip="Delete"
-              matTooltipPosition="above"
-            >
-              <mat-icon class="material-symbols-outlined">delete</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              matTooltip="Next"
-              matTooltipPosition="after"
-              (click)="openEditModal(data)"
-              matTooltip="Edit"
-              matTooltipPosition="above"
-            >
-              <mat-icon class="material-symbols-outlined">edit</mat-icon>
-            </button> -->
-
             <button
               mat-button
               class="fw-bold"
@@ -252,35 +231,42 @@
       </tr>
     </tbody>
   </table>
+  <div *ngIf="tableOnLoad">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </div>
 
   <div
-    style="
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      width: 100% !important;
-    "
+    *ngIf="!tableOnLoad"
+    style="display: flex; justify-content: space-between; align-items: baseline"
   >
     <div>
-      <p style="padding-left: 15px">Total Items: {{ totalCount }}</p>
+      <p>Total Items: {{ totalCount }}</p>
     </div>
 
     <div>
-      <button
-        [disabled]="this.currentPage == 1"
-        (click)="this.emitPrev()"
-        mat-icon-button
-      >
-        <span class="material-symbols-outlined"> navigate_before </span>
-      </button>
-      Page {{ this.currentPage }} of {{ this.totalPages }}
-      <button
-        [disabled]="this.currentPage == this.totalPages"
-        (click)="this.emitNext()"
-        mat-icon-button
-      >
-        <span class="material-symbols-outlined"> navigate_next </span>
-      </button>
+      <div>
+        <button
+          [disabled]="this.currentPage == 1"
+          (click)="this.emitPrev()"
+          mat-icon-button
+        >
+          <span class="material-symbols-outlined"> navigate_before </span>
+        </button>
+        Page {{ this.currentPage }} of {{ this.totalPages }}
+        <button
+          [disabled]="this.currentPage == this.totalPages"
+          (click)="this.emitNext()"
+          mat-icon-button
+        >
+          <span class="material-symbols-outlined"> navigate_next </span>
+        </button>
+      </div>
     </div>
+  </div>
+  <div *ngIf="tableOnLoad" style="width: 100%; display: flex; gap: 50px">
+    <div class="line"></div>
+    <div class="line"></div>
   </div>
 </mat-card>

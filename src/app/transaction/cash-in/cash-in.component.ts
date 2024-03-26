@@ -62,6 +62,7 @@ export class CashInComponent implements OnInit {
     skipCount: 0,
     limit: 3,
   };
+  public cashInTableOnLoad: boolean = true;
   // End
 
   constructor(
@@ -98,6 +99,7 @@ export class CashInComponent implements OnInit {
   }
 
   public getCashIns() {
+    this.cashInTableOnLoad = true;
     this.hrs.request(
       "get",
       "transaction/getCashIns",
@@ -108,7 +110,7 @@ export class CashInComponent implements OnInit {
         this.currentPage = page;
         this.counts = total;
         this.pages = pages;
-
+        this.cashInTableOnLoad = false;
         console.log(121321, this.cashIns);
       }
     );

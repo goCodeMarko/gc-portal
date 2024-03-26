@@ -66,6 +66,7 @@ export class CashOutComponent implements OnInit {
     skipCount: 0,
     limit: 3,
   };
+  cashOutTableOnLoad: boolean = true;
 
   // toggle webcam on/off
   public showWebcam = true;
@@ -102,6 +103,7 @@ export class CashOutComponent implements OnInit {
   }
 
   public getCashOuts() {
+    this.cashOutTableOnLoad = true;
     this.hrs.request(
       "get",
       "transaction/getCashOuts",
@@ -112,8 +114,7 @@ export class CashOutComponent implements OnInit {
         this.currentPage = page;
         this.counts = total;
         this.pages = pages;
-
-        console.log(121321, this.cashOuts);
+        this.cashOutTableOnLoad = false;
       }
     );
   }

@@ -61,6 +61,7 @@ export class TableComponent implements OnInit, OnChanges {
   @Input() totalCount = 0;
   @Input() totalPages = 0;
   @Input() currentPage = 0;
+  @Input() tableOnLoad: boolean = true;
   @Output() viewCashout = new EventEmitter<object>();
   @Output() next = new EventEmitter<object>();
   @Output() previous = new EventEmitter<object>();
@@ -78,11 +79,7 @@ export class TableComponent implements OnInit, OnChanges {
 
   // value1: number = this.filters.limit;
 
-  constructor(
-    private dialog: MatDialog,
-    private hrs: HttpRequestService,
-    private auth: AuthService
-  ) {}
+  constructor(private auth: AuthService) {}
 
   ngOnInit(): void {
     this.checkRole();
@@ -91,7 +88,8 @@ export class TableComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {}
 
   async checkRole() {
-    this.role = await this.auth.checkRole();
+    const user = JSON.parse(await this.auth.getUserData());
+    this.role = user.role;
   }
 
   emitNext() {

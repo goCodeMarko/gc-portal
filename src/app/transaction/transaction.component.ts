@@ -21,10 +21,12 @@ export class TransactionComponent implements OnInit {
       this.viewType = "cashin";
       this.tabActiveCashin = true;
       this.tabActiveCashout = false;
+      this.hideLogoutButton = false;
     } else {
       this.viewType = "cashout";
       this.tabActiveCashin = false;
       this.tabActiveCashout = true;
+      this.hideLogoutButton = false;
     }
 
     console.log(this.viewType);

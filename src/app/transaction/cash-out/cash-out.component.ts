@@ -211,7 +211,7 @@ export class CashOutComponent implements OnInit {
         console.log("cashout component: updateTransactionStatus", data);
         if (data.success) {
           this.dialog.open(PopUpModalComponent, {
-            width: "500px",
+            width: "1000px",
             data: {
               deletebutton: false,
               title: "Success!",

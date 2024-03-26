@@ -28,11 +28,14 @@
             <!-- <mat-hint>Hint</mat-hint> -->
           </mat-form-field>
 
-          <button mat-button color="accent" (click)="login()">LOGIN</button>
-
-          <a href="http://localhost:3001/api/user/authenticate/google">
-            Sign up Google</a
+          <button
+            mat-flat-button
+            color="primary"
+            class="btn-block fw-bold"
+            (click)="login()"
           >
+            LOGIN
+          </button>
         </form>
       </mat-card>
     </div>

@@ -69,18 +69,20 @@
       </mat-form-field>
       <div style="margin-top: 1em">
         <div>
-          <webcam
-            [height]="367"
-            [width]="367"
-            [trigger]="triggerObservable"
-            (imageCapture)="handleImage($event)"
-            [allowCameraSwitch]="true"
-            [switchCamera]="nextWebcamObservable"
-            [videoOptions]="videoOptions"
-            (cameraSwitched)="cameraWasSwitched($event)"
-            (initError)="handleInitError($event)"
-            *ngIf="!webcamImage"
-          ></webcam>
+          <div class="webcam-container">
+            <webcam
+              [height]="367"
+              [width]="367"
+              [trigger]="triggerObservable"
+              (imageCapture)="handleImage($event)"
+              [allowCameraSwitch]="true"
+              [switchCamera]="nextWebcamObservable"
+              [videoOptions]="videoOptions"
+              (cameraSwitched)="cameraWasSwitched($event)"
+              (initError)="handleInitError($event)"
+              *ngIf="!webcamImage"
+            ></webcam>
+          </div>
           <div class="snapshot" *ngIf="webcamImage">
             <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
           </div>

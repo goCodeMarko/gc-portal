@@ -31,6 +31,7 @@ import { TokenInterceptorServiceService } from "./token-interceptor/token-interc
 import { LoginComponent } from "./login/login.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { TransactionModule } from "./transaction/transaction.module";
+import { SocketService } from "./shared/socket/socket.service";
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { TransactionModule } from "./transaction/transaction.module";
   ],
   providers: [
     HttpRequestService,
+    SocketService,
     AuthService,
     {
       provide: LocationStrategy,

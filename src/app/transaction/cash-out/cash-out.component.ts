@@ -8,6 +8,7 @@ import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.comp
 import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
+import { SocketService } from "src/app/shared/socket/socket.service";
 
 interface ICashOuts {
   _id: string;
@@ -85,7 +86,8 @@ export class CashOutComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private hrs: HttpRequestService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private socket: SocketService
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
@@ -100,6 +102,17 @@ export class CashOutComponent implements OnInit {
   ngOnInit(): void {
     this.getCashOuts();
     this.readAvailableVideoInputs();
+
+    this.socket.onMessage().subscribe((message) => {
+      if (message.type === "updateTransactionStatus") {
+        this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
+          if (cashout._id === message.data._id) {
+            cashout.status = message.data.status;
+          }
+          return { ...cashout };
+        });
+      }
+    });
   }
 
   public getCashOuts() {
@@ -202,14 +215,11 @@ export class CashOutComponent implements OnInit {
   }
 
   public updateTransactionStatus(status: number, trans_id: any) {
-    console.log("cash out component: ", status);
-    console.log("cash out component: ", trans_id);
     this.hrs.request(
       "put",
       `transaction/updateTransactionStatus?trans_id=${trans_id}`,
       { status: status },
       async (data: any) => {
-        console.log("cashout component: updateTransactionStatus", data);
         if (data.success) {
           this.dialog.open(PopUpModalComponent, {
             width: "1000px",
@@ -218,6 +228,11 @@ export class CashOutComponent implements OnInit {
               title: "Success!",
               message: "Transaction status <b>has been updated</b>.",
             },
+          });
+
+          this.socket.sendMessage({
+            type: "updateTransactionStatus",
+            data: { _id: trans_id, status: status },
           });
 
           this.cashOuts = this.cashOuts.map((cashout) => {

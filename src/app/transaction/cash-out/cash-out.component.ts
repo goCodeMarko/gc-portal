@@ -109,14 +109,12 @@ export class CashOutComponent implements OnInit {
       "transaction/getCashOuts",
       this.filters,
       async (res: IResponse) => {
-        setTimeout(() => {
-          const { total, page, pages } = res.data.meta;
-          this.cashOuts = res.data.items;
-          this.currentPage = page;
-          this.counts = total;
-          this.pages = pages;
-          this.cashOutTableOnLoad = false;
-        }, 5000);
+        const { total, page, pages } = res.data.meta;
+        this.cashOuts = res.data.items;
+        this.currentPage = page;
+        this.counts = total;
+        this.pages = pages;
+        this.cashOutTableOnLoad = false;
       }
     );
   }

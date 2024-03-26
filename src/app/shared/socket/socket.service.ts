@@ -10,7 +10,7 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io(environment.SERVER_URL); // Change the URL to your server's address
+    this.socket = io(environment.WEBSOCKET); // Change the URL to your server's address
   }
 
   public sendMessage(message: { type: string; data: any }): void {

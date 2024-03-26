@@ -231,7 +231,7 @@
       </tr>
     </tbody>
   </table>
-  <div *ngIf="tableOnLoad">
+  <div class="line-container" *ngIf="tableOnLoad">
     <div class="line"></div>
     <div class="line"></div>
     <div class="line"></div>
@@ -239,7 +239,12 @@
 
   <div
     *ngIf="!tableOnLoad"
-    style="display: flex; justify-content: space-between; align-items: baseline"
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-left: 15px;
+    "
   >
     <div>
       <p>Total Items: {{ totalCount }}</p>

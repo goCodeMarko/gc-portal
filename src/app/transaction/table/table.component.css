@@ -82,10 +82,13 @@ td {
   }
 }
 
+.line-container {
+  padding-top: 32px;
+}
 .line {
   width: 100%;
-  height: 56px;
-  margin-top: 11px;
+  height: 50px;
+  margin-top: 10px;
   border-radius: 15px;
   background: linear-gradient(90deg, #f0f0f0, #d8d6d6, #f0f0f0) 0 0/ 80vh 100% fixed;
   background-color: rgb(204, 199, 199);

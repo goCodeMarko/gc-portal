@@ -4,6 +4,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  ElementRef,
+  ViewChild,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { WebcamImage, WebcamInitError, WebcamUtil } from "ngx-webcam";
@@ -59,6 +61,7 @@ interface IResponse {
 })
 export class CashOutComponent implements OnInit, OnDestroy {
   @Output() hideLogoutButton = new EventEmitter<boolean>();
+  @ViewChild("triggerAudioBtn") triggerAudioBtn!: ElementRef;
 
   //tables
   cashOuts: ICashOuts[] = [];
@@ -96,8 +99,9 @@ export class CashOutComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private hrs: HttpRequestService,
     private dialog: MatDialog,
-    private audio: AudioService,
-    private socket: SocketService
+    public audio: AudioService,
+    private socket: SocketService,
+    private elRef: ElementRef
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
@@ -117,13 +121,13 @@ export class CashOutComponent implements OnInit, OnDestroy {
           return { ...cashout };
         });
 
-        this.audio.playSound("mixkit-elevator-tone.mp3");
+        this.triggerAudioBtn.nativeElement.click();
       }
 
       if (message.type === "newCashout") {
         this.cashOuts.pop();
         this.cashOuts.unshift(message.data);
-        this.audio.playSound("mixkit-elevator-tone.mp3");
+        this.triggerAudioBtn.nativeElement.click();
       }
     });
   }

@@ -15,6 +15,7 @@ export class AudioService {
     this.audio.src = `${this.audioPath}${sound}`;
     this.audio.load();
     this.audio.play();
+    this.audio.autoplay = true;
     console.log("yow");
   }
 }

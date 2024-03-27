@@ -169,3 +169,14 @@
     ></app-table>
   </div>
 </div>
+
+//to bypass autoplay policies in Safari and other browsers, you need to ensure
+that audio playback is initiated by a user interaction, such as a click event.
+
+<button
+  hidden
+  #id="notificationAudio"
+  (click)="this.audio.playSound('mixkit-elevator-tone.mp3')"
+>
+  Play Sound
+</button>

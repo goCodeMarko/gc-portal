@@ -4,6 +4,8 @@ import {
   EventEmitter,
   Output,
   OnDestroy,
+  ElementRef,
+  ViewChild,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
@@ -49,6 +51,7 @@ interface IResponse {
 })
 export class CashInComponent implements OnInit, OnDestroy {
   @Output() hideLogoutButton = new EventEmitter<boolean>();
+  @ViewChild("notificationAudio") notificationAudio: ElementRef;
 
   public cashinForm: FormGroup;
 
@@ -81,7 +84,8 @@ export class CashInComponent implements OnInit, OnDestroy {
     private hrs: HttpRequestService,
     private dialog: MatDialog,
     private socket: SocketService,
-    private audio: AudioService
+    private audio: AudioService,
+    private elRef: ElementRef
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
@@ -109,13 +113,15 @@ export class CashInComponent implements OnInit, OnDestroy {
           }
           return { ...cashin };
         });
-        this.audio.playSound("mixkit-elevator-tone.mp3");
+
+        this.notificationAudio.nativeElement.click();
       }
 
       if (message.type === "newCashin") {
         this.cashIns.pop();
         this.cashIns.unshift(message.data);
-        this.audio.playSound("mixkit-elevator-tone.mp3");
+
+        this.notificationAudio.nativeElement.click();
       }
     });
   }

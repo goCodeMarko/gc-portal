@@ -117,13 +117,13 @@ export class CashOutComponent implements OnInit, OnDestroy {
           return { ...cashout };
         });
 
-        this.audio.playSound("mixkit-elevator-tone.wav");
+        this.audio.playSound("mixkit-elevator-tone.mp3");
       }
 
       if (message.type === "newCashout") {
         this.cashOuts.pop();
         this.cashOuts.unshift(message.data);
-        this.audio.playSound("mixkit-elevator-tone.wav");
+        this.audio.playSound("mixkit-elevator-tone.mp3");
       }
     });
   }

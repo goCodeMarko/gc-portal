@@ -109,13 +109,13 @@ export class CashInComponent implements OnInit, OnDestroy {
           }
           return { ...cashin };
         });
-        this.audio.playSound("mixkit-elevator-tone.wav");
+        this.audio.playSound("mixkit-elevator-tone.mp3");
       }
 
       if (message.type === "newCashin") {
         this.cashIns.pop();
         this.cashIns.unshift(message.data);
-        this.audio.playSound("mixkit-elevator-tone.wav");
+        this.audio.playSound("mixkit-elevator-tone.mp3");
       }
     });
   }

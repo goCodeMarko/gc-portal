@@ -28,8 +28,6 @@ export class TransactionComponent implements OnInit {
       this.tabActiveCashout = true;
       this.hideLogoutButton = false;
     }
-
-    console.log(this.viewType);
   }
 
   logoutButton(event: boolean) {

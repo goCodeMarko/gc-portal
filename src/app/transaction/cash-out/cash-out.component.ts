@@ -1,7 +1,13 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { WebcamImage, WebcamInitError, WebcamUtil } from "ngx-webcam";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { Observable } from "rxjs-compat";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
 import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
@@ -9,6 +15,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
 import { SocketService } from "src/app/shared/socket/socket.service";
+import { AudioService } from "src/app/shared/audio/audio.service";
 
 interface ICashOuts {
   _id: string;
@@ -50,7 +57,7 @@ interface IResponse {
     ]),
   ],
 })
-export class CashOutComponent implements OnInit {
+export class CashOutComponent implements OnInit, OnDestroy {
   @Output() hideLogoutButton = new EventEmitter<boolean>();
 
   //tables
@@ -82,11 +89,14 @@ export class CashOutComponent implements OnInit {
   private nextWebcam: Subject<boolean | string> = new Subject<
     boolean | string
   >();
+
+  private socketSubscription: Subscription;
   public cashoutForm: FormGroup;
   constructor(
     private fb: FormBuilder,
     private hrs: HttpRequestService,
     private dialog: MatDialog,
+    private audio: AudioService,
     private socket: SocketService
   ) {
     this.cashoutForm = this.fb.group({
@@ -97,13 +107,8 @@ export class CashOutComponent implements OnInit {
       fee: ["", Validators.required],
       note: [""],
     });
-  }
 
-  ngOnInit(): void {
-    this.getCashOuts();
-    this.readAvailableVideoInputs();
-
-    this.socket.onMessage().subscribe((message) => {
+    this.socketSubscription = this.socket.onMessage().subscribe((message) => {
       if (message.type === "updateTransactionStatus") {
         this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
           if (cashout._id === message.data._id) {
@@ -111,8 +116,25 @@ export class CashOutComponent implements OnInit {
           }
           return { ...cashout };
         });
+
+        this.audio.playSound("mixkit-elevator-tone.wav");
+      }
+
+      if (message.type === "newCashout") {
+        this.cashOuts.pop();
+        this.cashOuts.unshift(message.data);
+        this.audio.playSound("mixkit-elevator-tone.wav");
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.getCashOuts();
+    this.readAvailableVideoInputs();
+  }
+
+  ngOnDestroy(): void {
+    this.socketSubscription.unsubscribe();
   }
 
   public getCashOuts() {
@@ -133,7 +155,6 @@ export class CashOutComponent implements OnInit {
   }
 
   emittedButton(event: { type: string; data: any }) {
-    console.log("cash out component:updateTransactionStatus ", event);
     switch (event.type) {
       case "approve":
         this.updateTransactionStatus(
@@ -232,7 +253,7 @@ export class CashOutComponent implements OnInit {
 
           this.socket.sendMessage({
             type: "updateTransactionStatus",
-            data: { _id: trans_id, status: status },
+            data: { _id: trans_id, status },
           });
 
           this.cashOuts = this.cashOuts.map((cashout) => {
@@ -287,6 +308,7 @@ export class CashOutComponent implements OnInit {
           this.resetCashoutForm();
           this.getCashOuts();
           this.hideLogoutButton.emit(false);
+          this.socket.sendMessage({ type: "newCashout", data: data.data });
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {

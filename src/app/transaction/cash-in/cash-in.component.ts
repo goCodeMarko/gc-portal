@@ -1,10 +1,19 @@
-import { Component, OnInit, EventEmitter, Output } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  OnDestroy,
+} from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
 import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
+import { SocketService } from "src/app/shared/socket/socket.service";
+import { Subscription } from "rxjs";
+import { AudioService } from "src/app/shared/audio/audio.service";
 
 interface ICashIns {
   _id: string;
@@ -38,7 +47,7 @@ interface IResponse {
   templateUrl: "./cash-in.component.html",
   styleUrls: ["./cash-in.component.css"],
 })
-export class CashInComponent implements OnInit {
+export class CashInComponent implements OnInit, OnDestroy {
   @Output() hideLogoutButton = new EventEmitter<boolean>();
 
   public cashinForm: FormGroup;
@@ -65,10 +74,14 @@ export class CashInComponent implements OnInit {
   public cashInTableOnLoad: boolean = true;
   // End
 
+  private socketSubscription: Subscription;
+
   constructor(
     private fb: FormBuilder,
     private hrs: HttpRequestService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private socket: SocketService,
+    private audio: AudioService
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
@@ -85,10 +98,34 @@ export class CashInComponent implements OnInit {
     this.approveCashinForm = this.fb.group({
       screenshot: ["", Validators.required],
     });
+
+    this.socketSubscription = this.socket.onMessage().subscribe((message) => {
+      console.log("socket: ", message);
+      if (message.type === "updateTransactionStatus") {
+        this.cashIns = this.cashIns.map((cashin: ICashIns) => {
+          if (cashin._id === message.data._id) {
+            cashin.status = message.data.status;
+            cashin.snapshot = message.data.snapshot;
+          }
+          return { ...cashin };
+        });
+        this.audio.playSound("mixkit-elevator-tone.wav");
+      }
+
+      if (message.type === "newCashin") {
+        this.cashIns.pop();
+        this.cashIns.unshift(message.data);
+        this.audio.playSound("mixkit-elevator-tone.wav");
+      }
+    });
   }
 
   ngOnInit(): void {
     this.getCashIns();
+  }
+
+  ngOnDestroy(): void {
+    this.socketSubscription.unsubscribe();
   }
 
   screenshotUploadHandler(event: any) {
@@ -111,7 +148,6 @@ export class CashInComponent implements OnInit {
         this.counts = total;
         this.pages = pages;
         this.cashInTableOnLoad = false;
-        console.log(121321, this.cashIns);
       }
     );
   }
@@ -185,10 +221,14 @@ export class CashInComponent implements OnInit {
               if (cashout._id === trans_id) {
                 cashout.status = status;
               }
-
               return { ...cashout };
             });
           }
+
+          this.socket.sendMessage({
+            type: "updateTransactionStatus",
+            data: data.data,
+          });
         } else {
           if (data.error.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {
@@ -296,6 +336,8 @@ export class CashInComponent implements OnInit {
           this.getCashIns();
           this.viewType = "table";
           this.hideLogoutButton.emit(false);
+
+          this.socket.sendMessage({ type: "newCashin", data: data.data });
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {

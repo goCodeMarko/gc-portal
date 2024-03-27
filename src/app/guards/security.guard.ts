@@ -25,7 +25,7 @@ export class SecurityGuard implements CanActivate {
     | UrlTree {
     return (async (): Promise<boolean> => {
       const role: string = await this.auth.checkRole();
-      console.log(1231312312312, role);
+
       if (["frontliner", "admin"].includes(role)) {
         return true;
       } else {

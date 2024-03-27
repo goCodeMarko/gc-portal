@@ -32,6 +32,7 @@ import { LoginComponent } from "./login/login.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { TransactionModule } from "./transaction/transaction.module";
 import { SocketService } from "./shared/socket/socket.service";
+import { AudioService } from "./shared/audio/audio.service";
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { SocketService } from "./shared/socket/socket.service";
   providers: [
     HttpRequestService,
     SocketService,
+    AudioService,
     AuthService,
     {
       provide: LocationStrategy,

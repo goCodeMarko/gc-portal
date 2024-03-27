@@ -84,7 +84,7 @@ export class CashInComponent implements OnInit, OnDestroy {
     private hrs: HttpRequestService,
     private dialog: MatDialog,
     private socket: SocketService,
-    private audio: AudioService,
+    public audio: AudioService,
     private elRef: ElementRef
   ) {
     this.cashinForm = this.fb.group({

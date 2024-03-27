@@ -51,7 +51,7 @@ interface IResponse {
 })
 export class CashInComponent implements OnInit, OnDestroy {
   @Output() hideLogoutButton = new EventEmitter<boolean>();
-  @ViewChild("notificationAudio") notificationAudio: ElementRef;
+  @ViewChild("triggerAudioBtn") triggerAudioBtn!: ElementRef;
 
   public cashinForm: FormGroup;
 
@@ -114,14 +114,14 @@ export class CashInComponent implements OnInit, OnDestroy {
           return { ...cashin };
         });
 
-        this.notificationAudio.nativeElement.click();
+        this.triggerAudioBtn.nativeElement.click();
       }
 
       if (message.type === "newCashin") {
         this.cashIns.pop();
         this.cashIns.unshift(message.data);
 
-        this.notificationAudio.nativeElement.click();
+        this.triggerAudioBtn.nativeElement.click();
       }
     });
   }

@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
 
-$max-mobile: 431px;
+$max-mobile: 590px;
 
 .login-background {
   background: url("../../assets/images/bg-sandbox.png") no-repeat center center
@@ -71,7 +71,7 @@ $max-mobile: 431px;
   mat-card {
     width: 100vw !important;
     height: 100vh !important;
-    margin-top: 0 !important;
+    margin-top: 2em !important;
     box-shadow: none !important;
     border: none !important;
   }

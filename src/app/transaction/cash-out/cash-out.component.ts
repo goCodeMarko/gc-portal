@@ -18,6 +18,8 @@ import { animate, style, transition, trigger } from "@angular/animations";
 import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
 import { SocketService } from "src/app/shared/socket/socket.service";
 import { AudioService } from "src/app/shared/audio/audio.service";
+import * as moment from "moment";
+import * as _ from "lodash";
 
 interface ICashOuts {
   _id: string;
@@ -60,7 +62,7 @@ interface IResponse {
   ],
 })
 export class CashOutComponent implements OnInit, OnDestroy {
-  @Output() hideLogoutButton = new EventEmitter<boolean>();
+  @Output() hideMainButton = new EventEmitter<boolean>();
   @ViewChild("triggerAudioBtn") triggerAudioBtn!: ElementRef;
 
   //tables
@@ -95,6 +97,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
   private socketSubscription: Subscription;
   public cashoutForm: FormGroup;
+  public transactionDetails: any = {};
   constructor(
     private fb: FormBuilder,
     private hrs: HttpRequestService,
@@ -125,15 +128,22 @@ export class CashOutComponent implements OnInit, OnDestroy {
       }
 
       if (message.type === "newCashout") {
-        this.cashOuts.pop();
+        if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
         this.cashOuts.unshift(message.data);
+        this.triggerAudioBtn.nativeElement.click();
+      }
+
+      if (message.type === "updateTransactionDetails") {
+        this.transactionDetails.runbal_gcash = message.data.runbal_gcash;
+        this.transactionDetails.runbal_cash_on_hand =
+          message.data.runbal_cash_on_hand;
         this.triggerAudioBtn.nativeElement.click();
       }
     });
   }
 
-  ngOnInit(): void {
-    this.getCashOuts();
+  async ngOnInit(): Promise<any> {
+    await this.getTransaction();
     this.readAvailableVideoInputs();
   }
 
@@ -141,45 +151,73 @@ export class CashOutComponent implements OnInit, OnDestroy {
     this.socketSubscription.unsubscribe();
   }
 
+  public getTransaction(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Parse the client date and assume it's in the client's local timezone
+      const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");
+      const endDate = moment().endOf("day").format("YYYY-MM-DDTHH:mm:ss");
+
+      this.hrs.request(
+        "get",
+        "transaction/getTransaction",
+        { startDate, endDate },
+        async (res: any) => {
+          if (!_.has(res, "data")) {
+            this.viewType = "noTransaction";
+          } else if (res.success) {
+            this.transactionDetails = res.data;
+
+            this.getCashOuts();
+          }
+
+          resolve();
+        }
+      );
+    });
+  }
+
   public getCashOuts() {
     this.cashOutTableOnLoad = true;
     this.hrs.request(
       "get",
       "transaction/getCashOuts",
-      this.filters,
+      { ...this.filters, transaction_id: this.transactionDetails?._id },
       async (res: IResponse) => {
-        const { total, page, pages } = res.data.meta;
-        this.cashOuts = res.data.items;
-        this.currentPage = page;
-        this.counts = total;
-        this.pages = pages;
+        if (!_.has(res, "data")) {
+        } else if (res.success) {
+          console.log(234234);
+          const { total, page, pages } = res.data.meta;
+          this.cashOuts = res.data.items;
+          this.currentPage = page;
+          this.counts = total;
+          this.pages = pages;
+        }
+
         this.cashOutTableOnLoad = false;
       }
     );
   }
 
   emittedButton(event: { type: string; data: any }) {
+    console.log(4545454, event);
     switch (event.type) {
       case "approve":
         this.updateTransactionStatus(
           TransactionStatus.Approved,
-          event.data?.trans_id
+          event.data?.cid
         );
         break;
       case "cancel":
         this.updateTransactionStatus(
           TransactionStatus.Cancelled,
-          event.data?.trans_id
+          event.data?.cid
         );
         break;
       case "fail":
-        this.updateTransactionStatus(
-          TransactionStatus.Failed,
-          event.data?.trans_id
-        );
+        this.updateTransactionStatus(TransactionStatus.Failed, event.data?.cid);
         break;
       case "cashoutFormView":
-        this.hideLogoutButton.emit(true);
+        this.hideMainButton.emit(true);
         this.viewType = "addCashout";
         break;
     }
@@ -188,7 +226,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   cancel() {
     this.viewType = "table";
     this.resetCashoutForm();
-    this.hideLogoutButton.emit(false);
+    this.hideMainButton.emit(false);
   }
 
   resetCashoutForm() {
@@ -239,15 +277,15 @@ export class CashOutComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  public updateTransactionStatus(status: number, trans_id: any) {
+  public updateTransactionStatus(status: number, cid: any) {
     this.hrs.request(
       "put",
-      `transaction/updateTransactionStatus?trans_id=${trans_id}`,
-      { status: status },
+      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${cid}`,
+      { status: status, type: 2 },
       async (data: any) => {
         if (data.success) {
           this.dialog.open(PopUpModalComponent, {
-            width: "1000px",
+            width: "500px",
             data: {
               deletebutton: false,
               title: "Success!",
@@ -257,11 +295,42 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
           this.socket.sendMessage({
             type: "updateTransactionStatus",
-            data: { _id: trans_id, status },
+            data: { _id: cid, status },
+          });
+
+          // if (status === TransactionStatus.Approved) {
+          //   await this.getTransaction();
+          // }else{
+
+          // }
+
+          this.cashOuts = this.cashOuts.map((cashout: any) => {
+            if (cashout._id === cid) {
+              if (status === TransactionStatus.Approved) {
+                this.transactionDetails.runbal_gcash += cashout.amount;
+                this.transactionDetails.runbal_cash_on_hand -=
+                  cashout.amount - cashout.fee;
+              } else {
+                this.transactionDetails.runbal_gcash -= cashout.amount;
+                this.transactionDetails.runbal_cash_on_hand +=
+                  cashout.amount - cashout.fee;
+              }
+
+              cashout.status = status;
+            }
+            return { ...cashout };
+          });
+
+          this.socket.sendMessage({
+            type: "updateTransactionDetails",
+            data: {
+              runbal_gcash: this.transactionDetails.runbal_gcash,
+              runbal_cash_on_hand: this.transactionDetails.runbal_cash_on_hand,
+            },
           });
 
           this.cashOuts = this.cashOuts.map((cashout) => {
-            if (cashout._id === trans_id) {
+            if (cashout._id === cid) {
               cashout.status = status;
             }
 
@@ -293,10 +362,12 @@ export class CashOutComponent implements OnInit, OnDestroy {
     );
   }
 
+  public sendRequestBtnOnLoad = false;
   sendRequest() {
+    this.sendRequestBtnOnLoad = true;
     this.hrs.request(
       "post",
-      `transaction/addTransaction`,
+      `transaction/addTransaction?trans_id=${this.transactionDetails?._id}`,
       this.cashoutForm.value,
       async (data: any) => {
         if (data.success) {
@@ -311,7 +382,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
           this.viewType = "table";
           this.resetCashoutForm();
           this.getCashOuts();
-          this.hideLogoutButton.emit(false);
+          this.hideMainButton.emit(false);
           this.socket.sendMessage({ type: "newCashout", data: data.data });
         } else {
           if (data.message == "Restricted") {
@@ -334,6 +405,8 @@ export class CashOutComponent implements OnInit, OnDestroy {
               message: data?.error?.message,
             },
           });
+
+          this.sendRequestBtnOnLoad = false;
         }
       }
     );

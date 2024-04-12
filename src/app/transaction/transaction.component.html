@@ -6,23 +6,155 @@
   <div [class.active-cashout]="tabActiveCashout"></div>
   <div [class.active-cashin]="tabActiveCashin"></div>
 </div>
+
 <div class="space">
-  <div *ngIf="this.viewType === 'cashout'; else cashin">
-    <app-cash-out (hideLogoutButton)="logoutButton($event)"></app-cash-out>
+  <div [ngSwitch]="this.viewType">
+    <div *ngSwitchCase="'cashin'">
+      <app-cash-in (hideMainButton)="mainButton($event)"></app-cash-in>
+    </div>
+    <div *ngSwitchCase="'cashout'">
+      <app-cash-out (hideMainButton)="mainButton($event)"></app-cash-out>
+    </div>
+    <div *ngSwitchCase="'createTransaction'">
+      <mat-card class="mat-card-custom">
+        <form [formGroup]="this.transactionForm">
+          <!-- DATE -->
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="date" />
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+            <mat-error *ngIf="checkFormControlErrors('date')">
+              <div *ngIf="transactionForm.get('date')?.hasError('required')">
+                Date is required
+              </div>
+            </mat-error>
+          </mat-form-field>
+
+          <!-- GCASH -->
+          <mat-form-field
+            style="display: block; margin-bottom: 1em"
+            appearance="outline"
+          >
+            <mat-label>Gcash</mat-label>
+            <input
+              type="number"
+              min="0"
+              step=".25"
+              matInput
+              formControlName="gcash"
+              (paste)="currencyStrict($event)"
+              (keypress)="currencyStrict($event)"
+            />
+            <mat-error *ngIf="checkFormControlErrors('gcash')">
+              <div *ngIf="transactionForm.get('gcash')?.hasError('required')">
+                Amount is required
+              </div>
+            </mat-error>
+          </mat-form-field>
+
+          <!-- CASH ON HAND -->
+          <mat-form-field style="display: block" appearance="outline">
+            <mat-label>Cash on hand</mat-label>
+            <input
+              type="number"
+              min="0"
+              step=".25"
+              matInput
+              formControlName="cash_on_hand"
+              (paste)="currencyStrict($event)"
+              (keypress)="currencyStrict($event)"
+            />
+            <mat-error *ngIf="checkFormControlErrors('cash_on_hand')">
+              <div
+                *ngIf="
+                  transactionForm.get('cash_on_hand')?.hasError('required')
+                "
+              >
+                Cash on hand is required
+              </div>
+            </mat-error>
+          </mat-form-field>
+
+          <!-- GCASH NUMBER -->
+          <mat-form-field
+            style="display: block; margin-bottom: 1em"
+            appearance="outline"
+          >
+            <mat-label>Gcash number</mat-label>
+            <input
+              type="text"
+              matInput
+              formControlName="gcashNumber"
+              (paste)="phoneNumberStrict($event)"
+              (keypress)="phoneNumberStrict($event)"
+            />
+            <mat-error *ngIf="checkFormControlErrors('gcashNumber')">
+              <div
+                *ngIf="transactionForm.get('gcashNumber')?.hasError('required')"
+              >
+                Phone number is required
+              </div>
+              <div
+                *ngIf="transactionForm.get('gcashNumber')?.hasError('pattern')"
+              >
+                Invalid phone number format
+              </div>
+            </mat-error>
+          </mat-form-field>
+
+          <div class="main-buttons">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="createTransaction()"
+              [disabled]="this.transactionForm.invalid || createTransBtnOnLoad"
+              class="btn-block fw-bold"
+            >
+              <i
+                class="fas"
+                [ngClass]="{
+                  'fa-circle-notch fa-spin': createTransBtnOnLoad,
+                  'fa-check': !createTransBtnOnLoad
+                }"
+              ></i>
+              CREATE TRANSACTION
+            </button>
+            <button
+              mat-flat-button
+              (click)="cancel()"
+              color="primary"
+              class="btn-block fw-bold"
+            >
+              CANCEL
+            </button>
+          </div>
+        </form>
+      </mat-card>
+    </div>
   </div>
-
-  <ng-template #cashin>
-    <app-cash-in (hideLogoutButton)="logoutButton($event)"></app-cash-in>
-  </ng-template>
 </div>
-
-<div *ngIf="!hideLogoutButton" class="logout-container">
-  <button
-    mat-flat-button
-    color="primary"
-    (click)="logout()"
-    class="btn-block fw-bold"
-  >
-    LOG OUT
-  </button>
-</div>
+<mat-card *ngIf="!hideMainButton" style="margin-top: 15px">
+  <div class="main-button-container">
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="createTransactionView()"
+      class="btn-block fw-bold"
+    >
+      CREATE TRANSACTION
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="logout()"
+      class="btn-block fw-bold"
+    >
+      LOG OUT
+    </button>
+  </div>
+</mat-card>

@@ -3,7 +3,11 @@ import { Observable } from "rxjs";
 import { Socket, io } from "socket.io-client";
 import { environment } from "src/environments/environment";
 
-type strings = "updateTransactionStatus" | "newCashout" | "newCashin";
+type strings =
+  | "updateTransactionStatus"
+  | "newCashout"
+  | "newCashin"
+  | "updateTransactionDetails";
 @Injectable({
   providedIn: "root",
 })

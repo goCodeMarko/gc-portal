@@ -23,6 +23,7 @@ export class TokenInterceptorServiceService implements HttpInterceptor {
       setHeaders: {
         Accept: "application/json",
         Authorization: "Bearer " + this.auth.getToken(),
+        Timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
     });
     return next.handle(header);

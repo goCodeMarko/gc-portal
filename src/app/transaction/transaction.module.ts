@@ -13,6 +13,8 @@ import { MatCardModule } from "@angular/material/card";
 import { MatRadioModule } from "@angular/material/radio";
 import { TableComponent } from "./table/table.component";
 import { TransactionStatusPipe } from "../shared/pipes/transaction-status.pipe";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import { TransactionStatusPipe } from "../shared/pipes/transaction-status.pipe";
     ReactiveFormsModule,
     MatCardModule,
     MatRadioModule,
+    MatDatepickerModule,
+    MatProgressSpinnerModule,
     RouterModule.forChild(TransactionRoutes),
   ],
 })

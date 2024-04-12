@@ -1,3 +1,8 @@
 ::ng-deep .mat-card {
   padding: 15px !important;
 }
+
+::ng-deep .fas {
+  font-size: 25px !important;
+  font-weight: 900;
+}

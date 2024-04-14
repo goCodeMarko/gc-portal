@@ -99,7 +99,7 @@ export class CashInComponent implements OnInit, OnDestroy {
         "",
         [Validators.required, Validators.pattern(/^09\d{9}$/)],
       ],
-      fee_payment_is_gcash: ["true"],
+      fee_payment_is_gcash: ["false"],
       amount: ["", Validators.required],
       fee: ["", Validators.required],
       note: [""],
@@ -463,7 +463,7 @@ export class CashInComponent implements OnInit, OnDestroy {
     this.cashinForm.reset();
     this.cashinForm.patchValue({
       type: 1,
-      fee_payment_is_gcash: "true",
+      fee_payment_is_gcash: "false",
     });
   }
 

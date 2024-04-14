@@ -108,7 +108,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
-      fee_payment_is_gcash: ["false"],
+      fee_payment_is_gcash: ["true"],
       snapshot: ["", Validators.required],
       amount: ["", Validators.required],
       fee: ["", Validators.required],
@@ -235,7 +235,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
     this.cashoutForm.patchValue({
       type: 2,
-      fee_payment_is_gcash: "false",
+      fee_payment_is_gcash: "true",
     });
   }
 

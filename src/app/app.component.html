@@ -1,4 +1,22 @@
 <!-- ============================================================== -->
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
-<router-outlet><app-spinner></app-spinner></router-outlet>
+
+<div class="text-light">
+  <p
+    style="margin: 0; text-align: center; background-color: #28a745"
+    *ngIf="isOnline === true"
+  >
+    You're now connected to the internet.
+  </p>
+  <p
+    style="margin: 0; text-align: center; background-color: #dc3545"
+    *ngIf="isOnline === false"
+  >
+    You're not connected to the internet.
+  </p>
+</div>
+
+<router-outlet>
+  <app-spinner></app-spinner>
+</router-outlet>

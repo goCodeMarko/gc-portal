@@ -33,6 +33,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { TransactionModule } from "./transaction/transaction.module";
 import { SocketService } from "./shared/socket/socket.service";
 import { AudioService } from "./shared/audio/audio.service";
+import { InternetConnectionService } from "./shared/internet-connection/internet-connection.service";
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { AudioService } from "./shared/audio/audio.service";
     SocketService,
     AudioService,
     AuthService,
+    InternetConnectionService,
     {
       provide: LocationStrategy,
       useClass: PathLocationStrategy,

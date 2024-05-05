@@ -57,3 +57,80 @@ ul.links {
 #ghost-element {
   padding-top: 80px;
 }
+
+#cssportal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0;
+  width: 100%;
+  height: 100%;
+}
+#div0 {
+  grid-area: 1/1/2/2;
+  align-self: center;
+  font-weight: bold;
+}
+#div1 {
+  grid-area: 1/2/2/3;
+  align-self: center;
+}
+#div2 {
+  grid-area: 2/1/3/2;
+  justify-self: start;
+  align-self: center;
+  font-weight: bold;
+}
+#div3 {
+  grid-area: 2/2/3/3;
+  justify-self: start;
+  align-self: center;
+}
+#div4 {
+  grid-area: 3/1/4/2;
+  justify-self: start;
+  align-self: center;
+  font-weight: bold;
+}
+#div5 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5;
+  width: 100%;
+  height: 100%;
+}
+#div5-1 {
+  grid-area: 1 / 1 / 2 / 2;
+  justify-self: start;
+  align-self: center;
+}
+
+#div5-2 {
+  grid-area: 1 / 2 / 2 / 3;
+  justify-self: start;
+  align-self: center;
+}
+#div6 {
+  grid-area: 4 / 1 / 4 / 2;
+  justify-self: start;
+  align-self: center;
+  font-weight: bold;
+}
+#div7 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5;
+  width: 100%;
+  height: 100%;
+}
+#div7-1 {
+  grid-area: 1 / 1 / 2 / 2;
+  justify-self: start;
+  align-self: center;
+}
+
+#div7-2 {
+  grid-area: 1 / 2 / 2 / 3;
+  justify-self: start;
+  align-self: center;
+}

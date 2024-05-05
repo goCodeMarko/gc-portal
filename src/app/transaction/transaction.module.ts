@@ -15,6 +15,9 @@ import { TableComponent } from "./table/table.component";
 import { TransactionStatusPipe } from "../shared/pipes/transaction-status.pipe";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { PaymentTypePipe } from "../shared/pipes/payment-type.pipe";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatIconModule } from "@angular/material/icon";
 
 @NgModule({
   declarations: [
@@ -23,6 +26,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     CashInComponent,
     TableComponent,
     TransactionStatusPipe,
+    PaymentTypePipe,
   ],
   imports: [
     CommonModule,
@@ -35,6 +39,8 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MatRadioModule,
     MatDatepickerModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
+    MatIconModule,
     RouterModule.forChild(TransactionRoutes),
   ],
 })

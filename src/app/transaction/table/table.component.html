@@ -162,16 +162,16 @@
   </div>
 
   <!-- TABLE BODY -->
-  <table *ngIf="!tableOnLoad" class="table table-responsive">
+  <table *ngIf="!tableOnLoad && totalCount > 0" class="table">
     <thead>
       <tr>
         <!-- <th></th> -->
-        <th *ngFor="let head of headers; let i = index"></th>
+        <th *ngFor="let head of headers; let i = index">{{ head }}</th>
 
         <th style="text-align: center"></th>
       </tr>
     </thead>
-    <tbody *ngIf="data">
+    <tbody>
       <tr *ngFor="let data of data; let i = index">
         <!-- <td>
           {{
@@ -181,59 +181,61 @@
         <td *ngFor="let dataName of dataNames">
           <ng-container [ngSwitch]="true">
             <ng-container *ngSwitchCase="'createdAt' === dataName">
+              <div [innerHTML]="data.status | transactionStatus"></div>
               {{ data[dataName] | date : "shortTime" }}
             </ng-container>
-            <ng-container
-              *ngSwitchCase="'amount' === dataName || 'fee' === dataName"
-            >
+            <ng-container *ngSwitchCase="'amount' === dataName">
               {{ data[dataName] | currency : "₱" : "symbol" }}
             </ng-container>
-
-            <ng-container *ngSwitchCase="'status' === dataName">
-              <div [innerHTML]="data[dataName] | transactionStatus"></div>
+            <ng-container *ngSwitchCase="'fee' === dataName">
+              <div [innerHTML]="data.fee_payment_is_gcash | paymentType"></div>
+              {{ data[dataName] | currency : "₱" : "symbol" }}
             </ng-container>
 
             <ng-container *ngSwitchDefault> {{ data[dataName] }} </ng-container>
           </ng-container>
         </td>
         <td style="text-align: center">
-          <div class="buttons">
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            <mat-icon>dialpad</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
             <button
-              mat-button
-              class="fw-bold"
-              color="primary"
-              (click)="emitViewCashout(data)"
+              mat-menu-item
+              (click)="buttonClicked({ type: 'edit', data: data })"
             >
-              <p class="fw-bold">VIEW</p>
+              <span>EDIT</span>
             </button>
-
             <button
+              mat-menu-item
               *ngIf="role === 'admin'"
-              mat-button
               (click)="
                 buttonClicked({ type: 'approve', data: { cid: data._id } })
               "
-              color="primary"
             >
-              <p class="fw-bold">APPROVE</p>
+              <span>APPROVE</span>
             </button>
             <button
+              mat-menu-item
               *ngIf="role === 'admin'"
-              mat-button
               (click)="buttonClicked({ type: 'fail', data: { cid: data._id } })"
             >
-              <p class="fw-bold">FAIL</p>
+              <span>FAIL</span>
             </button>
             <button
-              mat-button
-              color="primary"
+              mat-menu-item
+              *ngIf="role === 'admin'"
               (click)="
                 buttonClicked({ type: 'cancel', data: { cid: data._id } })
               "
             >
-              <p class="fw-bold">CANCEL</p>
+              <span>CANCEL</span>
             </button>
-          </div>
+          </mat-menu>
         </td>
       </tr>
     </tbody>
@@ -247,7 +249,7 @@
   </div>
   <!-- TABLE FOOTER LOADER -->
   <div
-    *ngIf="!tableOnLoad"
+    *ngIf="!tableOnLoad && totalCount > 0"
     style="
       display: flex;
       justify-content: space-between;

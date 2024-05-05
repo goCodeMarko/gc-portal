@@ -95,6 +95,7 @@ export class CashInComponent implements OnInit, OnDestroy {
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
+      cid: [""],
       phone_number: [
         "",
         [Validators.required, Validators.pattern(/^09\d{9}$/)],
@@ -192,7 +193,6 @@ export class CashInComponent implements OnInit, OnDestroy {
         transaction_id: this.transactionDetails?._id,
       },
       async (res: IResponse) => {
-        console.log(2342341111, res.data);
         if (!_.has(res, "data")) {
         } else if (res.success) {
           const { total, page, pages } = res.data.meta;
@@ -225,6 +225,21 @@ export class CashInComponent implements OnInit, OnDestroy {
       case "cashinFormView":
         this.hideMainButton.emit(true);
         this.viewType = "addCashin";
+        break;
+      case "edit":
+        this.hideMainButton.emit(true);
+        const { phone_number, _id, fee_payment_is_gcash, amount, fee, note } =
+          event.data;
+        this.cashinForm.patchValue({
+          phone_number: phone_number,
+          cid: _id,
+          fee_payment_is_gcash: String(fee_payment_is_gcash),
+          amount: fee_payment_is_gcash ? amount + fee : amount,
+          fee: fee,
+          note: note,
+        });
+        this.viewType = "editCashin";
+        console.log("-----------editCashin", this.cashinForm.value);
         break;
     }
   }
@@ -452,6 +467,58 @@ export class CashInComponent implements OnInit, OnDestroy {
     );
   }
 
+  public updateRequestBtnOnLoad = false;
+  updateRequest() {
+    this.updateRequestBtnOnLoad = true;
+    this.hrs.request(
+      "put",
+      `transaction/updateCICO?trans_id=${this.transactionDetails?._id}&cid=${
+        this.cashinForm.get("cid")!.value
+      }`,
+      this.cashinForm.value,
+      async (data: any) => {
+        if (data.success) {
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Success!",
+              message: "Cashin Request <b>has been updated</b>.",
+            },
+          });
+          this.viewType = "table";
+          this.resetCashinForm();
+          this.getCashIns();
+          this.hideMainButton.emit(false);
+
+          // this.socket.sendMessage({ type: "newCashout", data: data.data });
+        } else {
+          if (data.message == "Restricted") {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Access Denied",
+                message:
+                  "Oops, It looks like you <b>dont have access</b> on this feature.",
+              },
+            });
+          }
+
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Server Error",
+              message: data?.error?.message,
+            },
+          });
+
+          this.updateRequestBtnOnLoad = false;
+        }
+      }
+    );
+  }
   cancel() {
     this.viewType = "table";
     this.resetCashinForm();

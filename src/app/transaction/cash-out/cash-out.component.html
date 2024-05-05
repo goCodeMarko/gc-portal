@@ -1,5 +1,5 @@
-<div [ngSwitch]="this.viewType">
-  <div *ngSwitchCase="'addCashout'">
+<div [ngSwitch]="true">
+  <div *ngSwitchCase="viewType === 'addCashout' || viewType === 'editCashout'">
     <mat-card class="mat-card-custom">
       <form [formGroup]="this.cashoutForm">
         <!-- AMOUNT -->
@@ -108,6 +108,7 @@
             </div>
             <div class="main-buttons">
               <button
+                *ngIf="viewType === 'addCashout'"
                 mat-flat-button
                 color="primary"
                 (click)="sendRequest()"
@@ -122,6 +123,23 @@
                   }"
                 ></i>
                 SEND REQUEST
+              </button>
+              <button
+                *ngIf="viewType === 'editCashout'"
+                mat-flat-button
+                color="primary"
+                (click)="updateRequest()"
+                [disabled]="this.cashoutForm.invalid || updateRequestBtnOnLoad"
+                class="btn-block fw-bold"
+              >
+                <i
+                  class="fas"
+                  [ngClass]="{
+                    'fa-circle-notch fa-spin': updateRequestBtnOnLoad,
+                    'fa-check': !updateRequestBtnOnLoad
+                  }"
+                ></i>
+                UPDATE REQUEST
               </button>
               <button
                 mat-flat-button
@@ -148,33 +166,56 @@
     </mat-card>
   </div>
 
-  <div *ngSwitchCase="'table'">
+  <div *ngSwitchCase="viewType === 'table'">
     <mat-card style="margin-bottom: 15px">
-      <section *ngIf="!cashOutTableOnLoad">
-        <div>
+      <section id="cssportal-grid" *ngIf="!cashOutTableOnLoad">
+        <div id="div0">
+          <mat-icon class="material-icons material-symbols-rounded"
+            >calendar_month</mat-icon
+          >
+          DATE
+        </div>
+        <div id="div1">
           <b>{{ transactionDetails.date | date : "EEEE, MMMM d, y" }}</b>
         </div>
-        <div>
-          Gcash number: <b>{{ transactionDetails.gcashNumber }}</b>
+        <div id="div2">
+          <mat-icon class="material-icons material-symbols-rounded"
+            >phone_android</mat-icon
+          >
+          ACCOUNT
         </div>
-        <div>
-          Gcash:
-          <b
-            >{{ transactionDetails.gcash | currency : "₱" : "symbol" }}
-            <span class="material-symbols-outlined"> east </span>
-            {{ transactionDetails.runbal_gcash | currency : "₱" : "symbol" }}
-          </b>
+        <div id="div3">{{ transactionDetails.gcashNumber }}</div>
+        <div id="div4">
+          <mat-icon class="material-icons material-symbols-rounded"
+            >account_balance_wallet</mat-icon
+          >
+          COH
         </div>
-        <div>
-          Cash on hand:
-          <b
-            >{{ transactionDetails.cash_on_hand | currency : "₱" : "symbol" }}
-            <span class="material-symbols-outlined"> east </span>
+
+        <section id="div5">
+          <div id="div5-1">
+            {{ transactionDetails.cash_on_hand | currency : "₱" : "symbol" }}
+          </div>
+          <div id="div5-2">
             {{
               transactionDetails.runbal_cash_on_hand | currency : "₱" : "symbol"
-            }}</b
+            }}
+          </div>
+        </section>
+        <div id="div6">
+          <mat-icon class="material-icons material-symbols-rounded"
+            >rss_feed</mat-icon
           >
+          GCASH
         </div>
+        <section id="div7">
+          <div id="div7-1">
+            {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
+          </div>
+          <div id="div7-2">
+            {{ transactionDetails.runbal_gcash | currency : "₱" : "symbol" }}
+          </div>
+        </section>
       </section>
 
       <div class="line-container" *ngIf="cashOutTableOnLoad">
@@ -187,9 +228,9 @@
 
     <app-table
       [componentName]="'cashout'"
-      [headers]="['DATE', 'STATUS', 'AMOUNT']"
+      [headers]="['TIME', 'FEE', 'AMOUNT', 'MENU']"
       [data]="this.cashOuts"
-      [dataNames]="['createdAt', 'status', 'amount']"
+      [dataNames]="['createdAt', 'fee', 'amount']"
       [tableButtons]="[{ name: 'VIEW' }, 'status', 'amount']"
       [totalCount]="counts"
       [filters]="this.filters"
@@ -202,7 +243,7 @@
       @fade
     ></app-table>
   </div>
-  <div *ngSwitchCase="'noTransaction'">
+  <div *ngSwitchCase="viewType === 'noTransaction'">
     <p>No Transaction</p>
   </div>
 </div>

@@ -86,7 +86,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   public multipleWebcamsAvailable = false;
 
   // latest snapshot
-  public webcamImage: WebcamImage | null = null;
+  public webcamImage: object | null = null;
 
   // webcam snapshot trigger
   private trigger: Subject<void> = new Subject<void>();
@@ -108,6 +108,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
+      cid: [""],
       fee_payment_is_gcash: ["true"],
       snapshot: ["", Validators.required],
       amount: ["", Validators.required],
@@ -199,7 +200,6 @@ export class CashOutComponent implements OnInit, OnDestroy {
   }
 
   emittedButton(event: { type: string; data: any }) {
-    console.log(4545454, event);
     switch (event.type) {
       case "approve":
         this.updateTransactionStatus(
@@ -219,6 +219,22 @@ export class CashOutComponent implements OnInit, OnDestroy {
       case "cashoutFormView":
         this.hideMainButton.emit(true);
         this.viewType = "addCashout";
+        break;
+      case "edit":
+        this.hideMainButton.emit(true);
+
+        const { phone_number, _id, fee_payment_is_gcash, amount, fee, note } =
+          event.data;
+        this.cashoutForm.patchValue({
+          phone_number: phone_number,
+          cid: _id,
+          fee_payment_is_gcash: String(fee_payment_is_gcash),
+          amount: fee_payment_is_gcash ? amount - fee : amount,
+          fee: fee,
+          note: note,
+        });
+        this.webcamImage = { imageAsDataUrl: event.data.snapshot };
+        this.viewType = "editCashout";
         break;
     }
   }
@@ -297,12 +313,6 @@ export class CashOutComponent implements OnInit, OnDestroy {
             type: "updateTransactionStatus",
             data: { _id: cid, status },
           });
-
-          // if (status === TransactionStatus.Approved) {
-          //   await this.getTransaction();
-          // }else{
-
-          // }
 
           this.cashOuts = this.cashOuts.map((cashout: any) => {
             if (cashout._id === cid) {
@@ -407,6 +417,58 @@ export class CashOutComponent implements OnInit, OnDestroy {
           });
 
           this.sendRequestBtnOnLoad = false;
+        }
+      }
+    );
+  }
+
+  public updateRequestBtnOnLoad = false;
+  updateRequest() {
+    this.updateRequestBtnOnLoad = true;
+    this.hrs.request(
+      "put",
+      `transaction/updateCICO?trans_id=${this.transactionDetails?._id}&cid=${
+        this.cashoutForm.get("cid")!.value
+      }`,
+      this.cashoutForm.value,
+      async (data: any) => {
+        if (data.success) {
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Success!",
+              message: "Cashout Request <b>has been updated</b>.",
+            },
+          });
+          this.viewType = "table";
+          this.resetCashoutForm();
+          this.getCashOuts();
+          this.hideMainButton.emit(false);
+          // this.socket.sendMessage({ type: "newCashout", data: data.data });
+        } else {
+          if (data.message == "Restricted") {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Access Denied",
+                message:
+                  "Oops, It looks like you <b>dont have access</b> on this feature.",
+              },
+            });
+          }
+
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Server Error",
+              message: data?.error?.message,
+            },
+          });
+
+          this.updateRequestBtnOnLoad = false;
         }
       }
     );

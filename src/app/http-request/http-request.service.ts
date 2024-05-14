@@ -28,6 +28,10 @@ export class HttpRequestService {
             }
           );
       case "get":
+        // const URL =
+        //   endpoint === "transaction/generateReport"
+        //     ? environment.SERVER_URL_81
+        //     : environment.SERVER_URL;
         return this.http
           .get(`${environment.SERVER_URL}${endpoint}`, {
             params: payload,

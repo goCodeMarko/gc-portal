@@ -34,6 +34,8 @@ import { TransactionModule } from "./transaction/transaction.module";
 import { SocketService } from "./shared/socket/socket.service";
 import { AudioService } from "./shared/audio/audio.service";
 import { InternetConnectionService } from "./shared/internet-connection/internet-connection.service";
+import { ViewNoteModalComponent } from "./modals/view-note-modal/view-note-modal.component";
+import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-snapshot-modal.component";
 
 @NgModule({
   declarations: [
@@ -43,10 +45,13 @@ import { InternetConnectionService } from "./shared/internet-connection/internet
     SpinnerComponent,
     AppSidebarComponent,
     PopUpModalComponent,
+    ViewNoteModalComponent,
     EditBookComponent,
     AddBookComponent,
     EditSessionHandlingComponent,
     LoginComponent,
+    ViewNoteModalComponent,
+    ViewSnapshotModalComponent,
   ],
   imports: [
     BrowserModule,

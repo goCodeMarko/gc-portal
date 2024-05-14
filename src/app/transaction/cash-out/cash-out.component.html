@@ -176,7 +176,7 @@
           DATE
         </div>
         <div id="div1">
-          <b>{{ transactionDetails.date | date : "EEEE, MMMM d, y" }}</b>
+          <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
         </div>
         <div id="div2">
           <mat-icon class="material-icons material-symbols-rounded"
@@ -218,7 +218,10 @@
         </section>
       </section>
 
-      <div class="line-container" *ngIf="cashOutTableOnLoad">
+      <div
+        class="line-container"
+        *ngIf="cashOutTableOnLoad && !transactionDetails"
+      >
         <div class="line"></div>
         <div class="line"></div>
         <div class="line"></div>
@@ -228,9 +231,9 @@
 
     <app-table
       [componentName]="'cashout'"
-      [headers]="['TIME', 'FEE', 'AMOUNT', 'MENU']"
+      [headers]="['TIME', 'FEE', 'AMOUNT', 'NOTE', 'SNAPSHOT', 'MENU']"
       [data]="this.cashOuts"
-      [dataNames]="['createdAt', 'fee', 'amount']"
+      [dataNames]="['createdAt', 'fee', 'amount', 'note', 'snapshot']"
       [tableButtons]="[{ name: 'VIEW' }, 'status', 'amount']"
       [totalCount]="counts"
       [filters]="this.filters"

@@ -20,6 +20,8 @@ import { SocketService } from "src/app/shared/socket/socket.service";
 import { AudioService } from "src/app/shared/audio/audio.service";
 import * as moment from "moment";
 import * as _ from "lodash";
+import { ViewNoteModalComponent } from "src/app/modals/view-note-modal/view-note-modal.component";
+import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/view-snapshot-modal.component";
 
 interface ICashOuts {
   _id: string;
@@ -30,6 +32,7 @@ interface ICashOuts {
   status: number;
   type: number;
   phone_number: string;
+  note: string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -98,6 +101,9 @@ export class CashOutComponent implements OnInit, OnDestroy {
   private socketSubscription: Subscription;
   public cashoutForm: FormGroup;
   public transactionDetails: any = {};
+  public sendRequestBtnOnLoad = false;
+  public updateRequestBtnOnLoad = false;
+
   constructor(
     private fb: FormBuilder,
     private hrs: HttpRequestService,
@@ -124,21 +130,36 @@ export class CashOutComponent implements OnInit, OnDestroy {
           }
           return { ...cashout };
         });
-
-        this.triggerAudioBtn.nativeElement.click();
       }
 
       if (message.type === "newCashout") {
         if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
         this.cashOuts.unshift(message.data);
-        this.triggerAudioBtn.nativeElement.click();
+      }
+
+      if (message.type === "updateCashout") {
+        console.log("----------", message.data);
+        this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
+          console.log("----------cashout", cashout);
+          if (cashout._id === message.data.cid) {
+            cashout.amount =
+              message.data.fee_payment_is_gcash === "true"
+                ? message.data.amount + message.data.fee
+                : message.data.amount;
+            cashout.fee = message.data.fee;
+            cashout.fee_payment_is_gcash =
+              message.data.fee_payment_is_gcash === "true";
+            cashout.note = message.data.note;
+            cashout.snapshot = message.data.snapshot;
+          }
+          return { ...cashout };
+        });
       }
 
       if (message.type === "updateTransactionDetails") {
         this.transactionDetails.runbal_gcash = message.data.runbal_gcash;
         this.transactionDetails.runbal_cash_on_hand =
           message.data.runbal_cash_on_hand;
-        this.triggerAudioBtn.nativeElement.click();
       }
     });
   }
@@ -199,32 +220,42 @@ export class CashOutComponent implements OnInit, OnDestroy {
     );
   }
 
+  private previousCO!: {
+    fee_payment_is_gcash: boolean;
+    amount: number;
+    fee: number;
+    status: number;
+  };
   emittedButton(event: { type: string; data: any }) {
     switch (event.type) {
       case "approve":
-        this.updateTransactionStatus(
-          TransactionStatus.Approved,
-          event.data?.cid
-        );
+        this.updateTransactionStatus(TransactionStatus.Approved, event.data);
         break;
       case "cancel":
-        this.updateTransactionStatus(
-          TransactionStatus.Cancelled,
-          event.data?.cid
-        );
+        this.updateTransactionStatus(TransactionStatus.Cancelled, event.data);
         break;
       case "fail":
-        this.updateTransactionStatus(TransactionStatus.Failed, event.data?.cid);
+        this.updateTransactionStatus(TransactionStatus.Failed, event.data);
         break;
       case "cashoutFormView":
         this.hideMainButton.emit(true);
         this.viewType = "addCashout";
+        this.sendRequestBtnOnLoad = false;
         break;
       case "edit":
         this.hideMainButton.emit(true);
+        this.updateRequestBtnOnLoad = false;
+        const {
+          phone_number,
+          _id,
+          fee_payment_is_gcash,
+          amount,
+          fee,
+          note,
+          status,
+          snapshot,
+        } = event.data;
 
-        const { phone_number, _id, fee_payment_is_gcash, amount, fee, note } =
-          event.data;
         this.cashoutForm.patchValue({
           phone_number: phone_number,
           cid: _id,
@@ -232,9 +263,28 @@ export class CashOutComponent implements OnInit, OnDestroy {
           amount: fee_payment_is_gcash ? amount - fee : amount,
           fee: fee,
           note: note,
+          snapshot: snapshot,
         });
+        this.previousCO = {
+          fee_payment_is_gcash: fee_payment_is_gcash,
+          amount: fee_payment_is_gcash ? amount - fee : amount,
+          fee: fee,
+          status: status,
+        };
         this.webcamImage = { imageAsDataUrl: event.data.snapshot };
         this.viewType = "editCashout";
+        break;
+      case "viewNote":
+        this.dialog.open(ViewNoteModalComponent, {
+          width: "500px",
+          data: event.data,
+        });
+        break;
+      case "viewSnapshot":
+        this.dialog.open(ViewSnapshotModalComponent, {
+          width: "500px",
+          data: event.data,
+        });
         break;
     }
   }
@@ -293,59 +343,96 @@ export class CashOutComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  public updateTransactionStatus(status: number, cid: any) {
+  public updateTransactionStatus(newStatus: number, event: any) {
     this.hrs.request(
       "put",
-      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${cid}`,
-      { status: status, type: 2 },
+      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${event.cid}`,
+      { status: newStatus, type: 2 },
       async (data: any) => {
         if (data.success) {
-          this.dialog.open(PopUpModalComponent, {
-            width: "500px",
-            data: {
-              deletebutton: false,
-              title: "Success!",
-              message: "Transaction status <b>has been updated</b>.",
-            },
-          });
-
           this.socket.sendMessage({
             type: "updateTransactionStatus",
-            data: { _id: cid, status },
+            data: { _id: data.cid, status },
           });
 
+          let COhaveChanges = false;
+
           this.cashOuts = this.cashOuts.map((cashout: any) => {
-            if (cashout._id === cid) {
-              if (status === TransactionStatus.Approved) {
+            if (cashout._id === event.cid) {
+              if (
+                newStatus === TransactionStatus.Approved &&
+                [
+                  TransactionStatus.Cancelled,
+                  TransactionStatus.Failed,
+                  TransactionStatus.Pending,
+                ].includes(cashout.status)
+              ) {
                 this.transactionDetails.runbal_gcash += cashout.amount;
                 this.transactionDetails.runbal_cash_on_hand -=
                   cashout.amount - cashout.fee;
-              } else {
-                this.transactionDetails.runbal_gcash -= cashout.amount;
-                this.transactionDetails.runbal_cash_on_hand +=
-                  cashout.amount - cashout.fee;
+                cashout.status = newStatus;
+                COhaveChanges = true;
+              } else if (
+                ([
+                  TransactionStatus.Cancelled,
+                  TransactionStatus.Failed,
+                  TransactionStatus.Pending,
+                ].includes(newStatus) &&
+                  cashout.status === TransactionStatus.Approved) ||
+                ([
+                  TransactionStatus.Cancelled,
+                  TransactionStatus.Pending,
+                ].includes(newStatus) &&
+                  cashout.status === TransactionStatus.Failed) ||
+                ([TransactionStatus.Failed, TransactionStatus.Pending].includes(
+                  newStatus
+                ) &&
+                  cashout.status === TransactionStatus.Cancelled)
+              ) {
+                if (
+                  [
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                    TransactionStatus.Pending,
+                  ].includes(newStatus) &&
+                  cashout.status === TransactionStatus.Approved
+                ) {
+                  this.transactionDetails.runbal_gcash -= cashout.amount;
+                  this.transactionDetails.runbal_cash_on_hand +=
+                    cashout.amount - cashout.fee;
+                }
+                cashout.status = newStatus;
+                COhaveChanges = true;
               }
-
-              cashout.status = status;
             }
             return { ...cashout };
           });
+          if (COhaveChanges) {
+            console.log(232, "yowwwww");
 
-          this.socket.sendMessage({
-            type: "updateTransactionDetails",
-            data: {
-              runbal_gcash: this.transactionDetails.runbal_gcash,
-              runbal_cash_on_hand: this.transactionDetails.runbal_cash_on_hand,
-            },
-          });
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Success!",
+                message: "Transaction status <b>has been updated</b>.",
+              },
+            });
 
-          this.cashOuts = this.cashOuts.map((cashout) => {
-            if (cashout._id === cid) {
-              cashout.status = status;
-            }
+            this.socket.sendMessage({
+              type: "updateTransactionDetails",
+              data: {
+                runbal_gcash: this.transactionDetails.runbal_gcash,
+                runbal_cash_on_hand:
+                  this.transactionDetails.runbal_cash_on_hand,
+              },
+            });
 
-            return { ...cashout };
-          });
+            this.socket.sendMessage({
+              type: "updateTransactionStatus",
+              data: { _id: event.cid, status: newStatus },
+            });
+          }
         } else {
           if (data.error.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {
@@ -372,7 +459,6 @@ export class CashOutComponent implements OnInit, OnDestroy {
     );
   }
 
-  public sendRequestBtnOnLoad = false;
   sendRequest() {
     this.sendRequestBtnOnLoad = true;
     this.hrs.request(
@@ -422,7 +508,6 @@ export class CashOutComponent implements OnInit, OnDestroy {
     );
   }
 
-  public updateRequestBtnOnLoad = false;
   updateRequest() {
     this.updateRequestBtnOnLoad = true;
     this.hrs.request(
@@ -433,6 +518,8 @@ export class CashOutComponent implements OnInit, OnDestroy {
       this.cashoutForm.value,
       async (data: any) => {
         if (data.success) {
+          const updatedCO = this.cashoutForm.value;
+
           this.dialog.open(PopUpModalComponent, {
             width: "500px",
             data: {
@@ -441,11 +528,47 @@ export class CashOutComponent implements OnInit, OnDestroy {
               message: "Cashout Request <b>has been updated</b>.",
             },
           });
+          console.log("--------previous CO", this.previousCO);
+          if (TransactionStatus.Approved === this.previousCO.status) {
+            //it will adjust the running balance based from previous CO
+            if (this.previousCO.fee_payment_is_gcash) {
+              this.transactionDetails.runbal_gcash -=
+                this.previousCO.amount + this.previousCO.fee;
+              this.transactionDetails.runbal_cash_on_hand +=
+                this.previousCO.amount;
+            } else {
+              this.transactionDetails.runbal_gcash -= this.previousCO.amount;
+              this.transactionDetails.runbal_cash_on_hand +=
+                this.previousCO.amount - this.previousCO.fee;
+            }
+
+            //it will uodate the running balance based from updated CO
+            if (updatedCO.fee_payment_is_gcash === "true") {
+              this.transactionDetails.runbal_gcash +=
+                updatedCO.amount + updatedCO.fee;
+              this.transactionDetails.runbal_cash_on_hand -= updatedCO.amount;
+            } else {
+              this.transactionDetails.runbal_gcash += updatedCO.amount;
+              this.transactionDetails.runbal_cash_on_hand -=
+                updatedCO.amount - updatedCO.fee;
+            }
+
+            this.socket.sendMessage({
+              type: "updateTransactionDetails",
+              data: {
+                runbal_gcash: this.transactionDetails.runbal_gcash,
+                runbal_cash_on_hand:
+                  this.transactionDetails.runbal_cash_on_hand,
+              },
+            });
+          }
+          console.log("--------trigger socket updateCashout");
+          this.socket.sendMessage({ type: "updateCashout", data: updatedCO });
+
           this.viewType = "table";
           this.resetCashoutForm();
           this.getCashOuts();
           this.hideMainButton.emit(false);
-          // this.socket.sendMessage({ type: "newCashout", data: data.data });
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {

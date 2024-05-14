@@ -122,6 +122,46 @@ export class TransactionComponent implements OnInit {
     );
   }
 
+  public generateReportBtnOnLoad = false;
+  generateReport() {
+    console.log("-------------generateReport");
+    this.generateReportBtnOnLoad = true;
+
+    const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");
+    const endDate = moment().endOf("day").format("YYYY-MM-DDTHH:mm:ss");
+
+    this.hrs.request(
+      "get",
+      "transaction/generateReport",
+      { startDate, endDate },
+      async (res: any) => {
+        this.generateReportBtnOnLoad = false;
+        if (res.success) {
+          this.dialog.open(PopUpModalComponent, {
+            width: "500px",
+            data: {
+              deletebutton: false,
+              title: "Success!",
+              message: "Daily report <b>has been sent</b> to your email.",
+            },
+          });
+        } else {
+          if (res.error.message == "Restricted") {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Access Denied",
+                message:
+                  "Oops, It looks like you <b>dont have access</b> on this feature.",
+              },
+            });
+          }
+        }
+      }
+    );
+  }
+
   cancel() {
     this.viewType = this.viewTypeBefore;
     this.tabActiveCashin = false;

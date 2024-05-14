@@ -192,6 +192,34 @@
               {{ data[dataName] | currency : "₱" : "symbol" }}
             </ng-container>
 
+            <ng-container *ngSwitchCase="'note' === dataName">
+              <div *ngIf="data[dataName]; else empty">
+                <button
+                  (click)="buttonClicked({ type: 'viewNote', data: data })"
+                  mat-icon-button
+                >
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <ng-template #empty>
+                <mat-icon mat-icon-button>remove</mat-icon></ng-template
+              >
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'snapshot' === dataName">
+              <div *ngIf="data[dataName]; else empty">
+                <button
+                  (click)="buttonClicked({ type: 'viewSnapshot', data: data })"
+                  mat-icon-button
+                >
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <ng-template #empty>
+                <mat-icon mat-icon-button>remove</mat-icon></ng-template
+              >
+            </ng-container>
+
             <ng-container *ngSwitchDefault> {{ data[dataName] }} </ng-container>
           </ng-container>
         </td>
@@ -228,7 +256,6 @@
             </button>
             <button
               mat-menu-item
-              *ngIf="role === 'admin'"
               (click)="
                 buttonClicked({ type: 'cancel', data: { cid: data._id } })
               "

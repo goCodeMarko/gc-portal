@@ -18,6 +18,8 @@ import { Subscription } from "rxjs";
 import { AudioService } from "src/app/shared/audio/audio.service";
 import * as moment from "moment";
 import * as _ from "lodash";
+import { ViewNoteModalComponent } from "src/app/modals/view-note-modal/view-note-modal.component";
+import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/view-snapshot-modal.component";
 
 interface ICashIns {
   _id: string;
@@ -28,6 +30,7 @@ interface ICashIns {
   status: number;
   type: number;
   phone_number: string;
+  note: string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -84,6 +87,8 @@ export class CashInComponent implements OnInit, OnDestroy {
 
   // Transaction Details
   public transactionDetails: any = {};
+  public sendRequestBtnOnLoad = false;
+  public updateRequestBtnOnLoad = false;
 
   constructor(
     private fb: FormBuilder,
@@ -118,15 +123,31 @@ export class CashInComponent implements OnInit, OnDestroy {
           }
           return { ...cashin };
         });
-
-        this.triggerAudioBtn.nativeElement.click();
       }
 
       if (message.type === "newCashin") {
         if (_.size(this.cashIns) === 3) this.cashIns.pop();
         this.cashIns.unshift(message.data);
+      }
 
-        this.triggerAudioBtn.nativeElement.click();
+      if (message.type === "updateCashin") {
+        console.log("----------", message.data);
+        this.cashIns = this.cashIns.map((cashin: ICashIns) => {
+          console.log("----------cashin", cashin);
+          if (cashin._id === message.data.cid) {
+            cashin.amount =
+              message.data.fee_payment_is_gcash === "true"
+                ? message.data.amount - message.data.fee
+                : message.data.amount;
+            cashin.fee = message.data.fee;
+            cashin.fee_payment_is_gcash =
+              message.data.fee_payment_is_gcash === "true";
+            cashin.note = message.data.note;
+            cashin.phone_number = message.data.phone_number;
+            cashin.snapshot = message.data.snapshot;
+          }
+          return { ...cashin };
+        });
       }
 
       if (message.type === "updateTransactionDetails") {
@@ -135,8 +156,6 @@ export class CashInComponent implements OnInit, OnDestroy {
           message.data.runbal_cash_on_hand;
 
         console.log(2, message);
-
-        this.triggerAudioBtn.nativeElement.click();
       }
     });
   }
@@ -206,6 +225,12 @@ export class CashInComponent implements OnInit, OnDestroy {
     );
   }
 
+  private previousCI!: {
+    fee_payment_is_gcash: boolean;
+    amount: number;
+    fee: number;
+    status: number;
+  };
   emittedButton(event: { type: string; data: any }) {
     switch (event.type) {
       case "approve":
@@ -214,22 +239,28 @@ export class CashInComponent implements OnInit, OnDestroy {
         this.approveTransactionDetails = event.data;
         break;
       case "cancel":
-        this.updateTransactionStatus(
-          TransactionStatus.Cancelled,
-          event.data?.cid
-        );
+        this.updateTransactionStatus(TransactionStatus.Cancelled, event.data);
         break;
       case "fail":
-        this.updateTransactionStatus(TransactionStatus.Failed, event.data?.cid);
+        this.updateTransactionStatus(TransactionStatus.Failed, event.data);
         break;
       case "cashinFormView":
         this.hideMainButton.emit(true);
         this.viewType = "addCashin";
+        this.sendRequestBtnOnLoad = false;
         break;
       case "edit":
         this.hideMainButton.emit(true);
-        const { phone_number, _id, fee_payment_is_gcash, amount, fee, note } =
-          event.data;
+        this.updateRequestBtnOnLoad = false;
+        const {
+          phone_number,
+          _id,
+          fee_payment_is_gcash,
+          amount,
+          fee,
+          note,
+          status,
+        } = event.data;
         this.cashinForm.patchValue({
           phone_number: phone_number,
           cid: _id,
@@ -238,9 +269,25 @@ export class CashInComponent implements OnInit, OnDestroy {
           fee: fee,
           note: note,
         });
+        this.previousCI = {
+          fee_payment_is_gcash: fee_payment_is_gcash,
+          amount: fee_payment_is_gcash ? amount + fee : amount,
+          fee: fee,
+          status: status,
+        };
         this.viewType = "editCashin";
-        console.log("-----------editCashin", this.cashinForm.value);
         break;
+      case "viewNote":
+        this.dialog.open(ViewNoteModalComponent, {
+          width: "500px",
+          data: event.data,
+        });
+        break;
+      case "viewSnapshot":
+        this.dialog.open(ViewSnapshotModalComponent, {
+          width: "500px",
+          data: event.data,
+        });
     }
   }
 
@@ -249,34 +296,24 @@ export class CashInComponent implements OnInit, OnDestroy {
     formData.append("status", "2");
     formData.append("type", "1");
     formData.append("screenshot", this.screenshotFile);
-    this.updateTransactionStatus(
-      2,
-      this.approveTransactionDetails.cid,
-      formData
-    );
+    this.updateTransactionStatus(2, this.approveTransactionDetails, formData);
   }
 
   public approveReqBtnOnLoad = false;
   public async updateTransactionStatus(
-    status: number,
-    cid: any,
+    newStatus: number,
+    event: any,
     formData?: any
   ) {
-    if (status === TransactionStatus.Approved) this.approveReqBtnOnLoad = true;
+    if (newStatus === TransactionStatus.Approved)
+      this.approveReqBtnOnLoad = true;
     this.hrs.request(
       "put",
-      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${cid}`,
-      formData ? formData : { status, type: 1 },
+      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${event.cid}`,
+      formData ? formData : { status: newStatus, type: 1 },
       async (data: any) => {
         if (data.success) {
-          this.dialog.open(PopUpModalComponent, {
-            width: "500px",
-            data: {
-              deletebutton: false,
-              title: "Success!",
-              message: "Transaction status <b>has been updated</b>.",
-            },
-          });
+          let CIhaveChanges = false;
 
           if (formData) {
             await this.getTransaction();
@@ -294,23 +331,71 @@ export class CashInComponent implements OnInit, OnDestroy {
                   this.transactionDetails.runbal_cash_on_hand,
               },
             });
+            CIhaveChanges = true;
             this.approveReqBtnOnLoad = false;
           } else {
             this.cashIns = this.cashIns.map((cashin: any) => {
-              if (cashin._id === cid) {
-                if (status === TransactionStatus.Approved) {
+              if (cashin._id === event.cid) {
+                if (
+                  newStatus === TransactionStatus.Approved &&
+                  [
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                    TransactionStatus.Pending,
+                  ].includes(cashin.status)
+                ) {
                   this.transactionDetails.runbal_gcash += cashin.amount;
                   this.transactionDetails.runbal_cash_on_hand -=
                     cashin.amount - cashin.fee;
-                } else {
-                  this.transactionDetails.runbal_gcash += cashin.amount;
-                  this.transactionDetails.runbal_cash_on_hand -=
-                    cashin.amount + cashin.fee;
+                  cashin.status = newStatus;
+                  CIhaveChanges = true;
+                } else if (
+                  ([
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                    TransactionStatus.Pending,
+                  ].includes(newStatus) &&
+                    cashin.status === TransactionStatus.Approved) ||
+                  ([
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Pending,
+                  ].includes(newStatus) &&
+                    cashin.status === TransactionStatus.Failed) ||
+                  ([
+                    TransactionStatus.Failed,
+                    TransactionStatus.Pending,
+                  ].includes(newStatus) &&
+                    cashin.status === TransactionStatus.Cancelled)
+                ) {
+                  if (
+                    [
+                      TransactionStatus.Cancelled,
+                      TransactionStatus.Failed,
+                      TransactionStatus.Pending,
+                    ].includes(newStatus) &&
+                    cashin.status === TransactionStatus.Approved
+                  ) {
+                    this.transactionDetails.runbal_gcash += cashin.amount;
+                    this.transactionDetails.runbal_cash_on_hand -=
+                      cashin.amount + cashin.fee;
+                  }
+                  cashin.status = newStatus;
+                  CIhaveChanges = true;
                 }
-                cashin.status = status;
               }
 
               return { ...cashin };
+            });
+          }
+
+          if (CIhaveChanges) {
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Success!",
+                message: "Transaction status <b>has been updated</b>.",
+              },
             });
 
             this.socket.sendMessage({
@@ -321,12 +406,12 @@ export class CashInComponent implements OnInit, OnDestroy {
                   this.transactionDetails.runbal_cash_on_hand,
               },
             });
-          }
 
-          this.socket.sendMessage({
-            type: "updateTransactionStatus",
-            data: { _id: cid, status },
-          });
+            this.socket.sendMessage({
+              type: "updateTransactionStatus",
+              data: { _id: event.cid, status: newStatus },
+            });
+          }
         } else {
           if (data.error.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {
@@ -416,7 +501,6 @@ export class CashInComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  public sendRequestBtnOnLoad = false;
   sendRequest() {
     this.sendRequestBtnOnLoad = true;
     this.hrs.request(
@@ -467,7 +551,6 @@ export class CashInComponent implements OnInit, OnDestroy {
     );
   }
 
-  public updateRequestBtnOnLoad = false;
   updateRequest() {
     this.updateRequestBtnOnLoad = true;
     this.hrs.request(
@@ -478,6 +561,8 @@ export class CashInComponent implements OnInit, OnDestroy {
       this.cashinForm.value,
       async (data: any) => {
         if (data.success) {
+          const updatedCI = this.cashinForm.value;
+
           this.dialog.open(PopUpModalComponent, {
             width: "500px",
             data: {
@@ -486,12 +571,33 @@ export class CashInComponent implements OnInit, OnDestroy {
               message: "Cashin Request <b>has been updated</b>.",
             },
           });
+
+          if (TransactionStatus.Approved === this.previousCI.status) {
+            this.transactionDetails.runbal_cash_on_hand -=
+              this.previousCI.amount;
+            this.transactionDetails.runbal_gcash +=
+              this.previousCI.amount - this.previousCI.fee;
+            const updatedCI = this.cashinForm.value;
+
+            // this.transactionDetails.runbal_cash_on_hand += updatedCI.amount;
+            // this.transactionDetails.runbal_gcash -=
+            //   updatedCI.amount - updatedCI.fee;
+
+            this.socket.sendMessage({
+              type: "updateTransactionDetails",
+              data: {
+                runbal_gcash: this.transactionDetails.runbal_gcash,
+                runbal_cash_on_hand:
+                  this.transactionDetails.runbal_cash_on_hand,
+              },
+            });
+          }
+          this.socket.sendMessage({ type: "updateCashin", data: updatedCI });
+
           this.viewType = "table";
           this.resetCashinForm();
           this.getCashIns();
           this.hideMainButton.emit(false);
-
-          // this.socket.sendMessage({ type: "newCashout", data: data.data });
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {

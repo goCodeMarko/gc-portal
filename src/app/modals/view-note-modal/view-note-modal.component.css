@@ -1,0 +1,9 @@
+.button {
+  display: inline-flex;
+}
+
+*,
+body {
+  padding: 0;
+  margin: 0;
+}

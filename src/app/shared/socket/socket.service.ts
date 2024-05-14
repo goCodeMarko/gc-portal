@@ -6,7 +6,9 @@ import { environment } from "src/environments/environment";
 type strings =
   | "updateTransactionStatus"
   | "newCashout"
+  | "updateCashout"
   | "newCashin"
+  | "updateCashin"
   | "updateTransactionDetails";
 @Injectable({
   providedIn: "root",

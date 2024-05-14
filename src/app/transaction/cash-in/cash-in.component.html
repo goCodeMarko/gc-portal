@@ -193,7 +193,7 @@
           DATE
         </div>
         <div id="div1">
-          <b>{{ transactionDetails.date | date : "EEEE, MMMM d, y" }}</b>
+          <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
         </div>
         <div id="div2">
           <mat-icon class="material-icons material-symbols-rounded"
@@ -244,9 +244,24 @@
     </mat-card>
     <app-table
       [componentName]="'cashin'"
-      [headers]="['TIME', 'FEE', 'AMOUNT', 'ACCOUNT', 'MENU']"
+      [headers]="[
+        'TIME',
+        'FEE',
+        'AMOUNT',
+        'ACCOUNT',
+        'NOTE',
+        'SNAPSHOT',
+        'MENU'
+      ]"
       [data]="this.cashIns"
-      [dataNames]="['createdAt', 'fee', 'amount', 'phone_number']"
+      [dataNames]="[
+        'createdAt',
+        'fee',
+        'amount',
+        'phone_number',
+        'note',
+        'snapshot'
+      ]"
       [totalCount]="counts"
       [filters]="this.filters"
       [currentPage]="currentPage"

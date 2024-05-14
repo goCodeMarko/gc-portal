@@ -6,7 +6,10 @@
 export const environment = {
   production: false,
   // SERVER_URL: "http://localhost/api/",
-  // WEBSOCKET: "http://localhost:81/",
+  // SERVER_URL_81: "http://localhost:81/api/",
+  // WEBSOCKET: "http://localhost:81",
   SERVER_URL: "http://localhost:3001/api/",
   WEBSOCKET: "http://localhost:3001",
+  // SERVER_URL: "https://gc-portal-server-c7324e603bcc.herokuapp.com/api/",
+  // WEBSOCKET: "https://gc-portal-server-c7324e603bcc.herokuapp.com",
 };

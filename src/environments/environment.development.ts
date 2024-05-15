@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  SERVER_URL: "https://gc-portal-server-c7324e603bcc.herokuapp.com/api/",
-  WEBSOCKET: "https://gc-portal-server-c7324e603bcc.herokuapp.com",
+  SERVER_URL: "https://gc-portal-api-uat-b732e7f9b5c3.herokuapp.com/api/",
+  WEBSOCKET: "https://gc-portal-api-uat-b732e7f9b5c3.herokuapp.com",
 };

@@ -1,9 +1,6 @@
 export const environment = {
   production: false,
-  env: "dev",
-  // SERVER_URL: "http://localhost/api/",
-  // SERVER_URL_81: "http://localhost:81/api/",
-  // WEBSOCKET: "http://localhost:81",
-  SERVER_URL: "http://localhost:3001/api/",
-  WEBSOCKET: "http://localhost:3001",
+  env: "uat",
+  SERVER_URL: "https://gcportal-api-uat-856f4a8bfa2f.herokuapp.com/api/",
+  WEBSOCKET: "https://gcportal-api-uat-856f4a8bfa2f.herokuapp.com",
 };

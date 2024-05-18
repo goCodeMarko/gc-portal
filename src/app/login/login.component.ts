@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
             await this.auth.setToken(data.data);
             console.log("token has been set!");
 
-            this.auth.navigate("transaction");
+            this.auth.navigate("transaction/main");
             console.log("User has been navigated!");
           } catch (error) {
             this.message = "Client Error, Please contact your administrator";

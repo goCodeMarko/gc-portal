@@ -1,10 +1,11 @@
 import { RouterModule, Routes } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { TransactionComponent } from "./transaction.component";
+import { SecurityGuard } from "./../guards/security.guard";
 
 export const TransactionRoutes: Routes = [
   {
-    path: "",
+    path: "main",
     component: TransactionComponent,
   },
 ];

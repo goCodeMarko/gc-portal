@@ -20,7 +20,7 @@ export const AppRoutes: Routes = [
           ),
         canActivate: [SecurityGuard],
       },
+      { path: "**", redirectTo: "/login", pathMatch: "full" },
     ],
   },
-  { path: "**", redirectTo: "login" },
 ];

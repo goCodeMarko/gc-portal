@@ -45,10 +45,13 @@ export class AuthService {
   async checkRole(): Promise<string> {
     return new Promise((resolve) => {
       this.hrs.request("get", "user/getAuthUser", {}, (response: IResponse) => {
-        const { role } = response.data;
-        console.log(1231312312312, role);
-        if (response.success) resolve(role);
-        else this.router.navigate(["login"]);
+        try {
+          const { role } = response.data;
+          if (response.success) resolve(role);
+          else this.router.navigate(["login"]);
+        } catch (error) {
+          this.router.navigate(["login"]);
+        }
       });
     });
 

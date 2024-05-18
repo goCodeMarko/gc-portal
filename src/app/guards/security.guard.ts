@@ -29,7 +29,7 @@ export class SecurityGuard implements CanActivate {
       if (["frontliner", "admin"].includes(role)) {
         return true;
       } else {
-        this.router.navigate(["transaction"]);
+        this.router.navigate(["/login"]);
         return false;
       }
     })();

@@ -124,7 +124,6 @@ export class TransactionComponent implements OnInit {
 
   public generateReportBtnOnLoad = false;
   generateReport() {
-    console.log("-------------generateReport");
     this.generateReportBtnOnLoad = true;
 
     const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");

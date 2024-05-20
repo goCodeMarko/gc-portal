@@ -153,7 +153,14 @@
       color="primary"
       (click)="generateReport()"
       class="btn-block fw-bold"
+      [disabled]="generateReportBtnOnLoad"
     >
+      <i
+        class="fas"
+        [ngClass]="{
+          'fa-circle-notch fa-spin': generateReportBtnOnLoad
+        }"
+      ></i>
       GENERATE REPORT
     </button>
     <button

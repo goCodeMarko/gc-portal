@@ -120,6 +120,7 @@ export class CashInComponent implements OnInit, OnDestroy {
         this.cashIns = this.cashIns.map((cashin: ICashIns) => {
           if (cashin._id === message.data._id) {
             cashin.status = message.data.status;
+            cashin.snapshot = message.data.snapshot;
           }
           return { ...cashin };
         });
@@ -406,10 +407,18 @@ export class CashInComponent implements OnInit, OnDestroy {
                   this.transactionDetails.runbal_cash_on_hand,
               },
             });
+            console.log(12312321312, data);
+            const [updatedData] = data.data.cashin.filter((data: any) => {
+              if (data._id === event.cid) return data;
+            });
 
             this.socket.sendMessage({
               type: "updateTransactionStatus",
-              data: { _id: event.cid, status: newStatus },
+              data: {
+                _id: event.cid,
+                status: newStatus,
+                snapshot: updatedData.snapshot,
+              },
             });
           }
         } else {
@@ -573,15 +582,16 @@ export class CashInComponent implements OnInit, OnDestroy {
           });
 
           if (TransactionStatus.Approved === this.previousCI.status) {
+            console.log("----------------edit approved");
             this.transactionDetails.runbal_cash_on_hand -=
               this.previousCI.amount;
             this.transactionDetails.runbal_gcash +=
               this.previousCI.amount - this.previousCI.fee;
             const updatedCI = this.cashinForm.value;
 
-            // this.transactionDetails.runbal_cash_on_hand += updatedCI.amount;
-            // this.transactionDetails.runbal_gcash -=
-            //   updatedCI.amount - updatedCI.fee;
+            this.transactionDetails.runbal_cash_on_hand += updatedCI.amount;
+            this.transactionDetails.runbal_gcash -=
+              updatedCI.amount - updatedCI.fee;
 
             this.socket.sendMessage({
               type: "updateTransactionDetails",

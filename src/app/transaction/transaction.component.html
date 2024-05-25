@@ -115,14 +115,12 @@
               [disabled]="this.transactionForm.invalid || createTransBtnOnLoad"
               class="btn-block fw-bold"
             >
-              <i
-                class="fas"
-                [ngClass]="{
-                  'fa-circle-notch fa-spin': createTransBtnOnLoad,
-                  'fa-check': !createTransBtnOnLoad
-                }"
-              ></i>
-              CREATE TRANSACTION
+              <div *ngIf="!createTransBtnOnLoad; else #loadcreatetrans">
+                CREATE TRANSACTION
+              </div>
+              <ng-template #loadcreatetrans>
+                <i class="fas fa-circle-notch fa-spin"></i>
+              </ng-template>
             </button>
             <button
               mat-flat-button

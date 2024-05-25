@@ -171,13 +171,15 @@
   </div>
 
   <!-- TABLE BODY -->
-  <table *ngIf="!tableOnLoad && totalCount > 0" class="table">
+  <table *ngIf="!tableOnLoad && totalCount > 0" class="table table-striped">
     <thead>
       <tr>
         <!-- <th></th> -->
-        <th *ngFor="let head of headers; let i = index">{{ head }}</th>
+        <th *ngFor="let head of headers; let i = index" scope="col">
+          {{ head }}
+        </th>
 
-        <th style="text-align: center"></th>
+        <th style="text-align: center" scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -291,6 +293,7 @@
       justify-content: space-between;
       align-items: baseline;
       padding-left: 15px;
+      margin-top: 1em;
     "
   >
     <div>

@@ -41,6 +41,13 @@
   color: white !important;
 }
 
+/* ::ng-deep video {
+  width: 100% !important;
+}
+::ng-deep .camera-switch {
+  top: 25px !important;
+} */
+
 @font-face {
   font-family: "Poppins-Regular";
   src: url("./../assets/fonts/Poppins-Regular.ttf") format("truetype");

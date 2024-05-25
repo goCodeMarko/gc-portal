@@ -99,16 +99,20 @@
                 color="main-green"
                 (click)="triggerSnapshot()"
                 *ngIf="!webcamImage"
+                class="fw-bold"
               >
-                <span class="material-symbols-outlined"> photo_camera </span>
+                <!-- <span class="material-symbols-outlined"> photo_camera </span> -->
+                TAKE PICTURE
               </button>
               <button
                 mat-flat-button
                 color="danger"
                 (click)="recapture()"
                 *ngIf="webcamImage"
+                class="fw-bold"
               >
-                <span class="material-symbols-outlined"> delete </span>
+                <!-- <span class="material-symbols-outlined"> delete </span> -->
+                REMOVE PICTURE
               </button>
             </div>
             <div class="main-buttons">
@@ -120,13 +124,13 @@
                 [disabled]="this.cashoutForm.invalid || sendRequestBtnOnLoad"
                 class="btn-block fw-bold"
               >
-                <i
+                <!-- <i
                   class="fas"
                   [ngClass]="{
                     'fa-circle-notch fa-spin': sendRequestBtnOnLoad,
                     'fa-check': !sendRequestBtnOnLoad
                   }"
-                ></i>
+                ></i> -->
                 SEND REQUEST
               </button>
               <button
@@ -176,26 +180,26 @@
     <mat-card style="margin-bottom: 15px">
       <section id="cssportal-grid" *ngIf="!cashOutTableOnLoad">
         <div id="div0">
-          <mat-icon class="material-icons material-symbols-rounded"
+          <!-- <mat-icon class="material-icons material-symbols-rounded"
             >calendar_month</mat-icon
-          >
+          > -->
           DATE
         </div>
         <div id="div1">
           <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
         </div>
         <div id="div2">
-          <mat-icon class="material-icons material-symbols-rounded"
+          <!-- <mat-icon class="material-icons material-symbols-rounded"
             >phone_android</mat-icon
-          >
+          > -->
           ACCOUNT
         </div>
         <div id="div3">{{ transactionDetails.gcashNumber }}</div>
         <div id="div4">
-          <mat-icon class="material-icons material-symbols-rounded"
+          <!-- <mat-icon class="material-icons material-symbols-rounded"
             >account_balance_wallet</mat-icon
-          >
-          COH
+          > -->
+          CASH
         </div>
 
         <section id="div5">
@@ -209,9 +213,9 @@
           </div>
         </section>
         <div id="div6">
-          <mat-icon class="material-icons material-symbols-rounded"
+          <!-- <mat-icon class="material-icons material-symbols-rounded"
             >rss_feed</mat-icon
-          >
+          > -->
           GCASH
         </div>
         <section id="div7">
@@ -237,7 +241,7 @@
 
     <app-table
       [componentName]="'cashout'"
-      [headers]="['TIME', 'FEE', 'AMOUNT', 'NOTE', 'SNAPSHOT', 'MENU']"
+      [headers]="['TIME', 'FEE', 'AMOUNT', 'NOTE', 'REFERENCE', 'MENU']"
       [data]="this.cashOuts"
       [dataNames]="['createdAt', 'fee', 'amount', 'note', 'snapshot']"
       [tableButtons]="[{ name: 'VIEW' }, 'status', 'amount']"

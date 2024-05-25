@@ -70,10 +70,15 @@
         <div style="margin-bottom: 2em">
           <mat-label style="margin-right: 1em">Payment Fee</mat-label>
           <mat-radio-group formControlName="fee_payment_is_gcash">
-            <mat-radio-button value="true" style="margin-right: 1em"
+            <mat-radio-button
+              color="accent"
+              value="true"
+              style="margin-right: 1em"
               >Gcash</mat-radio-button
             >
-            <mat-radio-button value="false">Cash</mat-radio-button>
+            <mat-radio-button color="accent" value="false"
+              >Cash</mat-radio-button
+            >
           </mat-radio-group>
         </div>
 
@@ -90,7 +95,7 @@
           <button
             *ngIf="viewType === 'addCashin'"
             mat-flat-button
-            color="primary"
+            color="main-green"
             (click)="sendRequest()"
             [disabled]="this.cashinForm.invalid || sendRequestBtnOnLoad"
             class="btn-block fw-bold"
@@ -107,7 +112,7 @@
           <button
             *ngIf="viewType === 'editCashin'"
             mat-flat-button
-            color="primary"
+            color="main-green"
             (click)="updateRequest()"
             [disabled]="this.cashinForm.invalid || updateRequestBtnOnLoad"
             class="btn-block fw-bold"
@@ -123,8 +128,8 @@
           </button>
           <button
             mat-flat-button
+            color="main-green"
             (click)="cancel()"
-            color="primary"
             class="btn-block fw-bold"
           >
             CANCEL
@@ -157,7 +162,7 @@
         <div class="main-buttons">
           <button
             mat-flat-button
-            color="primary"
+            color="main-green"
             (click)="approveRequest()"
             [disabled]="this.approveCashinForm.invalid || approveReqBtnOnLoad"
             class="btn-block fw-bold"
@@ -174,7 +179,7 @@
           <button
             mat-flat-button
             (click)="cancel()"
-            color="primary"
+            color="main-green"
             class="btn-block fw-bold"
           >
             CANCEL

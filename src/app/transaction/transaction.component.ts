@@ -20,7 +20,7 @@ export class TransactionComponent implements OnInit {
 
   //Cash in form
   public transactionForm: FormGroup;
-
+  public role: string = "";
   constructor(
     private auth: AuthService,
     private fb: FormBuilder,
@@ -35,7 +35,14 @@ export class TransactionComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.checkRole();
+  }
+
+  async checkRole() {
+    const user = JSON.parse(this.auth.getUserData());
+    this.role = user.role;
+  }
 
   view(type: string) {
     if (type === "cashin") {

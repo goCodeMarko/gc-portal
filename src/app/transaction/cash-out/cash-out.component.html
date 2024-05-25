@@ -124,14 +124,12 @@
                 [disabled]="this.cashoutForm.invalid || sendRequestBtnOnLoad"
                 class="btn-block fw-bold"
               >
-                <!-- <i
-                  class="fas"
-                  [ngClass]="{
-                    'fa-circle-notch fa-spin': sendRequestBtnOnLoad,
-                    'fa-check': !sendRequestBtnOnLoad
-                  }"
-                ></i> -->
-                SEND REQUEST
+                <div *ngIf="!sendRequestBtnOnLoad; else #loadsend">
+                  SEND REQUEST
+                </div>
+                <ng-template #loadsend>
+                  <i class="fas fa-circle-notch fa-spin"></i>
+                </ng-template>
               </button>
               <button
                 *ngIf="viewType === 'editCashout'"
@@ -141,14 +139,12 @@
                 [disabled]="this.cashoutForm.invalid || updateRequestBtnOnLoad"
                 class="btn-block fw-bold"
               >
-                <i
-                  class="fas"
-                  [ngClass]="{
-                    'fa-circle-notch fa-spin': updateRequestBtnOnLoad,
-                    'fa-check': !updateRequestBtnOnLoad
-                  }"
-                ></i>
-                UPDATE REQUEST
+                <div *ngIf="!sendRequestBtnOnLoad; else #loadupdate">
+                  UPDATE REQUEST
+                </div>
+                <ng-template #loadupdate>
+                  <i class="fas fa-circle-notch fa-spin"></i>
+                </ng-template>
               </button>
 
               <button

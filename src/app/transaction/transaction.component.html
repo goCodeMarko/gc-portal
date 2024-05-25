@@ -19,7 +19,7 @@
       <mat-card class="mat-card-custom">
         <form [formGroup]="this.transactionForm">
           <!-- DATE -->
-          <mat-form-field color="primary" appearance="outline">
+          <mat-form-field color="main-green" appearance="outline">
             <mat-label>Date</mat-label>
             <input matInput [matDatepicker]="picker1" formControlName="date" />
 
@@ -110,7 +110,7 @@
           <div class="main-buttons">
             <button
               mat-flat-button
-              color="primary"
+              color="main-green"
               (click)="createTransaction()"
               [disabled]="this.transactionForm.invalid || createTransBtnOnLoad"
               class="btn-block fw-bold"
@@ -127,7 +127,7 @@
             <button
               mat-flat-button
               (click)="cancel()"
-              color="primary"
+              color="main-green"
               class="btn-block fw-bold"
             >
               CANCEL
@@ -141,16 +141,18 @@
 <mat-card *ngIf="!hideMainButton" style="margin-top: 15px">
   <div class="main-button-container">
     <button
+      *ngIf="role === 'admin'"
       mat-flat-button
-      color="primary"
+      color="main-green"
       (click)="createTransactionView()"
       class="btn-block fw-bold"
     >
       CREATE TRANSACTION
     </button>
     <button
+      *ngIf="role === 'admin'"
       mat-flat-button
-      color="primary"
+      color="main-green"
       (click)="generateReport()"
       class="btn-block fw-bold"
       [disabled]="generateReportBtnOnLoad"
@@ -163,7 +165,7 @@
     </button>
     <button
       mat-flat-button
-      color="primary"
+      color="main-green"
       (click)="logout()"
       class="btn-block fw-bold"
     >

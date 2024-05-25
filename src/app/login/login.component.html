@@ -10,7 +10,7 @@
             />
           </div>
           <h2>Login</h2>
-          <p>Stay updated on your professional world</p>
+          <p>Welcome to GC Portal</p>
         </div>
 
         <form [formGroup]="this.loginForm">
@@ -18,7 +18,7 @@
             {{ this.message }}
           </p>
           <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
+            <mat-label>Username</mat-label>
             <input matInput type="text" matInput formControlName="email" />
             <!-- <mat-hint>Hint</mat-hint> -->
           </mat-form-field>
@@ -30,7 +30,7 @@
 
           <button
             mat-flat-button
-            color="primary"
+            color="main-green"
             class="btn-block fw-bold"
             (click)="login()"
           >

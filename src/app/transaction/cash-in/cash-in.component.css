@@ -81,6 +81,8 @@ body {
   grid-area: 1 / 2 / 2 / 3;
   justify-self: start;
   align-self: center;
+  color: #297bfa;
+  font-weight: bold;
 }
 #div6 {
   grid-area: 4 / 1 / 4 / 2;
@@ -105,4 +107,6 @@ body {
   grid-area: 1 / 2 / 2 / 3;
   justify-self: start;
   align-self: center;
+  color: #297bfa;
+  font-weight: bold;
 }

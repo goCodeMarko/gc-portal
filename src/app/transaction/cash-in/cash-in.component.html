@@ -100,11 +100,9 @@
             [disabled]="this.cashinForm.invalid || sendRequestBtnOnLoad"
             class="btn-block fw-bold"
           >
-            <div *ngIf="!sendRequestBtnOnLoad; else #loadsend">SEND REQUEST</div>
+            <div *ngIf="!sendRequestBtnOnLoad; else loadsend">SEND REQUEST</div>
             <ng-template #loadsend>
-               <i
-              class="fas fa-circle-notch fa-spin"
-            ></i>
+              <i class="fas fa-circle-notch fa-spin"></i>
             </ng-template>
           </button>
           <button
@@ -115,12 +113,12 @@
             [disabled]="this.cashinForm.invalid || updateRequestBtnOnLoad"
             class="btn-block fw-bold"
           >
-
-            <div *ngIf="!updateRequestBtnOnLoad; else #loadupdate">UPDATE REQUEST</div>
+            <div *ngIf="!updateRequestBtnOnLoad; else loadupdate">
+              UPDATE REQUEST
+            </div>
             <ng-template #loadupdate>
-               <i
-              class="fas fa-circle-notch fa-spin"
-            ></i>
+              <i class="fas fa-circle-notch fa-spin"></i>
+            </ng-template>
           </button>
           <button
             mat-flat-button

@@ -376,6 +376,12 @@ export class CashOutComponent implements OnInit, OnDestroy {
                 cashout.status = newStatus;
                 COhaveChanges = true;
               } else if (
+                cashout.status === TransactionStatus.Pending &&
+                [TransactionStatus.Cancelled].includes(newStatus)
+              ) {
+                cashout.status = newStatus;
+                COhaveChanges = true;
+              } else if (
                 ([
                   TransactionStatus.Cancelled,
                   TransactionStatus.Failed,

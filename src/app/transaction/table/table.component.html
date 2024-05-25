@@ -203,6 +203,16 @@
               {{ data[dataName] | currency : "₱" : "symbol" }}
             </ng-container>
 
+            <ng-container *ngSwitchCase="'phone_number' === dataName">
+              <div
+                id="phone_number{{ i }}"
+                class="clipboard"
+                (click)="copy(data[dataName], $event)"
+              >
+                {{ data[dataName] }}
+              </div>
+            </ng-container>
+
             <ng-container *ngSwitchCase="'note' === dataName">
               <div *ngIf="data[dataName]; else empty">
                 <button

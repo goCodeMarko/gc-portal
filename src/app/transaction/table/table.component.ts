@@ -13,6 +13,7 @@ import { HttpRequestService } from "../../http-request/http-request.service";
 import { EditBookComponent } from "../../modals/edit-book/edit-book.component";
 import { saveAs } from "file-saver";
 import { AuthService } from "src/app/authorization/auth.service";
+import { Clipboard } from "@angular/cdk/clipboard";
 
 interface IBooks {
   author: string;
@@ -79,7 +80,7 @@ export class TableComponent implements OnInit, OnChanges {
 
   // value1: number = this.filters.limit;
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private clipboard: Clipboard) {}
 
   ngOnInit(): void {
     this.checkRole();
@@ -90,6 +91,22 @@ export class TableComponent implements OnInit, OnChanges {
   async checkRole() {
     const user = JSON.parse(await this.auth.getUserData());
     this.role = user.role;
+  }
+
+  copy(phoneNumber: string, event: any) {
+    const element = document.getElementById(event.target.id);
+    this.clipboard.copy(phoneNumber);
+    element!.style.color = "#90ac8e";
+    element!.style.fontSize = "12px";
+    element!.style.fontWeight = "bold";
+    element!.textContent = "COPIED!";
+
+    setTimeout(() => {
+      element!.style.color = "#000000";
+      element!.style.fontSize = "16px";
+      element!.style.fontWeight = "normal";
+      element!.textContent = phoneNumber;
+    }, 1000);
   }
 
   emitNext() {

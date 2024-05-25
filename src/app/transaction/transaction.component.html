@@ -155,11 +155,12 @@
       class="btn-block fw-bold"
       [disabled]="generateReportBtnOnLoad"
     >
-      <i
-        class="fas"
-        [ngClass]="{ 'fa-circle-notch fa-spin': generateReportBtnOnLoad }"
-      ></i>
-      GENERATE REPORT
+      <div *ngIf="!generateReportBtnOnLoad; else loadgenreport">
+        GENERATE REPORT
+      </div>
+      <ng-template #loadgenreport>
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </ng-template>
     </button>
     <button
       mat-flat-button

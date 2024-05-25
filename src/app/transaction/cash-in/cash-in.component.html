@@ -161,14 +161,12 @@
             [disabled]="this.approveCashinForm.invalid || approveReqBtnOnLoad"
             class="btn-block fw-bold"
           >
-            <i
-              class="fas"
-              [ngClass]="{
-                'fa-circle-notch fa-spin': approveReqBtnOnLoad,
-                'fa-check': !approveReqBtnOnLoad
-              }"
-            ></i>
-            APPROVE REQUEST
+            <div *ngIf="!approveReqBtnOnLoad; else loadapprequest">
+              APPROVE REQUEST
+            </div>
+            <ng-template #loadapprequest>
+              <i class="fas fa-circle-notch fa-spin"></i>
+            </ng-template>
           </button>
           <button
             mat-flat-button

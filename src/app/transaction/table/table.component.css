@@ -102,3 +102,7 @@ table {
 #ghost-element {
   padding-top: 80px;
 }
+
+.clipboard {
+  cursor: pointer;
+}

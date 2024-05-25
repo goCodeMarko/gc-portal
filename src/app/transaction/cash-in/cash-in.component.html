@@ -2,29 +2,6 @@
   <div *ngSwitchCase="viewType === 'addCashin' || viewType === 'editCashin'">
     <mat-card class="mat-card-custom">
       <form [formGroup]="this.cashinForm">
-        <!-- PHONE NUMBER -->
-        <mat-form-field
-          style="display: block; margin-bottom: 1em"
-          appearance="outline"
-        >
-          <mat-label>Phone number</mat-label>
-          <input
-            type="text"
-            matInput
-            formControlName="phone_number"
-            (paste)="phoneNumberStrict($event)"
-            (keypress)="phoneNumberStrict($event)"
-          />
-          <mat-error *ngIf="checkFormControlErrors('phone_number')">
-            <div *ngIf="cashinForm.get('phone_number')?.hasError('required')">
-              Phone number is required
-            </div>
-            <div *ngIf="cashinForm.get('phone_number')?.hasError('pattern')">
-              Invalid phone number format
-            </div>
-          </mat-error>
-        </mat-form-field>
-
         <!-- AMOUNT -->
         <mat-form-field
           style="display: block; margin-bottom: 1em"
@@ -62,6 +39,29 @@
           <mat-error *ngIf="checkFormControlErrors('fee')">
             <div *ngIf="cashinForm.get('fee')?.hasError('required')">
               Fee is required
+            </div>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- PHONE NUMBER -->
+        <mat-form-field
+          style="display: block; margin-bottom: 1em"
+          appearance="outline"
+        >
+          <mat-label>Phone number</mat-label>
+          <input
+            type="text"
+            matInput
+            formControlName="phone_number"
+            (paste)="phoneNumberStrict($event)"
+            (keypress)="phoneNumberStrict($event)"
+          />
+          <mat-error *ngIf="checkFormControlErrors('phone_number')">
+            <div *ngIf="cashinForm.get('phone_number')?.hasError('required')">
+              Phone number is required
+            </div>
+            <div *ngIf="cashinForm.get('phone_number')?.hasError('pattern')">
+              Invalid phone number format
             </div>
           </mat-error>
         </mat-form-field>

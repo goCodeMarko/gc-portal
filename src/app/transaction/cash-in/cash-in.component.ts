@@ -128,7 +128,10 @@ export class CashInComponent implements OnInit, OnDestroy {
 
       if (message.type === "newCashin") {
         if (_.size(this.cashIns) === 3) this.cashIns.pop();
+        if (_.size(this.cashIns) === 0) this.currentPage = 1;
         this.cashIns.unshift(message.data);
+        this.counts += 1;
+        this.pages = Math.ceil(this.counts / 3);
       }
 
       if (message.type === "updateCashin") {

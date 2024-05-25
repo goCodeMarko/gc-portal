@@ -2,7 +2,12 @@
   <!-- TABLE HEADER -->
   <div
     *ngIf="!tableOnLoad"
-    style="display: flex; justify-content: space-between; align-items: baseline"
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1em;
+    "
   >
     <!-- search box -->
     <div>
@@ -133,7 +138,9 @@
         <span class="material-symbols-outlined"> border_left </span>
       </button> -->
       <button
-        mat-button
+        mat-stroked-button
+        color="main-green"
+        style="padding: 0px 10px"
         class="fw-bold"
         *ngIf="componentName === 'cashout'"
         (click)="this.buttonClicked({ type: 'cashoutFormView' })"
@@ -143,7 +150,9 @@
       </button>
 
       <button
-        mat-button
+        mat-stroked-button
+        color="main-green"
+        style="padding: 0px 10px"
         class="fw-bold"
         *ngIf="componentName === 'cashin' && !tableOnLoad"
         (click)="this.buttonClicked({ type: 'cashinFormView' })"
@@ -294,6 +303,7 @@
           [disabled]="this.currentPage == 1"
           (click)="this.emitPrev()"
           mat-icon-button
+          color="main-green"
         >
           <span class="material-symbols-outlined"> navigate_before </span>
         </button>
@@ -302,6 +312,7 @@
           [disabled]="this.currentPage == this.totalPages"
           (click)="this.emitNext()"
           mat-icon-button
+          color="main-green"
         >
           <span class="material-symbols-outlined"> navigate_next </span>
         </button>

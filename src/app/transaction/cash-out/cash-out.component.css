@@ -24,6 +24,13 @@ ul.links {
 
 .buttons {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.main-buttons {
+  margin-top: 2em;
 }
 
 .webcam-container {
@@ -109,6 +116,8 @@ ul.links {
   grid-area: 1 / 2 / 2 / 3;
   justify-self: start;
   align-self: center;
+  color: #297bfa;
+  font-weight: bold;
 }
 #div6 {
   grid-area: 4 / 1 / 4 / 2;
@@ -133,4 +142,6 @@ ul.links {
   grid-area: 1 / 2 / 2 / 3;
   justify-self: start;
   align-self: center;
+  color: #297bfa;
+  font-weight: bold;
 }

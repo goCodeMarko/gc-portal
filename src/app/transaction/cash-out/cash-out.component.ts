@@ -134,7 +134,10 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
       if (message.type === "newCashout") {
         if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
+        if (_.size(this.cashOuts) === 0) this.currentPage = 1;
         this.cashOuts.unshift(message.data);
+        this.counts += 1;
+        this.pages = Math.ceil(this.counts / 3);
       }
 
       if (message.type === "updateCashout") {

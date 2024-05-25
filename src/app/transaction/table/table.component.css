@@ -49,13 +49,6 @@ tfoot {
   font-size: medium;
 }
 
-::ng-deep video {
-  width: 100% !important;
-}
-::ng-deep .camera-switch {
-  top: 25px !important;
-}
-
 th,
 td {
   text-align: center;

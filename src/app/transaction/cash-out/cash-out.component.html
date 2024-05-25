@@ -124,7 +124,7 @@
                 [disabled]="this.cashoutForm.invalid || sendRequestBtnOnLoad"
                 class="btn-block fw-bold"
               >
-                <div *ngIf="!sendRequestBtnOnLoad; else #loadsend">
+                <div *ngIf="!sendRequestBtnOnLoad; else loadsend">
                   SEND REQUEST
                 </div>
                 <ng-template #loadsend>
@@ -139,7 +139,7 @@
                 [disabled]="this.cashoutForm.invalid || updateRequestBtnOnLoad"
                 class="btn-block fw-bold"
               >
-                <div *ngIf="!sendRequestBtnOnLoad; else #loadupdate">
+                <div *ngIf="!sendRequestBtnOnLoad; else loadupdate">
                   UPDATE REQUEST
                 </div>
                 <ng-template #loadupdate>

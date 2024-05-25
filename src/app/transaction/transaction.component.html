@@ -115,7 +115,7 @@
               [disabled]="this.transactionForm.invalid || createTransBtnOnLoad"
               class="btn-block fw-bold"
             >
-              <div *ngIf="!createTransBtnOnLoad; else #loadcreatetrans">
+              <div *ngIf="!createTransBtnOnLoad; else loadcreatetrans">
                 CREATE TRANSACTION
               </div>
               <ng-template #loadcreatetrans>

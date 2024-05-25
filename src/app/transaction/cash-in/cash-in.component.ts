@@ -354,6 +354,12 @@ export class CashInComponent implements OnInit, OnDestroy {
                   cashin.status = newStatus;
                   CIhaveChanges = true;
                 } else if (
+                  cashin.status === TransactionStatus.Pending &&
+                  [TransactionStatus.Cancelled].includes(newStatus)
+                ) {
+                  cashin.status = newStatus;
+                  CIhaveChanges = true;
+                } else if (
                   ([
                     TransactionStatus.Cancelled,
                     TransactionStatus.Failed,

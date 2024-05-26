@@ -45,8 +45,8 @@
   width: 100% !important;
 }
 ::ng-deep .camera-switch {
-  top: 35px !important;
-  right: 25px !important;
+  top: 25px !important;
+  right: 35px !important;
 }
 
 @font-face {

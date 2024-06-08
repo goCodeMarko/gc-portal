@@ -1,0 +1,374 @@
+<mat-card>
+  <ng-container *ngIf="!tableOnLoad; else tableLoader">
+    <ng-container *ngIf="data.length >= 1; else noData">
+      <ng-container *ngTemplateOutlet="tableButtons"></ng-container>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <!-- <th></th> -->
+            <th *ngFor="let head of headers; let i = index" scope="col">
+              {{ head }}
+            </th>
+
+            <th style="text-align: center" scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of data; let i = index">
+            <!-- <td>
+            {{
+              this.filters.limit * this.currentPage - (this.filters.limit - 1) + i
+            }}
+          </td> -->
+            <td *ngFor="let dataName of dataNames">
+              <ng-container [ngSwitch]="true">
+                <ng-container *ngSwitchCase="'createdAt' === dataName">
+                  <div [innerHTML]="data.status | transactionStatus"></div>
+                  {{ data[dataName] | date : "shortTime" }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'amount' === dataName">
+                  {{ data[dataName] | currency : "₱" : "symbol" }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'fee' === dataName">
+                  <div
+                    [innerHTML]="data.fee_payment_is_gcash | paymentType"
+                  ></div>
+                  {{ data[dataName] | currency : "₱" : "symbol" }}
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'phone_number' === dataName">
+                  <div
+                    id="phone_number{{ i }}"
+                    class="ls-clipboard"
+                    (click)="copy(data[dataName], $event)"
+                  >
+                    {{ data[dataName] }}
+                  </div>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'note' === dataName">
+                  <div *ngIf="data[dataName]; else empty">
+                    <button
+                      (click)="buttonClicked({ type: 'viewNote', data: data })"
+                      mat-icon-button
+                    >
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <ng-template #empty>
+                    <mat-icon mat-icon-button>remove</mat-icon></ng-template
+                  >
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'snapshot' === dataName">
+                  <div *ngIf="data[dataName]; else empty">
+                    <button
+                      (click)="
+                        buttonClicked({ type: 'viewSnapshot', data: data })
+                      "
+                      mat-icon-button
+                    >
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <ng-template #empty>
+                    <mat-icon mat-icon-button>remove</mat-icon></ng-template
+                  >
+                </ng-container>
+
+                <ng-container *ngSwitchDefault>
+                  {{ data[dataName] }}
+                </ng-container>
+              </ng-container>
+            </td>
+            <td style="text-align: center">
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Example icon-button with a menu"
+              >
+                <mat-icon>dialpad</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  mat-menu-item
+                  (click)="buttonClicked({ type: 'edit', data: data })"
+                >
+                  <span>EDIT</span>
+                </button>
+                <button
+                  mat-menu-item
+                  *ngIf="role === 'admin'"
+                  (click)="
+                    buttonClicked({ type: 'approve', data: { cid: data._id } })
+                  "
+                >
+                  <span>APPROVE</span>
+                </button>
+                <button
+                  mat-menu-item
+                  *ngIf="role === 'admin'"
+                  (click)="
+                    buttonClicked({ type: 'fail', data: { cid: data._id } })
+                  "
+                >
+                  <span>FAIL</span>
+                </button>
+                <button
+                  mat-menu-item
+                  (click)="
+                    buttonClicked({ type: 'cancel', data: { cid: data._id } })
+                  "
+                >
+                  <span>CANCEL</span>
+                </button>
+              </mat-menu>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          padding-left: 15px;
+          margin-top: 1em;
+        "
+      >
+        <div>
+          <p>Items: {{ totalCount }}</p>
+        </div>
+
+        <div>
+          <div>
+            <button
+              [disabled]="this.currentPage == 1"
+              (click)="this.emitPrev()"
+              mat-icon-button
+              color="main-green"
+              style="margin-right: 1em"
+            >
+              <span class="material-symbols-outlined"> navigate_before </span>
+            </button>
+            Page {{ this.currentPage }} of {{ this.totalPages }}
+            <button
+              [disabled]="this.currentPage == this.totalPages"
+              (click)="this.emitNext()"
+              mat-icon-button
+              color="main-green"
+              style="margin-left: 1em"
+            >
+              <span class="material-symbols-outlined"> navigate_next </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #noData>
+      <ng-container *ngTemplateOutlet="tableButtons"></ng-container
+    ></ng-template>
+  </ng-container>
+
+  <ng-template #tableLoader>
+    <div
+      class="ls-line-container"
+      style="
+        flex-direction: row-reverse;
+        margin-bottom: 1em;
+        justify-content: center;
+      "
+    >
+      <div class="ls-line" style="width: 40%"></div>
+    </div>
+
+    <div class="ls-line-container">
+      <div class="ls-line"></div>
+      <div class="ls-line"></div>
+      <div class="ls-line"></div>
+      <div class="ls-line"></div>
+    </div>
+
+    <div
+      class="ls-line-container"
+      style="
+        width: 100%;
+        display: flex;
+        gap: 50px;
+        flex-direction: row;
+        margin-top: 1em;
+      "
+    >
+      <div class="ls-line"></div>
+      <div class="ls-line"></div>
+    </div>
+  </ng-template>
+</mat-card>
+
+<ng-template #tableButtons>
+  <div
+    style="
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: baseline;
+    "
+  >
+    <!-- search box -->
+    <div>
+      <!-- <mat-form-field
+        style="margin: 1em; width: 300px; font-size: 14px; padding-right: 15px"
+        appearance="standard"
+      >
+        <mat-label>Search</mat-label>
+        <input matInput placeholder="" />
+        <mat-icon matSuffix style="color: #90ac8e">search</mat-icon>
+        <mat-hint></mat-hint>
+      </mat-form-field>
+      <button
+        #menuTrigger="matMenuTrigger"
+        [matMenuTriggerFor]="filter"
+        mat-button
+      >
+        Filters
+        <span class="material-symbols-outlined" style="margin-left: 5px">
+          tune
+        </span>
+      </button> -->
+
+      <!-- <mat-menu #filter="matMenu" class="mymegamenu">
+        <div class="custom-mat-panel" (click)="$event.stopPropagation()">
+          <button
+            style="color: #90ac8e; position: absolute; right: 10px; top: 10px"
+            mat-icon-button
+            (click)="menuTrigger.closeMenu()"
+          >
+            <mat-icon matSuffix>close</mat-icon>
+          </button>
+
+          <div style="display: flex">
+            <div style="border-right: 1px solid red; padding-right: 15px">
+              <b>Search By</b>
+              <span class="example-list-section">
+                <p>
+                  <mat-checkbox class="example-margin" [(ngModel)]="checked"
+                    >Checked</mat-checkbox
+                  >
+                </p>
+                <p>
+                  <mat-checkbox
+                    class="example-margin"
+                    [(ngModel)]="indeterminate"
+                    >Indeterminate</mat-checkbox
+                  >
+                </p>
+                <p>
+                  <mat-checkbox
+                    class="example-margin"
+                    [(ngModel)]="indeterminate"
+                    >Indeterminate</mat-checkbox
+                  >
+                </p>
+                <p>
+                  <mat-checkbox
+                    class="example-margin"
+                    [(ngModel)]="indeterminate"
+                    >Indeterminate</mat-checkbox
+                  >
+                </p>
+              </span>
+            </div>
+            <div style="border-right: 1px solid red; padding: 0px 15px">
+              <b> Items Per Page</b>
+
+              <div style="display: block">
+                {{ this.value1 }}
+
+                <mat-slider
+                  class="example-margin"
+                  disabled="false"
+                  max="50"
+                  min="10"
+                  step="10"
+                  discrete="false"
+                  showTickMarks="false"
+                  [(ngModel)]="value1"
+                  (input)="value1 = $event.value"
+                >
+                </mat-slider>
+              </div>
+            </div>
+            <div style="border-right: 1px solid red; padding: 0px 15px">
+              <b>Sort By</b>
+            </div>
+            <div style="padding: 0px 15px">
+              <b>Sort Type</b>
+            </div>
+          </div>
+
+          <button
+            mat-button
+            (click)="setFilter(); menuTrigger.closeMenu()"
+            style="width: 100%; margin-top: 20px"
+          >
+            Save
+          </button>
+        </div>
+      </mat-menu>  -->
+    </div>
+
+    <div>
+      <!-- <button
+        mat-button
+        (click)="this.downloadPDF()"
+        [disabled]="this.pdfbtn"
+        [ngStyle]="{ cursor: this.pdfbtn ? 'progress ' : 'pointer' }"
+        color="accent"
+      >
+        Export to PDF
+        <span class="material-symbols-outlined"> news </span>
+      </button>
+      <button
+        mat-button
+        (click)="this.downloadExcel()"
+        [disabled]="this.excelbtn"
+        [ngStyle]="{ cursor: this.excelbtn ? 'progress ' : 'pointer' }"
+        color="accent"
+      >
+        Export to XLSX
+        <span class="material-symbols-outlined"> window </span>
+      </button>
+      <button mat-button>
+        Export to CSV
+        <span class="material-symbols-outlined"> border_left </span>
+      </button> -->
+      <button
+        mat-stroked-button
+        color="main-green"
+        style="padding: 0px 10px"
+        class="fw-bold"
+        *ngIf="componentName === 'cashout'"
+        (click)="this.buttonClicked({ type: 'cashoutFormView' })"
+      >
+        <ng-container *ngIf="role === 'admin'; else otherTemplate">
+          <b>ADD CASH OUT</b>
+        </ng-container>
+        <ng-template #otherTemplate><b>REQUEST CASH OUT</b></ng-template>
+      </button>
+
+      <button
+        mat-stroked-button
+        color="main-green"
+        style="padding: 0px 10px"
+        class="fw-bold"
+        *ngIf="componentName === 'cashin' && !tableOnLoad"
+        (click)="this.buttonClicked({ type: 'cashinFormView' })"
+      >
+        <p *ngIf="role === 'admin'; else otherTemplate">ADD CASH IN</p>
+        <ng-template #otherTemplate><p>REQUEST CASH IN</p></ng-template>
+      </button>
+    </div>
+  </div>
+</ng-template>

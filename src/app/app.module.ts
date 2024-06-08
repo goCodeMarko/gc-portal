@@ -36,6 +36,7 @@ import { AudioService } from "./shared/audio/audio.service";
 import { InternetConnectionService } from "./shared/internet-connection/internet-connection.service";
 import { ViewNoteModalComponent } from "./modals/view-note-modal/view-note-modal.component";
 import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-snapshot-modal.component";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-sn
     MatInputModule,
     MatTooltipModule,
     TransactionModule,
+    MatButtonToggleModule,
     RouterModule.forRoot(AppRoutes),
   ],
   providers: [

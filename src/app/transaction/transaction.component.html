@@ -1,24 +1,28 @@
-<div class="tab-container">
+<!-- <div class="tab-container">
   <div class="tab-group">
     <b class="tab-cashout fw-bold" (click)="view('cashout')">CASH OUT</b>
     <b class="tab-cashin fw-bold" (click)="view('cashin')">CASH IN</b>
   </div>
   <div [class.active-cashout]="tabActiveCashout"></div>
   <div [class.active-cashin]="tabActiveCashin"></div>
-</div>
+</div> -->
 
-<div class="space">
-  <div [ngSwitch]="this.viewType">
-    <div *ngSwitchCase="'cashin'">
-      <app-cash-in (hideMainButton)="mainButton($event)"></app-cash-in>
-    </div>
-    <div *ngSwitchCase="'cashout'">
-      <app-cash-out (hideMainButton)="mainButton($event)"></app-cash-out>
-    </div>
-    <div *ngSwitchCase="'createTransaction'">
-      <mat-card class="mat-card-custom">
-        <form [formGroup]="this.transactionForm">
-          <!-- DATE -->
+<mat-button-toggle-group class="ms-tabs-container">
+  <mat-button-toggle (click)="view('cashout')">CASH OUT</mat-button-toggle>
+  <mat-button-toggle (click)="view('cashin')">CASH IN</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div [ngSwitch]="this.viewType">
+  <ng-container *ngSwitchCase="'cashin'">
+    <app-cash-in (hideMainButton)="mainButton($event)"> </app-cash-in>
+  </ng-container>
+  <ng-container *ngSwitchCase="'cashout'">
+    <app-cash-out (hideMainButton)="mainButton($event)"> </app-cash-out>
+  </ng-container>
+  <ng-container *ngSwitchCase="'createTransaction'">
+    <mat-card style="margin: 0px">
+      <form [formGroup]="this.transactionForm" class="gs-form-group">
+        <div class="gs-form-control">
           <mat-form-field appearance="outline">
             <mat-label>Date</mat-label>
             <input matInput [matDatepicker]="picker1" formControlName="date" />
@@ -28,14 +32,15 @@
               [for]="picker1"
             ></mat-datepicker-toggle>
             <mat-datepicker #picker1></mat-datepicker>
-            <mat-error *ngIf="checkFormControlErrors('date')">
-              <div *ngIf="transactionForm.get('date')?.hasError('required')">
-                Date is required
-              </div>
-            </mat-error>
           </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('date')">
+            <small *ngIf="transactionForm.get('date')?.hasError('required')">
+              Date is required
+            </small>
+          </mat-error>
+        </div>
 
-          <!-- GCASH -->
+        <div class="gs-form-control">
           <mat-form-field style="display: block" appearance="outline">
             <mat-label>Gcash</mat-label>
             <input
@@ -47,14 +52,15 @@
               (paste)="currencyStrict($event)"
               (keypress)="currencyStrict($event)"
             />
-            <mat-error *ngIf="checkFormControlErrors('gcash')">
-              <div *ngIf="transactionForm.get('gcash')?.hasError('required')">
-                Amount is required
-              </div>
-            </mat-error>
           </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('gcash')">
+            <small *ngIf="transactionForm.get('gcash')?.hasError('required')">
+              Amount is required
+            </small>
+          </mat-error>
+        </div>
 
-          <!-- CASH ON HAND -->
+        <div class="gs-form-control">
           <mat-form-field style="display: block" appearance="outline">
             <mat-label>Cash on hand</mat-label>
             <input
@@ -66,22 +72,18 @@
               (paste)="currencyStrict($event)"
               (keypress)="currencyStrict($event)"
             />
-            <mat-error *ngIf="checkFormControlErrors('cash_on_hand')">
-              <div
-                *ngIf="
-                  transactionForm.get('cash_on_hand')?.hasError('required')
-                "
-              >
-                Cash on hand is required
-              </div>
-            </mat-error>
           </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('cash_on_hand')">
+            <small
+              *ngIf="transactionForm.get('cash_on_hand')?.hasError('required')"
+            >
+              Cash on hand is required
+            </small>
+          </mat-error>
+        </div>
 
-          <!-- GCASH NUMBER -->
-          <mat-form-field
-            style="display: block; margin-bottom: 1em"
-            appearance="outline"
-          >
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
             <mat-label>Gcash number</mat-label>
             <input
               type="text"
@@ -90,21 +92,23 @@
               (paste)="phoneNumberStrict($event)"
               (keypress)="phoneNumberStrict($event)"
             />
-            <mat-error *ngIf="checkFormControlErrors('gcashNumber')">
-              <div
-                *ngIf="transactionForm.get('gcashNumber')?.hasError('required')"
-              >
-                Phone number is required
-              </div>
-              <div
-                *ngIf="transactionForm.get('gcashNumber')?.hasError('pattern')"
-              >
-                Invalid phone number format
-              </div>
-            </mat-error>
           </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('gcashNumber')">
+            <small
+              *ngIf="transactionForm.get('gcashNumber')?.hasError('required')"
+            >
+              Phone number is required
+            </small>
+            <small
+              *ngIf="transactionForm.get('gcashNumber')?.hasError('pattern')"
+            >
+              Invalid phone number format
+            </small>
+          </mat-error>
+        </div>
 
-          <div class="main-buttons">
+        <div class="gs-button-group">
+          <div class="gs-button-group-horizontal">
             <button
               mat-flat-button
               color="main-green"
@@ -128,44 +132,48 @@
               CANCEL
             </button>
           </div>
-        </form>
-      </mat-card>
-    </div>
-  </div>
+        </div>
+      </form>
+    </mat-card>
+  </ng-container>
 </div>
-<mat-card *ngIf="!hideMainButton" style="margin-top: 15px">
-  <div class="main-button-container">
-    <button
-      *ngIf="role === 'admin'"
-      mat-flat-button
-      color="main-green"
-      (click)="createTransactionView()"
-      class="btn-block fw-bold"
-    >
-      CREATE TRANSACTION
-    </button>
-    <button
-      *ngIf="role === 'admin'"
-      mat-flat-button
-      color="main-green"
-      (click)="generateReport()"
-      class="btn-block fw-bold"
-      [disabled]="generateReportBtnOnLoad"
-    >
-      <div *ngIf="!generateReportBtnOnLoad; else loadgenreport">
-        GENERATE REPORT
-      </div>
-      <ng-template #loadgenreport>
-        <i class="fas fa-circle-notch fa-spin"></i>
-      </ng-template>
-    </button>
-    <button
-      mat-flat-button
-      color="main-green"
-      (click)="logout()"
-      class="btn-block fw-bold"
-    >
-      LOG OUT
-    </button>
-  </div>
-</mat-card>
+
+<ng-container *ngIf="!hideMainButton">
+  <mat-card class="gs-button-group">
+    <div class="gs-button-group-horizontal">
+      <ng-container *ngIf="role === 'admin'">
+        <button
+          mat-flat-button
+          color="main-green"
+          (click)="createTransactionView()"
+          class="btn-block fw-bold"
+        >
+          CREATE TRANSACTION
+        </button>
+        <button
+          mat-flat-button
+          color="main-green"
+          (click)="generateReport()"
+          class="btn-block fw-bold"
+          [disabled]="generateReportBtnOnLoad"
+        >
+          <ng-container *ngIf="!generateReportBtnOnLoad; else loadgenreport">
+            GENERATE REPORT
+          </ng-container>
+          <ng-template #loadgenreport>
+            <i class="fas fa-circle-notch fa-spin"></i>
+          </ng-template>
+        </button>
+      </ng-container>
+
+      <button
+        mat-flat-button
+        color="main-green"
+        (click)="logout()"
+        class="btn-block fw-bold"
+      >
+        LOG OUT
+      </button>
+    </div>
+  </mat-card>
+</ng-container>

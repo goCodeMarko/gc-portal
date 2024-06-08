@@ -29,3 +29,93 @@ File: scss
 @import "../styles/icons/material-design-iconic-font/css/materialdesignicons.min.css";
 
 @import "~@fortawesome/fontawesome-free/css/all.css";
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+.gs-space {
+  margin-top: 2em;
+  padding: 0px;
+}
+
+.mat-card {
+  padding: 5px !important;
+}
+
+.fas {
+  font-size: 25px !important;
+  font-weight: 900;
+}
+
+.mat-danger {
+  background-color: #d9534f;
+  color: white;
+}
+
+.mat-main-green {
+  background-color: #90ac8e !important;
+  color: white !important;
+}
+
+.mat-main-green-basic {
+  color: #90ac8e;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #90ac8e;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  color: #90ac8e;
+  background-color: #90ac8e;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: rgb(255, 37, 37, 0.26);
+}
+
+button:disabled {
+  background-color: #90ac8e !important;
+  color: white !important;
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("./../fonts/Poppins-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Anton-Regular";
+  src: url("./../fonts/Anton-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.mat-form-field-wrapper {
+  padding-bottom: 0px !important;
+}
+
+.gs-button-group {
+  margin: 2em 0px 0px 0px !important;
+
+  .gs-button-group-horizontal {
+    display: flex !important;
+    gap: 0.5em !important;
+    flex-direction: column !important;
+  }
+}
+
+.gs-form-group {
+  display: flex;
+  gap: 0.5em;
+  flex-direction: column;
+
+  .gs-form-control {
+    padding: 0px;
+    small {
+      font-weight: bold;
+      font-size: 12px;
+    }
+  }
+}

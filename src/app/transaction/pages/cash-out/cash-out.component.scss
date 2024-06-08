@@ -1,0 +1,34 @@
+*,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.ls-snapshot {
+  text-align: center;
+
+  img {
+    width: 100%;
+  }
+}
+
+.webcam-container {
+  .webcam-wrapper {
+    video {
+      width: 100% !important;
+      border-radius: 8px;
+    }
+
+    .camera-switch {
+      top: 25px !important;
+      right: 35px !important;
+    }
+  }
+}
+
+.ls-buttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}

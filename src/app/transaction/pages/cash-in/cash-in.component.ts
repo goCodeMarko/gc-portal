@@ -9,10 +9,13 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
-import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
+import { PopUpModalComponent } from "../../../modals/pop-up-modal/pop-up-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
+import {
+  TransactionStatus,
+  TransactionStatusLabels,
+} from "../../../shared/enums";
 import { SocketService } from "src/app/shared/socket/socket.service";
 import { Subscription } from "rxjs";
 import { AudioService } from "src/app/shared/audio/audio.service";
@@ -52,7 +55,7 @@ interface IResponse {
 @Component({
   selector: "app-cash-in",
   templateUrl: "./cash-in.component.html",
-  styleUrls: ["./cash-in.component.css"],
+  styleUrls: ["./cash-in.component.scss"],
 })
 export class CashInComponent implements OnInit, OnDestroy {
   @Output() hideMainButton = new EventEmitter<boolean>();

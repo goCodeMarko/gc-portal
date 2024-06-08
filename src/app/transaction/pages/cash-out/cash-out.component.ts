@@ -12,10 +12,13 @@ import { WebcamImage, WebcamInitError, WebcamUtil } from "ngx-webcam";
 import { Subject, Subscription } from "rxjs";
 import { Observable } from "rxjs-compat";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
-import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
+import { PopUpModalComponent } from "../../../modals/pop-up-modal/pop-up-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
+import {
+  TransactionStatus,
+  TransactionStatusLabels,
+} from "../../../shared/enums";
 import { SocketService } from "src/app/shared/socket/socket.service";
 import { AudioService } from "src/app/shared/audio/audio.service";
 import * as moment from "moment";
@@ -54,7 +57,7 @@ interface IResponse {
 @Component({
   selector: "app-cash-out",
   templateUrl: "./cash-out.component.html",
-  styleUrls: ["./cash-out.component.css"],
+  styleUrls: ["./cash-out.component.scss"],
   animations: [
     trigger("fade", [
       transition("void => *", [

@@ -1,0 +1,294 @@
+<div [ngSwitch]="true">
+  <ng-container
+    *ngSwitchCase="viewType === 'addCashin' || viewType === 'editCashin'"
+  >
+    <mat-card>
+      <form [formGroup]="this.cashinForm" class="gs-form-group">
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input
+              type="number"
+              min="0"
+              step=".25"
+              matInput
+              formControlName="amount"
+              (paste)="currencyStrict($event)"
+              (keypress)="currencyStrict($event)"
+            />
+          </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('amount')">
+            <small *ngIf="cashinForm.get('amount')?.hasError('required')">
+              Amount is required
+            </small>
+          </mat-error>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Fee</mat-label>
+            <input
+              type="number"
+              min="0"
+              step=".25"
+              matInput
+              formControlName="fee"
+              (paste)="currencyStrict($event)"
+              (keypress)="currencyStrict($event)"
+            />
+          </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('fee')">
+            <small *ngIf="cashinForm.get('fee')?.hasError('required')">
+              Fee is required
+            </small>
+          </mat-error>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Phone number</mat-label>
+            <input
+              type="text"
+              matInput
+              formControlName="phone_number"
+              (paste)="phoneNumberStrict($event)"
+              (keypress)="phoneNumberStrict($event)"
+            />
+          </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('phone_number')">
+            <small *ngIf="cashinForm.get('phone_number')?.hasError('required')">
+              Phone number is required
+            </small>
+            <small *ngIf="cashinForm.get('phone_number')?.hasError('pattern')">
+              Invalid phone number format
+            </small>
+          </mat-error>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-radio-group formControlName="fee_payment_is_gcash">
+            <mat-radio-button
+              color="accent"
+              value="true"
+              style="margin-right: 1em"
+              >Gcash</mat-radio-button
+            >
+            <mat-radio-button color="accent" value="false"
+              >Cash</mat-radio-button
+            >
+          </mat-radio-group>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Note</mat-label>
+            <input type="text" matInput formControlName="note" />
+          </mat-form-field>
+
+          <div class="gs-button-group">
+            <div class="gs-button-group-horizontal">
+              <button
+                *ngIf="viewType === 'addCashin'"
+                mat-flat-button
+                color="main-green"
+                (click)="sendRequest()"
+                [disabled]="this.cashinForm.invalid || sendRequestBtnOnLoad"
+                class="btn-block fw-bold"
+              >
+                <div *ngIf="!sendRequestBtnOnLoad; else loadsend">
+                  SEND REQUEST
+                </div>
+                <ng-template #loadsend>
+                  <i class="fas fa-circle-notch fa-spin"></i>
+                </ng-template>
+              </button>
+              <button
+                *ngIf="viewType === 'editCashin'"
+                mat-flat-button
+                color="main-green"
+                (click)="updateRequest()"
+                [disabled]="this.cashinForm.invalid || updateRequestBtnOnLoad"
+                class="btn-block fw-bold"
+              >
+                <div *ngIf="!updateRequestBtnOnLoad; else loadupdate">
+                  UPDATE REQUEST
+                </div>
+                <ng-template #loadupdate>
+                  <i class="fas fa-circle-notch fa-spin"></i>
+                </ng-template>
+              </button>
+              <button
+                mat-flat-button
+                color="main-green"
+                (click)="cancel()"
+                class="btn-block fw-bold"
+              >
+                CANCEL
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-card>
+  </ng-container>
+  <ng-container *ngSwitchCase="viewType === 'approveCashin'">
+    <mat-card class="mat-card-custom">
+      <form [formGroup]="this.approveCashinForm">
+        <!-- SCREENSHOT -->
+        <mat-form-field
+          style="display: block; margin-bottom: 1em"
+          appearance="outline"
+        >
+          <button mat-icon-button matPrefix (click)="fileInput.click()">
+            <mat-icon class="material-symbols-outlined">edit</mat-icon>
+          </button>
+          <input type="text" readonly matInput formControlName="screenshot" />
+        </mat-form-field>
+
+        <input
+          type="file"
+          hidden
+          #fileInput
+          (change)="screenshotUploadHandler($event)"
+        />
+
+        <div class="button-group">
+          <div class="button-group-horizontal">
+            <button
+              mat-flat-button
+              color="main-green"
+              (click)="approveRequest()"
+              [disabled]="this.approveCashinForm.invalid || approveReqBtnOnLoad"
+              class="btn-block fw-bold"
+            >
+              <div *ngIf="!approveReqBtnOnLoad; else loadapprequest">
+                APPROVE REQUEST
+              </div>
+              <ng-template #loadapprequest>
+                <i class="fas fa-circle-notch fa-spin"></i>
+              </ng-template>
+            </button>
+            <button
+              mat-flat-button
+              (click)="cancel()"
+              color="main-green"
+              class="btn-block fw-bold"
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
+      </form>
+    </mat-card>
+  </ng-container>
+  <ng-container *ngSwitchCase="this.viewType === 'table'">
+    <mat-card style="margin-bottom: 15px">
+      <ng-container *ngIf="!cashInTableOnLoad; else detailLoader">
+        <section id="cssportal-grid">
+          <div id="div0">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+            >calendar_month</mat-icon
+          >  -->
+            DATE
+          </div>
+          <div id="div1">
+            <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
+          </div>
+          <div id="div2">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+            >phone_android</mat-icon
+          > -->
+            ACCOUNT
+          </div>
+          <div id="div3">{{ transactionDetails.gcashNumber }}</div>
+          <div id="div4">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+            >account_balance_wallet</mat-icon
+          > -->
+            CASH
+          </div>
+
+          <section id="div5">
+            <div id="div5-1">
+              {{ transactionDetails.cash_on_hand | currency : "₱" : "symbol" }}
+            </div>
+            <div id="div5-2">
+              {{
+                transactionDetails.runbal_cash_on_hand
+                  | currency : "₱" : "symbol"
+              }}
+            </div>
+          </section>
+          <div id="div6">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+            >rss_feed</mat-icon 
+          > -->
+            GCASH
+          </div>
+          <section id="div7">
+            <div id="div7-1">
+              {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
+            </div>
+            <div id="div7-2">
+              {{ transactionDetails.runbal_gcash | currency : "₱" : "symbol" }}
+            </div>
+          </section>
+        </section>
+      </ng-container>
+
+      <ng-template #detailLoader>
+        <div class="ms-trans-detail-loader">
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+        </div>
+      </ng-template>
+    </mat-card>
+
+    <app-table
+      [componentName]="'cashin'"
+      [headers]="[
+        'TIME',
+        'FEE',
+        'AMOUNT',
+        'ACCOUNT',
+        'NOTE',
+        'REFERENCE',
+        'MENU'
+      ]"
+      [data]="this.cashIns"
+      [dataNames]="[
+        'createdAt',
+        'fee',
+        'amount',
+        'phone_number',
+        'note',
+        'snapshot'
+      ]"
+      [totalCount]="counts"
+      [filters]="this.filters"
+      [currentPage]="currentPage"
+      [tableOnLoad]="cashInTableOnLoad"
+      [totalPages]="pages"
+      (next)="this.getCashIns($event)"
+      (emitButtonClick)="this.emittedButton($event)"
+      (previous)="this.getCashIns($event)"
+      @fade
+    ></app-table>
+  </ng-container>
+  <ng-container *ngSwitchCase="this.viewType === 'noTransaction'">
+    <p>No Transaction</p>
+  </ng-container>
+</div>
+
+<!-- to bypass autoplay policies in Safari and other browsers, you need to ensure
+that audio playback is initiated by a user interaction, such as a click event. -->
+
+<button
+  hidden
+  #triggerAudioBtn
+  (click)="this.audio.playSound('mixkit-elevator-tone.ogg')"
+>
+  Play Sound
+</button>

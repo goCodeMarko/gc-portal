@@ -1,0 +1,264 @@
+<div [ngSwitch]="true">
+  <ng-container
+    *ngSwitchCase="viewType === 'addCashout' || viewType === 'editCashout'"
+  >
+    <mat-card>
+      <form [formGroup]="this.cashoutForm" class="gs-form-group">
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input
+              type="number"
+              min="0"
+              step=".25"
+              matInput
+              formControlName="amount"
+              (paste)="currencyStrict($event)"
+              (keypress)="currencyStrict($event)"
+            />
+          </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('amount')">
+            <small *ngIf="cashoutForm.get('amount')?.hasError('required')">
+              Amount is required
+            </small>
+          </mat-error>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Fee</mat-label>
+            <input
+              type="number"
+              min="0"
+              step=".25"
+              matInput
+              formControlName="fee"
+              (paste)="currencyStrict($event)"
+              (keypress)="currencyStrict($event)"
+            />
+          </mat-form-field>
+          <mat-error *ngIf="checkFormControlErrors('fee')">
+            <small *ngIf="cashoutForm.get('fee')?.hasError('required')">
+              Fee is required
+            </small>
+          </mat-error>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-radio-group formControlName="fee_payment_is_gcash">
+            <mat-radio-button
+              color="accent"
+              value="true"
+              style="margin-right: 1em"
+              >Gcash</mat-radio-button
+            >
+            <mat-radio-button color="accent" value="false"
+              >Cash</mat-radio-button
+            >
+          </mat-radio-group>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Note</mat-label>
+            <input type="text" matInput formControlName="note" />
+          </mat-form-field>
+        </div>
+
+        <div class="gs-form-control">
+          <mat-form-field style="display: none">
+            <input type="text" matInput formControlName="snapshot" />
+          </mat-form-field>
+          <div class="webcam-container">
+            <webcam
+              [height]="367"
+              [width]="367"
+              [trigger]="triggerObservable"
+              (imageCapture)="handleImage($event)"
+              [allowCameraSwitch]="true"
+              [switchCamera]="nextWebcamObservable"
+              [videoOptions]="videoOptions"
+              (cameraSwitched)="cameraWasSwitched($event)"
+              (initError)="handleInitError($event)"
+              *ngIf="!webcamImage"
+            ></webcam>
+            <div class="ls-snapshot" *ngIf="webcamImage">
+              <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+            </div>
+            <br />
+            <div class="ls-buttons">
+              <button
+                mat-flat-button
+                color="main-green"
+                (click)="triggerSnapshot()"
+                *ngIf="!webcamImage"
+                class="fw-bold"
+              >
+                <!-- <span class="material-symbols-outlined"> photo_camera </span> -->
+                TAKE PICTURE
+              </button>
+              <button
+                mat-flat-button
+                color="danger"
+                (click)="recapture()"
+                *ngIf="webcamImage"
+                class="fw-bold"
+              >
+                REMOVE PICTURE
+              </button>
+            </div>
+          </div>
+          <mat-error *ngIf="checkFormControlErrors('snapshot')">
+            <small
+              *ngIf="
+                cashoutForm.get('snapshot')?.errors &&
+                cashoutForm.get('snapshot')?.hasError('required')
+              "
+            >
+              Snapshot is required
+            </small>
+          </mat-error>
+        </div>
+
+        <div class="gs-button-group">
+          <div class="gs-button-group-horizontal">
+            <button
+              *ngIf="viewType === 'addCashout'"
+              mat-flat-button
+              color="main-green"
+              (click)="sendRequest()"
+              [disabled]="this.cashoutForm.invalid || sendRequestBtnOnLoad"
+              class="btn-block fw-bold"
+            >
+              <ng-container *ngIf="!sendRequestBtnOnLoad; else loadsend">
+                SEND REQUEST
+              </ng-container>
+              <ng-template #loadsend>
+                <i class="fas fa-circle-notch fa-spin"></i>
+              </ng-template>
+            </button>
+            <button
+              *ngIf="viewType === 'editCashout'"
+              mat-flat-button
+              color="main-green"
+              (click)="updateRequest()"
+              [disabled]="this.cashoutForm.invalid || updateRequestBtnOnLoad"
+              class="btn-block fw-bold"
+            >
+              <ng-container *ngIf="!sendRequestBtnOnLoad; else loadupdate">
+                UPDATE REQUEST
+              </ng-container>
+              <ng-template #loadupdate>
+                <i class="fas fa-circle-notch fa-spin"></i>
+              </ng-template>
+            </button>
+
+            <button
+              mat-flat-button
+              color="main-green"
+              (click)="cancel()"
+              class="btn-block fw-bold"
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
+      </form>
+    </mat-card>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="viewType === 'table'">
+    <mat-card>
+      <ng-container *ngIf="!cashOutTableOnLoad; else detailLoader">
+        <section id="cssportal-grid">
+          <div id="div0">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+              >calendar_month</mat-icon
+            > -->
+            DATE
+          </div>
+          <div id="div1">
+            <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
+          </div>
+          <div id="div2">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+              >phone_android</mat-icon
+            > -->
+            ACCOUNT
+          </div>
+          <div id="div3">{{ transactionDetails.gcashNumber }}</div>
+          <div id="div4">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+              >account_balance_wallet</mat-icon
+            > -->
+            CASH
+          </div>
+
+          <section id="div5">
+            <div id="div5-1">
+              {{ transactionDetails.cash_on_hand | currency : "₱" : "symbol" }}
+            </div>
+            <div id="div5-2">
+              {{
+                transactionDetails.runbal_cash_on_hand
+                  | currency : "₱" : "symbol"
+              }}
+            </div>
+          </section>
+          <div id="div6">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+              >rss_feed</mat-icon
+            > -->
+            GCASH
+          </div>
+          <section id="div7">
+            <div id="div7-1">
+              {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
+            </div>
+            <div id="div7-2">
+              {{ transactionDetails.runbal_gcash | currency : "₱" : "symbol" }}
+            </div>
+          </section>
+        </section>
+      </ng-container>
+
+      <ng-template #detailLoader>
+        <div class="ms-trans-detail-loader">
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+        </div>
+      </ng-template>
+    </mat-card>
+    <app-table
+      [componentName]="'cashout'"
+      [headers]="['TIME', 'FEE', 'AMOUNT', 'NOTE', 'REFERENCE', 'MENU']"
+      [data]="this.cashOuts"
+      [dataNames]="['createdAt', 'fee', 'amount', 'note', 'snapshot']"
+      [tableButtons]="[{ name: 'VIEW' }, 'status', 'amount']"
+      [totalCount]="counts"
+      [filters]="this.filters"
+      [currentPage]="currentPage"
+      [tableOnLoad]="cashOutTableOnLoad"
+      [totalPages]="pages"
+      (next)="this.getCashOuts($event)"
+      (emitButtonClick)="this.emittedButton($event)"
+      (previous)="this.getCashOuts($event)"
+      @fade
+    ></app-table>
+  </ng-container>
+  <ng-container *ngSwitchCase="viewType === 'noTransaction'">
+    <p>No Transaction</p>
+  </ng-container>
+</div>
+
+<!-- to bypass autoplay policies in Safari and other browsers, you need to ensure
+that audio playback is initiated by a user interaction, such as a click event. -->
+<button
+  hidden
+  #triggerAudioBtn
+  (click)="this.audio.playSound('mixkit-elevator-tone.ogg')"
+>
+  Play Sound
+</button>

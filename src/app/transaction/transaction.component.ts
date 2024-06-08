@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { AuthService } from "../authorization/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import * as moment from "moment";
@@ -9,7 +9,8 @@ import { PopUpModalComponent } from "../modals/pop-up-modal/pop-up-modal.compone
 @Component({
   selector: "app-transaction",
   templateUrl: "./transaction.component.html",
-  styleUrls: ["./transaction.component.css"],
+  styleUrls: ["./transaction.component.scss"],
+  encapsulation: ViewEncapsulation.None, // Optional: Disable view encapsulation if necessary
 })
 export class TransactionComponent implements OnInit {
   viewType: string = "cashout";
@@ -52,6 +53,7 @@ export class TransactionComponent implements OnInit {
       this.hideMainButton = false;
     } else if (type === "cashout") {
       this.viewType = "cashout";
+      console.log(this.viewType);
       this.tabActiveCashin = false;
       this.tabActiveCashout = true;
       this.hideMainButton = false;

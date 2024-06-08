@@ -1,0 +1,76 @@
+*,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+mat-card {
+  margin-top: 1em;
+}
+
+::ng-deep .mat-menu-panel {
+  min-width: 0px !important;
+  min-height: 0px !important;
+}
+.mat-menu-content {
+  position: relative;
+}
+.custom-mat-panel {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  min-height: 300px;
+  min-width: 600px;
+  padding: 20px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+table {
+  padding: 0px;
+  margin-top: 1em;
+
+  th,
+  td {
+    text-align: center;
+    padding: 4px;
+    vertical-align: middle;
+  }
+
+  th {
+    padding: 4px !important;
+  }
+}
+
+.ls-line-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+
+  .ls-line {
+    width: 100%;
+    height: 45.5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #f0f0f0, #d8d6d6, #f0f0f0) 0 0/ 80vh 100%
+      fixed;
+    background-color: rgb(204, 199, 199);
+    animation: ghost 750ms infinite linear;
+  }
+}
+
+.ls-clipboard {
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 450px) {
+  /* horizontal scrollbar for tables if mobile screen */
+  table {
+    overflow-x: auto !important;
+    display: block !important;
+  }
+
+  th,
+  td {
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+}

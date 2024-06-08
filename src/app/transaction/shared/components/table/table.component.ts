@@ -7,11 +7,6 @@ import {
   SimpleChanges,
   EventEmitter,
 } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
-import { HttpRequestService } from "../../http-request/http-request.service";
-import { EditBookComponent } from "../../modals/edit-book/edit-book.component";
-import { saveAs } from "file-saver";
 import { AuthService } from "src/app/authorization/auth.service";
 import { Clipboard } from "@angular/cdk/clipboard";
 
@@ -42,7 +37,7 @@ interface IResponse {
 @Component({
   selector: "app-table",
   templateUrl: "./table.component.html",
-  styleUrls: ["./table.component.css"],
+  styleUrls: ["./table.component.scss"],
 })
 export class TableComponent implements OnInit, OnChanges {
   @Input() componentName: string = "";

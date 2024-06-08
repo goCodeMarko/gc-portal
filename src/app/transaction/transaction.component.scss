@@ -1,0 +1,80 @@
+@import "./../@padayon/styles/variables.scss";
+@import "./shared/styles/style.scss";
+
+*,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.ms-tabs-container {
+  width: 100% !important;
+  margin: 1em 0px;
+}
+
+mat-button-toggle {
+  flex: 1 1 auto !important;
+  padding-bottom: 2px !important;
+  font-weight: bold;
+}
+.mat-button-toggle-checked.mat-button-toggle-appearance-standard {
+  background-color: $main-color !important;
+  color: #fff !important;
+}
+
+/*
+.tab-container {
+  padding-top: 40px;
+  position: relative;
+  max-width: 400px;
+  font-size: larger;
+  background-color: transparent;
+
+  .tab-group {
+    background-color: $main-color;
+    padding: 20px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+    padding-top: 20px;
+    border-radius: 15px;
+
+    .tab-cashout {
+      position: absolute;
+      left: 12%;
+      top: 7px;
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    .tab-cashin {
+      position: absolute;
+      right: 15%;
+      top: 7px;
+      z-index: 2;
+      cursor: pointer;
+    }
+  }
+
+  .active-cashin {
+    position: absolute;
+    padding: 60px;
+    background-color: $main-color;
+    right: 9%;
+    top: 0px;
+    z-index: 1;
+    border-radius: 60px;
+  }
+
+  .active-cashout {
+    position: absolute;
+    padding: 60px;
+    background-color: $main-color;
+    left: 9.5%;
+    top: 0px;
+    z-index: 1;
+    border-radius: 60px;
+  }
+}
+*/

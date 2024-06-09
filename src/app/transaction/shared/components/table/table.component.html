@@ -50,36 +50,6 @@
                   </div>
                 </ng-container>
 
-                <ng-container *ngSwitchCase="'note' === dataName">
-                  <div *ngIf="data[dataName]; else empty">
-                    <button
-                      (click)="buttonClicked({ type: 'viewNote', data: data })"
-                      mat-icon-button
-                    >
-                      <mat-icon>search</mat-icon>
-                    </button>
-                  </div>
-                  <ng-template #empty>
-                    <mat-icon mat-icon-button>remove</mat-icon></ng-template
-                  >
-                </ng-container>
-
-                <ng-container *ngSwitchCase="'snapshot' === dataName">
-                  <div *ngIf="data[dataName]; else empty">
-                    <button
-                      (click)="
-                        buttonClicked({ type: 'viewSnapshot', data: data })
-                      "
-                      mat-icon-button
-                    >
-                      <mat-icon>search</mat-icon>
-                    </button>
-                  </div>
-                  <ng-template #empty>
-                    <mat-icon mat-icon-button>remove</mat-icon></ng-template
-                  >
-                </ng-container>
-
                 <ng-container *ngSwitchDefault>
                   {{ data[dataName] }}
                 </ng-container>
@@ -376,5 +346,27 @@
     >
       <span mat-line>CANCEL</span>
     </button>
+
+    <ng-container *ngIf="selectedDataInLongPress.note">
+      <button
+        (click)="
+          buttonClicked({ type: 'viewNote', data: selectedDataInLongPress })
+        "
+        mat-list-item
+      >
+        <span mat-line>VIEW NOTE</span>
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="selectedDataInLongPress.snapshot">
+      <button
+        (click)="
+          buttonClicked({ type: 'viewSnapshot', data: selectedDataInLongPress })
+        "
+        mat-list-item
+      >
+        <span mat-line>VIEW REFERENCE</span>
+      </button>
+    </ng-container>
   </mat-nav-list>
 </ng-template>

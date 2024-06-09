@@ -248,16 +248,9 @@
 
     <app-table
       [componentName]="'cashin'"
-      [headers]="['TIME', 'FEE', 'AMOUNT', 'ACCOUNT', 'NOTE', 'REFERENCE']"
+      [headers]="['TIME', 'FEE', 'AMOUNT', 'ACCOUNT']"
       [data]="this.cashIns"
-      [dataNames]="[
-        'createdAt',
-        'fee',
-        'amount',
-        'phone_number',
-        'note',
-        'snapshot'
-      ]"
+      [dataNames]="['createdAt', 'fee', 'amount', 'phone_number']"
       [totalCount]="counts"
       [filters]="this.filters"
       [currentPage]="currentPage"

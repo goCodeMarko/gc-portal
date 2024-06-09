@@ -5,14 +5,15 @@ import { Directive, Output, EventEmitter, HostListener } from "@angular/core";
 })
 export class LongPressDirective {
   // Duration for long press in milliseconds
-  private readonly duration = 1000;
+  private readonly duration = 500;
 
   // Event emitter for long press
   @Output() longPress = new EventEmitter<void>();
 
   // Variables to track the timer
-  private timeout: any;
-  private touchStart!: number;
+  private pressing!: boolean;
+  private longPressing!: boolean;
+  private timeout!: any;
 
   constructor() {}
 
@@ -20,10 +21,14 @@ export class LongPressDirective {
   @HostListener("mousedown", ["$event"])
   @HostListener("touchstart", ["$event"])
   onMouseDown(event: MouseEvent | TouchEvent) {
-    event.preventDefault();
-    this.touchStart = event.timeStamp;
+    this.pressing = true;
+    this.longPressing = false;
+    clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      this.longPress.emit();
+      if (this.pressing) {
+        this.longPressing = true;
+        this.longPress.emit();
+      }
     }, this.duration);
   }
 
@@ -31,7 +36,11 @@ export class LongPressDirective {
   @HostListener("mouseup")
   @HostListener("mouseleave")
   @HostListener("touchend")
-  onMouseUp() {
+  onMouseUp(event: MouseEvent | TouchEvent) {
+    if (this.longPressing) {
+      event.preventDefault();
+    }
+    this.pressing = false;
     clearTimeout(this.timeout);
   }
 }

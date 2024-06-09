@@ -15,6 +15,7 @@ import {
   MatBottomSheet,
   MatBottomSheetRef,
 } from "@angular/material/bottom-sheet";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 interface IBooks {
   author: string;
@@ -79,13 +80,14 @@ export class TableComponent implements OnInit, OnChanges {
 
   public role: string = "";
   @ViewChild("bottomSheetTemplate") bottomSheetTemplate!: TemplateRef<any>;
-  selectedDataInLongPress!: object;
+  selectedDataInLongPress!: any;
   // value1: number = this.filters.limit;
 
   constructor(
     private auth: AuthService,
     private clipboard: Clipboard,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -105,20 +107,27 @@ export class TableComponent implements OnInit, OnChanges {
     this.role = user.role;
   }
 
-  copy(phoneNumber: string, event: any) {
-    const element = document.getElementById(event.target.id);
-    this.clipboard.copy(phoneNumber);
-    element!.style.color = "#90ac8e";
-    element!.style.fontSize = "12px";
-    element!.style.fontWeight = "bold";
-    element!.textContent = "COPIED!";
+  copy() {
+    // const element = document.getElementById(event.target.id);
+    this.clipboard.copy(this.selectedDataInLongPress.phone_number);
 
-    setTimeout(() => {
-      element!.style.color = "#000000";
-      element!.style.fontSize = "16px";
-      element!.style.fontWeight = "normal";
-      element!.textContent = phoneNumber;
-    }, 1000);
+    this.snackBar.open("Copied to clipboard!", "", {
+      horizontalPosition: "center",
+      verticalPosition: "top",
+      duration: 3000,
+      panelClass: ["gs-custom-snackbar"],
+    });
+    // element!.style.color = "#90ac8e";
+    // element!.style.fontSize = "12px";
+    // element!.style.fontWeight = "bold";
+    // element!.textContent = "COPIED!";
+
+    // setTimeout(() => {
+    //   element!.style.color = "#000000";
+    //   element!.style.fontSize = "16px";
+    //   element!.style.fontWeight = "normal";
+    //   element!.textContent = phoneNumber;
+    // }, 1000);
   }
 
   emitNext() {

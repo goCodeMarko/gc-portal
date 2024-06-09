@@ -41,11 +41,7 @@
                 </ng-container>
 
                 <ng-container *ngSwitchCase="'phone_number' === dataName">
-                  <div
-                    id="phone_number{{ i }}"
-                    class="ls-clipboard"
-                    (click)="copy(data[dataName], $event)"
-                  >
+                  <div>
                     {{ data[dataName] }}
                   </div>
                 </ng-container>
@@ -307,12 +303,6 @@
   <mat-nav-list>
     <button
       mat-list-item
-      (click)="buttonClicked({ type: 'edit', data: selectedDataInLongPress })"
-    >
-      <span mat-line>EDIT</span>
-    </button>
-    <button
-      mat-list-item
       *ngIf="role === 'admin'"
       (click)="
         buttonClicked({
@@ -347,6 +337,13 @@
       <span mat-line>CANCEL</span>
     </button>
 
+    <button
+      mat-list-item
+      (click)="buttonClicked({ type: 'edit', data: selectedDataInLongPress })"
+    >
+      <span mat-line>EDIT</span>
+    </button>
+
     <ng-container *ngIf="selectedDataInLongPress.note">
       <button
         (click)="
@@ -366,6 +363,12 @@
         mat-list-item
       >
         <span mat-line>VIEW REFERENCE</span>
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="selectedDataInLongPress.phone_number">
+      <button (click)="copy()" mat-list-item>
+        <span mat-line>COPY ACCOUNT NUMBER</span>
       </button>
     </ng-container>
   </mat-nav-list>

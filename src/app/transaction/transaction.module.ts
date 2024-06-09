@@ -23,6 +23,7 @@ import { CreateTransactionComponent } from "./pages/create-transaction/create-tr
 import { SharedModule } from "../shared/shared.module";
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { MatListModule } from "@angular/material/list";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { MatListModule } from "@angular/material/list";
     MatBottomSheetModule,
     SharedModule,
     MatListModule,
+    MatSnackBarModule,
     RouterModule.forChild(TransactionRoutes),
   ],
 })

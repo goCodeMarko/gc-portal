@@ -19,6 +19,7 @@ import { PaymentTypePipe } from "../shared/pipes/payment-type.pipe";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { CreateTransactionComponent } from './pages/create-transaction/create-transaction.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
     TableComponent,
     TransactionStatusPipe,
     PaymentTypePipe,
+    CreateTransactionComponent,
   ],
   imports: [
     CommonModule,

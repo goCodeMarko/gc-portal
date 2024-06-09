@@ -6,9 +6,15 @@ import {
   Output,
   SimpleChanges,
   EventEmitter,
+  ViewChild,
+  TemplateRef,
 } from "@angular/core";
 import { AuthService } from "src/app/authorization/auth.service";
 import { Clipboard } from "@angular/cdk/clipboard";
+import {
+  MatBottomSheet,
+  MatBottomSheetRef,
+} from "@angular/material/bottom-sheet";
 
 interface IBooks {
   author: string;
@@ -72,16 +78,27 @@ export class TableComponent implements OnInit, OnChanges {
   indeterminate = false;
 
   public role: string = "";
-
+  @ViewChild("bottomSheetTemplate") bottomSheetTemplate!: TemplateRef<any>;
+  selectedDataInLongPress!: object;
   // value1: number = this.filters.limit;
 
-  constructor(private auth: AuthService, private clipboard: Clipboard) {}
+  constructor(
+    private auth: AuthService,
+    private clipboard: Clipboard,
+    private bottomSheet: MatBottomSheet
+  ) {}
 
   ngOnInit(): void {
     this.checkRole();
   }
 
   ngOnChanges(changes: SimpleChanges): void {}
+
+  onLongPress(data: any) {
+    console.log("Longpress Event", data);
+    this.selectedDataInLongPress = data;
+    this.bottomSheet.open(this.bottomSheetTemplate);
+  }
 
   async checkRole() {
     const user = JSON.parse(await this.auth.getUserData());
@@ -113,6 +130,7 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   buttonClicked(event: { type: string; data: any }) {
+    this.bottomSheet.dismiss();
     this.emitButtonClick.emit(event);
   }
 

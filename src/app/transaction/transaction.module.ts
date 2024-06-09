@@ -19,7 +19,10 @@ import { PaymentTypePipe } from "../shared/pipes/payment-type.pipe";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
-import { CreateTransactionComponent } from './pages/create-transaction/create-transaction.component';
+import { CreateTransactionComponent } from "./pages/create-transaction/create-transaction.component";
+import { SharedModule } from "../shared/shared.module";
+import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
+import { MatListModule } from "@angular/material/list";
 
 @NgModule({
   declarations: [
@@ -45,6 +48,9 @@ import { CreateTransactionComponent } from './pages/create-transaction/create-tr
     MatMenuModule,
     MatIconModule,
     MatButtonToggleModule,
+    MatBottomSheetModule,
+    SharedModule,
+    MatListModule,
     RouterModule.forChild(TransactionRoutes),
   ],
 })

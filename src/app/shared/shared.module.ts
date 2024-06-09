@@ -1,25 +1,29 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from "@angular/core";
 
-import { MenuItems } from './menu-items/menu-items';
-import { AccordionAnchorDirective, AccordionLinkDirective, AccordionDirective } from './accordion';
-import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
+import { MenuItems } from "./menu-items/menu-items";
+import {
+  AccordionAnchorDirective,
+  AccordionLinkDirective,
+  AccordionDirective,
+} from "./accordion";
+import { MatCardModule } from "@angular/material/card";
+import { CommonModule } from "@angular/common";
+import { LongPressDirective } from "./directives/long-press.directive";
 
 @NgModule({
   declarations: [
     AccordionAnchorDirective,
     AccordionLinkDirective,
-    AccordionDirective
+    AccordionDirective,
+    LongPressDirective,
   ],
-  imports: [
-    MatCardModule,
-    CommonModule
-  ],
+  imports: [MatCardModule, CommonModule],
   exports: [
     AccordionAnchorDirective,
     AccordionLinkDirective,
-    AccordionDirective
+    AccordionDirective,
+    LongPressDirective,
   ],
-  providers: [MenuItems]
+  providers: [MenuItems],
 })
-export class SharedModule { }
+export class SharedModule {}

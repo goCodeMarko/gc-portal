@@ -6,17 +6,6 @@
   <div [class.active-cashout]="tabActiveCashout"></div>
   <div [class.active-cashin]="tabActiveCashin"></div>
 </div> -->
-<mat-button-toggle-group class="ms-tabs-container" [(ngModel)]="selectedRoutes">
-  <mat-button-toggle value="cashout" routerLink="/transaction/cashout">
-    CASH OUT
-  </mat-button-toggle>
-
-  <mat-button-toggle value="cashin" routerLink="/transaction/cashin"
-    >CASH IN</mat-button-toggle
-  >
-</mat-button-toggle-group>
-
-<router-outlet (activate)="fromRouterOutlet($event)"></router-outlet>
 
 <!-- <div [ngSwitch]="this.viewType"> -->
 <!-- <ng-container *ngSwitchCase="'cashin'">
@@ -29,6 +18,19 @@
 
 <!-- </ng-container> -->
 <!-- </div> -->
+
+<mat-button-toggle-group class="ms-tabs-container" [(ngModel)]="selectedRoutes">
+  <mat-button-toggle value="cashout" routerLink="/transaction/cashout">
+    CASH OUT
+  </mat-button-toggle>
+
+  <mat-button-toggle value="cashin" routerLink="/transaction/cashin"
+    >CASH IN</mat-button-toggle
+  >
+</mat-button-toggle-group>
+
+<router-outlet (activate)="fromRouterOutlet($event)"></router-outlet>
+
 <ng-container *ngIf="!hideMainButton">
   <mat-card class="gs-button-group">
     <div class="gs-button-group-horizontal">

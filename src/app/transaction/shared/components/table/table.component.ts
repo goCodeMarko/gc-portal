@@ -109,9 +109,14 @@ export class TableComponent implements OnInit, OnChanges {
 
   copy() {
     // const element = document.getElementById(event.target.id);
-    this.clipboard.copy(this.selectedDataInLongPress.phone_number);
+    let phone_number: string;
 
-    this.snackBar.open("Copied to clipboard!", "", {
+    if (this.selectedDataInLongPress.phone_number) {
+      phone_number = this.selectedDataInLongPress.phone_number.slice(1, 11);
+      this.clipboard.copy(phone_number);
+    }
+
+    this.snackBar.open("Copied to Clipboard!", "", {
       horizontalPosition: "center",
       verticalPosition: "top",
       duration: 3000,

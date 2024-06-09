@@ -21,7 +21,10 @@
               this.filters.limit * this.currentPage - (this.filters.limit - 1) + i
             }}
           </td> -->
-            <td *ngFor="let dataName of dataNames">
+            <td
+              (longPress)="onLongPress(data)"
+              *ngFor="let dataName of dataNames"
+            >
               <ng-container [ngSwitch]="true">
                 <ng-container *ngSwitchCase="'createdAt' === dataName">
                   <div [innerHTML]="data.status | transactionStatus"></div>
@@ -81,49 +84,6 @@
                   {{ data[dataName] }}
                 </ng-container>
               </ng-container>
-            </td>
-            <td style="text-align: center">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="menu"
-                aria-label="Example icon-button with a menu"
-              >
-                <mat-icon>dialpad</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                <button
-                  mat-menu-item
-                  (click)="buttonClicked({ type: 'edit', data: data })"
-                >
-                  <span>EDIT</span>
-                </button>
-                <button
-                  mat-menu-item
-                  *ngIf="role === 'admin'"
-                  (click)="
-                    buttonClicked({ type: 'approve', data: { cid: data._id } })
-                  "
-                >
-                  <span>APPROVE</span>
-                </button>
-                <button
-                  mat-menu-item
-                  *ngIf="role === 'admin'"
-                  (click)="
-                    buttonClicked({ type: 'fail', data: { cid: data._id } })
-                  "
-                >
-                  <span>FAIL</span>
-                </button>
-                <button
-                  mat-menu-item
-                  (click)="
-                    buttonClicked({ type: 'cancel', data: { cid: data._id } })
-                  "
-                >
-                  <span>CANCEL</span>
-                </button>
-              </mat-menu>
             </td>
           </tr>
         </tbody>
@@ -371,4 +331,50 @@
       </button>
     </div>
   </div>
+</ng-template>
+
+<ng-template #bottomSheetTemplate>
+  <mat-nav-list>
+    <button
+      mat-list-item
+      (click)="buttonClicked({ type: 'edit', data: selectedDataInLongPress })"
+    >
+      <span mat-line>EDIT</span>
+    </button>
+    <button
+      mat-list-item
+      *ngIf="role === 'admin'"
+      (click)="
+        buttonClicked({
+          type: 'approve',
+          data: { cid: selectedDataInLongPress._id }
+        })
+      "
+    >
+      <span mat-line>APPROVE</span>
+    </button>
+    <button
+      mat-list-item
+      *ngIf="role === 'admin'"
+      (click)="
+        buttonClicked({
+          type: 'fail',
+          data: { cid: selectedDataInLongPress._id }
+        })
+      "
+    >
+      <span mat-line>FAIL</span>
+    </button>
+    <button
+      mat-list-item
+      (click)="
+        buttonClicked({
+          type: 'cancel',
+          data: { cid: selectedDataInLongPress._id }
+        })
+      "
+    >
+      <span mat-line>CANCEL</span>
+    </button>
+  </mat-nav-list>
 </ng-template>

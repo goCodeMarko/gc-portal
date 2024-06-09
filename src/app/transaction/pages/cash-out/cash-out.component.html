@@ -233,7 +233,7 @@
     </mat-card>
     <app-table
       [componentName]="'cashout'"
-      [headers]="['TIME', 'FEE', 'AMOUNT', 'NOTE', 'REFERENCE', 'MENU']"
+      [headers]="['TIME', 'FEE', 'AMOUNT', 'NOTE', 'REFERENCE']"
       [data]="this.cashOuts"
       [dataNames]="['createdAt', 'fee', 'amount', 'note', 'snapshot']"
       [tableButtons]="[{ name: 'VIEW' }, 'status', 'amount']"

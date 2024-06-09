@@ -213,7 +213,6 @@ export class CashOutComponent implements OnInit, OnDestroy {
       async (res: IResponse) => {
         if (!_.has(res, "data")) {
         } else if (res.success) {
-          console.log(234234);
           const { total, page, pages } = res.data.meta;
           this.cashOuts = res.data.items;
           this.currentPage = page;

@@ -34,6 +34,14 @@
 <ng-container *ngIf="!hideMainButton">
   <mat-card class="gs-button-group">
     <div class="gs-button-group-horizontal">
+      <button
+        mat-flat-button
+        color="main-green"
+        (click)="addTransaction()"
+        class="btn-block fw-bold"
+      >
+        {{ pre }} CASH {{ type }}
+      </button>
       <ng-container *ngIf="role === 'admin'">
         <button
           mat-flat-button

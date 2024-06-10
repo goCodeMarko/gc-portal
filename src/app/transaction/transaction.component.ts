@@ -21,6 +21,9 @@ export class TransactionComponent implements OnInit {
   private viewTypeBefore: string = "";
   selectedRoutes: string = "cashout";
   public role: string = "";
+  public routerOutletComponent: any;
+  public type = "OUT";
+  public pre = "REQUEST";
   constructor(
     private auth: AuthService,
     private fb: FormBuilder,
@@ -40,6 +43,9 @@ export class TransactionComponent implements OnInit {
   async checkRole() {
     const user = JSON.parse(this.auth.getUserData());
     this.role = user.role;
+
+    if (user.role === "admin") this.pre = "ADD";
+    else this.pre = "REQUEST";
   }
 
   createTransactionPage() {
@@ -48,11 +54,28 @@ export class TransactionComponent implements OnInit {
   }
 
   fromRouterOutlet(component: any) {
+    this.routerOutletComponent = component;
     if (component.hideMainButton) {
       this.hideMainButton = false;
       component.hideMainButton.subscribe((value: boolean) => {
         this.hideMainButton = value;
       });
+    }
+
+    if (component.cashinForm) this.type = "IN";
+    else this.type = "OUT";
+  }
+
+  addTransaction() {
+    if (
+      this.routerOutletComponent &&
+      this.routerOutletComponent.emittedButton
+    ) {
+      let formView: string = "cashoutFormView";
+
+      if (this.routerOutletComponent.cashinForm) formView = "cashinFormView";
+
+      this.routerOutletComponent.emittedButton({ type: formView });
     }
   }
 

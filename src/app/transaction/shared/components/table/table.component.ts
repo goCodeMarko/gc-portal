@@ -108,7 +108,12 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   yow() {
-    console.log("xxxxxxxxxxx");
+    this.snackBar.open("Copied to Clipboard!", "", {
+      horizontalPosition: "center",
+      verticalPosition: "top",
+      duration: 3000,
+      panelClass: ["gs-custom-snackbar"],
+    });
   }
 
   copy() {

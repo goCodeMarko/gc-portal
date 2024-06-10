@@ -132,53 +132,54 @@
     </mat-card>
   </ng-container>
   <ng-container *ngSwitchCase="viewType === 'approveCashin'">
-    <mat-card class="mat-card-custom">
-      <form [formGroup]="this.approveCashinForm">
-        <!-- SCREENSHOT -->
-        <mat-form-field
-          style="display: block; margin-bottom: 1em"
-          appearance="outline"
-        >
-          <button mat-icon-button matPrefix (click)="fileInput.click()">
-            <mat-icon class="material-symbols-outlined">edit</mat-icon>
-          </button>
-          <input type="text" readonly matInput formControlName="screenshot" />
-        </mat-form-field>
-
-        <input
-          type="file"
-          hidden
-          #fileInput
-          (change)="screenshotUploadHandler($event)"
-        />
-
-        <div class="button-group">
-          <div class="button-group-horizontal">
-            <button
-              mat-flat-button
-              color="main-green"
-              (click)="approveRequest()"
-              [disabled]="this.approveCashinForm.invalid || approveReqBtnOnLoad"
-              class="btn-block fw-bold"
-            >
-              <div *ngIf="!approveReqBtnOnLoad; else loadapprequest">
-                APPROVE REQUEST
-              </div>
-              <ng-template #loadapprequest>
-                <i class="fas fa-circle-notch fa-spin"></i>
-              </ng-template>
+    <mat-card>
+      <form [formGroup]="this.approveCashinForm" class="gs-form-group">
+        <div class="gs-form-control">
+          <mat-form-field
+            style="display: block; margin-bottom: 1em"
+            appearance="outline"
+          >
+            <button mat-icon-button matPrefix (click)="fileInput.click()">
+              <mat-icon class="material-symbols-outlined">edit</mat-icon>
             </button>
-            <button
-              mat-flat-button
-              (click)="cancel()"
-              color="main-green"
-              class="btn-block fw-bold"
-            >
-              CANCEL
-            </button>
-          </div>
+            <input type="text" readonly matInput formControlName="screenshot" />
+          </mat-form-field>
+
+          <input
+            type="file"
+            hidden
+            #fileInput
+            (change)="screenshotUploadHandler($event)"
+          />
         </div>
       </form>
+
+      <div class="gs-button-group">
+        <div class="gs-button-group-horizontal">
+          <button
+            mat-flat-button
+            color="main-green"
+            (click)="approveRequest()"
+            [disabled]="this.approveCashinForm.invalid || approveReqBtnOnLoad"
+            class="btn-block fw-bold"
+          >
+            <div *ngIf="!approveReqBtnOnLoad; else loadapprequest">
+              APPROVE REQUEST
+            </div>
+            <ng-template #loadapprequest>
+              <i class="fas fa-circle-notch fa-spin"></i>
+            </ng-template>
+          </button>
+          <button
+            mat-flat-button
+            (click)="cancel()"
+            color="main-green"
+            class="btn-block fw-bold"
+          >
+            CANCEL
+          </button>
+        </div>
+      </div>
     </mat-card>
   </ng-container>
   <ng-container *ngSwitchCase="this.viewType === 'table'">

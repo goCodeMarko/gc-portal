@@ -4,16 +4,16 @@
 .ms-tabs-container {
   width: 100% !important;
   margin: 1em 0px;
-}
 
-mat-button-toggle {
-  flex: 1 1 auto !important;
-  padding-bottom: 2px !important;
-  font-weight: bold;
-}
-.mat-button-toggle-checked.mat-button-toggle-appearance-standard {
-  background-color: $main-color !important;
-  color: #fff !important;
+  mat-button-toggle {
+    flex: 1 1 auto !important;
+    padding: 10px 10px 13px 10px !important;
+    font-weight: bold;
+  }
+  .mat-button-toggle-checked.mat-button-toggle-appearance-standard {
+    background-color: $main-color !important;
+    color: #fff !important;
+  }
 }
 
 /*

@@ -107,15 +107,6 @@ export class TableComponent implements OnInit, OnChanges {
     this.role = user.role;
   }
 
-  yow() {
-    this.snackBar.open("Copied to Clipboard!", "", {
-      horizontalPosition: "center",
-      verticalPosition: "top",
-      duration: 3000,
-      panelClass: ["gs-custom-snackbar"],
-    });
-  }
-
   copy() {
     // const element = document.getElementById(event.target.id);
     let phone_number: string;

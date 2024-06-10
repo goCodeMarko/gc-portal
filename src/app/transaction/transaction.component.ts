@@ -19,7 +19,7 @@ export class TransactionComponent implements OnInit {
   public tabActiveCashout = true;
   public tabActiveCashin = false;
   private viewTypeBefore: string = "";
-  selectedRoutes: string = "cashout";
+  selectedRoutes: string;
   public role: string = "";
   public routerOutletComponent: any;
   public type = "OUT";
@@ -30,7 +30,11 @@ export class TransactionComponent implements OnInit {
     private hrs: HttpRequestService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) {
+    if (this.router.url === "/transaction/cashin")
+      this.selectedRoutes = "cashin";
+    else this.selectedRoutes = "cashout";
+  }
 
   ngOnInit(): void {
     this.checkRole();

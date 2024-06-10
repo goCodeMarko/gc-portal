@@ -22,11 +22,11 @@ export class LongPressDirective {
   @HostListener("touchstart", ["$event"])
   onMouseDown(event: MouseEvent | TouchEvent) {
     this.pressing = true;
-    this.longPressing = false;
+    // this.longPressing = false;
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       if (this.pressing) {
-        this.longPressing = true;
+        // this.longPressing = true;
         this.longPress.emit();
       }
     }, this.duration);
@@ -37,9 +37,9 @@ export class LongPressDirective {
   @HostListener("mouseleave")
   @HostListener("touchend")
   onMouseUp(event: MouseEvent | TouchEvent) {
-    if (this.longPressing) {
-      event.preventDefault();
-    }
+    // if (this.longPressing) {
+    //   event.preventDefault();
+    // }
     this.pressing = false;
     clearTimeout(this.timeout);
   }

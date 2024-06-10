@@ -107,6 +107,10 @@ export class TableComponent implements OnInit, OnChanges {
     this.role = user.role;
   }
 
+  yow() {
+    console.log("xxxxxxxxxxx");
+  }
+
   copy() {
     // const element = document.getElementById(event.target.id);
     let phone_number: string;

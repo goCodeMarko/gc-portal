@@ -129,3 +129,7 @@ button:disabled {
   justify-content: center !important;
   font-size: 16px !important;
 }
+
+.gs-no-select {
+  user-select: none; /* Prevent text selection */
+}

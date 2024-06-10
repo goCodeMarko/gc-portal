@@ -24,6 +24,7 @@
             <td
               (longPress)="onLongPress(data)"
               *ngFor="let dataName of dataNames"
+              class="gs-no-select"
             >
               <ng-container [ngSwitch]="true">
                 <ng-container *ngSwitchCase="'createdAt' === dataName">
@@ -37,6 +38,7 @@
                   <div
                     [innerHTML]="data.fee_payment_is_gcash | paymentType"
                   ></div>
+                  <button (click)="yow()">xxxxxx</button>
                   {{ data[dataName] | currency : "₱" : "symbol" }}
                 </ng-container>
 

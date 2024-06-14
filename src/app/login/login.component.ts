@@ -90,9 +90,12 @@ export class LoginComponent implements OnInit {
             console.log("transaction id has been fetch!");
 
             if (this.transactionId) {
-              this.auth.navigate("/transaction/cashout", this.transactionId);
+              this.auth.navigate(
+                "/app/transaction/cashout",
+                this.transactionId
+              );
             } else {
-              this.auth.navigate("/transaction", "");
+              this.auth.navigate("/app/transaction", "");
             }
 
             console.log("User has been navigated!");

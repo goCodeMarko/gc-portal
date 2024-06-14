@@ -97,8 +97,8 @@ export class CreateTransactionComponent implements OnInit {
           this.viewTypeTransaction.emit("");
           this.transactionForm.reset();
 
-          // Check if the previous URL is "/transaction"
-          if (this.previousUrl === "/transaction") {
+          // Check if the previous URL is "/app/transaction"
+          if (this.previousUrl === "/app/transaction") {
             // Update the previous URL to include the "/cashout" route
             this.previousUrl = `${this.previousUrl}/cashout`;
 

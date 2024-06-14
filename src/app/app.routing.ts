@@ -10,7 +10,7 @@ export const AppRoutes: Routes = [
     component: LoginComponent,
   },
   {
-    path: "transaction",
+    path: "app",
     component: FullComponent,
     children: [
       {

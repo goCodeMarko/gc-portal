@@ -8,7 +8,7 @@ import { CashInComponent } from "./pages/cash-in/cash-in.component";
 
 export const TransactionRoutes: Routes = [
   {
-    path: "",
+    path: "transaction",
     component: TransactionComponent,
     children: [
       { path: "cashin", component: CashInComponent },

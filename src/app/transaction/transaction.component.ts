@@ -103,9 +103,9 @@ export class TransactionComponent implements OnInit {
 
     //It will change hte color of active button based on the current route
     const currentUrlWithoutQueryParams = this.router.url.split("?")[0];
-    if (currentUrlWithoutQueryParams === "/transaction/cashin")
+    if (currentUrlWithoutQueryParams === "/app/transaction/cashin")
       this.selectedRoutes = "cashin";
-    else if (currentUrlWithoutQueryParams === "/transaction/cashout")
+    else if (currentUrlWithoutQueryParams === "/app/transaction/cashout")
       this.selectedRoutes = "cashout";
     //end
   }
@@ -211,7 +211,7 @@ export class TransactionComponent implements OnInit {
 
   createTransactionPage() {
     this.hideMainButton = true;
-    this.router.navigate(["/transaction/create"]);
+    this.router.navigate(["/app/transaction/create"]);
   }
 
   addTransaction() {

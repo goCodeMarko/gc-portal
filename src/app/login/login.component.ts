@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "../authorization/auth.service";
 import { HttpRequestService } from "../http-request/http-request.service";
 import { trigger, style, animate, transition } from "@angular/animations";
+import * as moment from "moment";
+import * as _ from "lodash";
 interface IUser {
   email: string;
   fullname: string;
@@ -50,6 +52,29 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  private transactionId!: string;
+  private getTransaction(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Parse the client's local timezone
+      const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");
+      const endDate = moment().endOf("day").format("YYYY-MM-DDTHH:mm:ss");
+
+      this.hrs.request(
+        "get",
+        "transaction/getTransaction",
+        { startDate, endDate },
+        async (res: any) => {
+          console.log("--------------------login", res);
+          if (res.success && _.has(res, "data")) {
+            this.transactionId = res.data?._id;
+          }
+
+          resolve();
+        }
+      );
+    });
+  }
+
   login() {
     this.hrs.request(
       "post",
@@ -61,7 +86,15 @@ export class LoginComponent implements OnInit {
             await this.auth.setToken(data.data);
             console.log("token has been set!");
 
-            this.auth.navigate("/transaction/cashout");
+            await this.getTransaction();
+            console.log("transaction id has been fetch!");
+
+            if (this.transactionId) {
+              this.auth.navigate("/transaction/cashout", this.transactionId);
+            } else {
+              this.auth.navigate("/transaction", "");
+            }
+
             console.log("User has been navigated!");
           } catch (error) {
             this.message = "Client Error, Please contact your administrator";

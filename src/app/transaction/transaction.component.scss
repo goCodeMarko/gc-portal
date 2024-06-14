@@ -1,6 +1,12 @@
 @import "./../@padayon/styles/variables.scss";
 @import "./shared/styles/style.scss";
 
+*,
+body {
+  padding: 0;
+  margin: 0;
+}
+
 .ms-tabs-container {
   width: 100% !important;
   margin: 1em 0px;
@@ -13,6 +19,24 @@
   .mat-button-toggle-checked.mat-button-toggle-appearance-standard {
     background-color: $main-color !important;
     color: #fff !important;
+  }
+}
+
+.ms-box {
+  display: flex; /* Use flexbox layout */
+  flex-direction: column;
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+  width: 100%; /* Set width of the box */
+  height: 500px; /* Set height of the box */
+  border: 2px solid $second-color; /* Add a border to the box */
+  margin: auto !important; /* Center the box itself horizontally */
+  padding: 70px !important;
+  text-align: center;
+  .text-below {
+    h3 {
+      margin: 0;
+    }
   }
 }
 

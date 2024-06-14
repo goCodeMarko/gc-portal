@@ -71,8 +71,14 @@ export class AuthService {
     return account ? account : "";
   }
 
-  navigate(path: string) {
-    this.router.navigate([path]);
+  navigate(path: string, transactionId: string) {
+    let params = {};
+    if (transactionId) params = { tid: transactionId };
+    console.log("-----------------auth", transactionId);
+    this.router.navigate([path], {
+      queryParams: params,
+      queryParamsHandling: "merge",
+    });
   }
 
   logout(): void {

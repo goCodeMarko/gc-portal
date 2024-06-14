@@ -19,10 +19,11 @@ import {
 import { SocketService } from "src/app/shared/socket/socket.service";
 import { Subscription } from "rxjs";
 import { AudioService } from "src/app/shared/audio/audio.service";
-import * as moment from "moment";
 import * as _ from "lodash";
 import { ViewNoteModalComponent } from "src/app/modals/view-note-modal/view-note-modal.component";
 import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/view-snapshot-modal.component";
+import { TransactionDetailsService } from "../../shared/services/transaction-details/transaction-details.service";
+import { ActivatedRoute } from "@angular/router";
 
 interface ICashIns {
   _id: string;
@@ -52,6 +53,7 @@ interface IResponse {
   code: number;
   message: string;
 }
+
 @Component({
   selector: "app-cash-in",
   templateUrl: "./cash-in.component.html",
@@ -85,8 +87,9 @@ export class CashInComponent implements OnInit, OnDestroy {
   };
   public cashInTableOnLoad: boolean = true;
 
-  //sockets
+  //subscriptions
   private socketSubscription: Subscription;
+  private routeSubscription: Subscription;
 
   // Transaction Details
   public transactionDetails: any = {};
@@ -99,7 +102,8 @@ export class CashInComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private socket: SocketService,
     public audio: AudioService,
-    private elRef: ElementRef
+    private transactionDetailsService: TransactionDetailsService,
+    private route: ActivatedRoute
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
@@ -131,16 +135,17 @@ export class CashInComponent implements OnInit, OnDestroy {
 
       if (message.type === "newCashin") {
         if (_.size(this.cashIns) === 3) this.cashIns.pop();
-        if (_.size(this.cashIns) === 0) this.currentPage = 1;
+        if (_.size(this.cashIns) === 0) {
+          this.currentPage = 1;
+          this.viewType = "table";
+        }
         this.cashIns.unshift(message.data);
         this.counts += 1;
         this.pages = Math.ceil(this.counts / 3);
       }
 
       if (message.type === "updateCashin") {
-        console.log("----------", message.data);
         this.cashIns = this.cashIns.map((cashin: ICashIns) => {
-          console.log("----------cashin", cashin);
           if (cashin._id === message.data.cid) {
             cashin.amount =
               message.data.fee_payment_is_gcash === "true"
@@ -156,23 +161,25 @@ export class CashInComponent implements OnInit, OnDestroy {
           return { ...cashin };
         });
       }
+    });
 
-      if (message.type === "updateTransactionDetails") {
-        this.transactionDetails.runbal_gcash = message.data.runbal_gcash;
-        this.transactionDetails.runbal_cash_on_hand =
-          message.data.runbal_cash_on_hand;
-
-        console.log(2, message);
+    //Checks if route has tid param
+    this.routeSubscription = this.route.queryParams.subscribe((params: any) => {
+      if (params["tid"]) {
+        this.transactionDetails._id = params["tid"];
+        this.getCashIns();
+      } else {
+        this.viewType = "noTransaction";
       }
     });
+    //end
   }
 
-  async ngOnInit(): Promise<any> {
-    await this.getTransaction();
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.socketSubscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
   }
 
   screenshotUploadHandler(event: any) {
@@ -180,32 +187,6 @@ export class CashInComponent implements OnInit, OnDestroy {
       screenshot: event.target.files[0].name,
     });
     this.screenshotFile = event.target.files[0];
-  }
-
-  public getTransaction(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Parse the client's local timezone
-      const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");
-      const endDate = moment().endOf("day").format("YYYY-MM-DDTHH:mm:ss");
-
-      this.hrs.request(
-        "get",
-        "transaction/getTransaction",
-        { startDate, endDate },
-        async (res: any) => {
-          console.log(2342341111, res.data);
-          if (!_.has(res, "data")) {
-            this.viewType = "noTransaction";
-          } else if (res.success) {
-            this.transactionDetails = res.data;
-
-            this.getCashIns();
-          }
-
-          resolve();
-        }
-      );
-    });
   }
 
   public getCashIns() {
@@ -219,13 +200,14 @@ export class CashInComponent implements OnInit, OnDestroy {
         transaction_id: this.transactionDetails?._id,
       },
       async (res: IResponse) => {
-        if (!_.has(res, "data")) {
-        } else if (res.success) {
+        if (res.success && _.has(res, "data")) {
           const { total, page, pages } = res.data.meta;
           this.cashIns = res.data.items;
           this.currentPage = page;
           this.counts = total;
           this.pages = pages;
+        } else {
+          this.viewType = "noTransaction";
         }
         this.cashInTableOnLoad = false;
       }
@@ -322,79 +304,109 @@ export class CashInComponent implements OnInit, OnDestroy {
         if (data.success) {
           let CIhaveChanges = false;
 
+          // from pending, cancelled, failed to approved
           if (formData) {
-            await this.getTransaction();
-
             this.viewType = "table";
             this.resetApproveCashinForm();
             this.hideMainButton.emit(false);
             this.approveTransactionDetails = {};
-
-            this.socket.sendMessage({
-              type: "updateTransactionDetails",
-              data: {
-                runbal_gcash: this.transactionDetails.runbal_gcash,
-                runbal_cash_on_hand:
-                  this.transactionDetails.runbal_cash_on_hand,
-              },
-            });
-            CIhaveChanges = true;
             this.approveReqBtnOnLoad = false;
+
+            this.cashIns = this.cashIns.map((cashin: any) => {
+              if (cashin._id === event.cid) {
+                cashin.status = newStatus;
+
+                //to update transaction details for current user
+                this.transactionDetailsService.update({
+                  runbal_gcash: {
+                    data: cashin.amount,
+                    operation: "subtract",
+                  },
+                  runbal_cash_on_hand: {
+                    data: cashin.amount + cashin.fee,
+                    operation: "sum",
+                  },
+                });
+                //end
+                //to update transaction details for all users
+                this.socket.sendMessage({
+                  type: "updateTransactionDetails",
+                  data: {
+                    runbal_gcash: {
+                      data: cashin.amount,
+                      operation: "subtract",
+                    },
+                    runbal_cash_on_hand: {
+                      data: cashin.amount + cashin.fee,
+                      operation: "sum",
+                    },
+                  },
+                });
+                //end
+              }
+
+              return { ...cashin };
+            });
+
+            CIhaveChanges = true;
           } else {
             this.cashIns = this.cashIns.map((cashin: any) => {
               if (cashin._id === event.cid) {
+                // from approved to cancelled or failed
                 if (
-                  newStatus === TransactionStatus.Approved &&
-                  [
-                    TransactionStatus.Cancelled,
-                    TransactionStatus.Failed,
-                    TransactionStatus.Pending,
-                  ].includes(cashin.status)
-                ) {
-                  this.transactionDetails.runbal_gcash += cashin.amount;
-                  this.transactionDetails.runbal_cash_on_hand -=
-                    cashin.amount - cashin.fee;
-                  cashin.status = newStatus;
-                  CIhaveChanges = true;
-                } else if (
-                  cashin.status === TransactionStatus.Pending &&
+                  cashin.status === TransactionStatus.Approved &&
                   [
                     TransactionStatus.Cancelled,
                     TransactionStatus.Failed,
                   ].includes(newStatus)
                 ) {
+                  //to update transaction details for current user
+                  this.transactionDetailsService.update({
+                    runbal_gcash: {
+                      data: cashin.amount,
+                      operation: "sum",
+                    },
+                    runbal_cash_on_hand: {
+                      data: cashin.amount + cashin.fee,
+                      operation: "subtract",
+                    },
+                  });
+                  //end
+
+                  //to update transaction details for all users
+                  this.socket.sendMessage({
+                    type: "updateTransactionDetails",
+                    data: {
+                      runbal_gcash: {
+                        data: cashin.amount,
+                        operation: "sum",
+                      },
+                      runbal_cash_on_hand: {
+                        data: cashin.amount + cashin.fee,
+                        operation: "subtract",
+                      },
+                    },
+                  });
+                  //end
+
                   cashin.status = newStatus;
                   CIhaveChanges = true;
-                } else if (
-                  ([
+                }
+                // from failed  to cancelled
+                // from cancelled to failed
+                // from pending  to cancelled
+                // from pending  to failed
+                else if (
+                  [
                     TransactionStatus.Cancelled,
                     TransactionStatus.Failed,
                     TransactionStatus.Pending,
-                  ].includes(newStatus) &&
-                    cashin.status === TransactionStatus.Approved) ||
-                  ([
+                  ].includes(cashin.status) &&
+                  [
                     TransactionStatus.Cancelled,
-                    TransactionStatus.Pending,
-                  ].includes(newStatus) &&
-                    cashin.status === TransactionStatus.Failed) ||
-                  ([
                     TransactionStatus.Failed,
-                    TransactionStatus.Pending,
-                  ].includes(newStatus) &&
-                    cashin.status === TransactionStatus.Cancelled)
+                  ].includes(newStatus)
                 ) {
-                  if (
-                    [
-                      TransactionStatus.Cancelled,
-                      TransactionStatus.Failed,
-                      TransactionStatus.Pending,
-                    ].includes(newStatus) &&
-                    cashin.status === TransactionStatus.Approved
-                  ) {
-                    this.transactionDetails.runbal_gcash += cashin.amount;
-                    this.transactionDetails.runbal_cash_on_hand -=
-                      cashin.amount + cashin.fee;
-                  }
                   cashin.status = newStatus;
                   CIhaveChanges = true;
                 }
@@ -405,34 +417,26 @@ export class CashInComponent implements OnInit, OnDestroy {
           }
 
           if (CIhaveChanges) {
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                title: "Success!",
-                message: "Transaction status <b>has been updated</b>.",
-              },
-            });
-
-            this.socket.sendMessage({
-              type: "updateTransactionDetails",
-              data: {
-                runbal_gcash: this.transactionDetails.runbal_gcash,
-                runbal_cash_on_hand:
-                  this.transactionDetails.runbal_cash_on_hand,
-              },
-            });
-            console.log(12312321312, data);
+            //to cashin/cashout detail for all users
             const [updatedData] = data.data.cashin.filter((data: any) => {
               if (data._id === event.cid) return data;
             });
-
             this.socket.sendMessage({
               type: "updateTransactionStatus",
               data: {
                 _id: event.cid,
                 status: newStatus,
                 snapshot: updatedData.snapshot,
+              },
+            });
+            //end
+
+            this.dialog.open(PopUpModalComponent, {
+              width: "500px",
+              data: {
+                deletebutton: false,
+                title: "Success!",
+                message: "Transaction status <b>has been updated</b>.",
               },
             });
           }
@@ -541,11 +545,10 @@ export class CashInComponent implements OnInit, OnDestroy {
               message: "Cashin Request <b>has been sent</b>.",
             },
           });
-          this.getCashIns();
-          this.viewType = "table";
+          await this.getCashIns();
           this.hideMainButton.emit(false);
-          console.log(4234234, data);
           this.socket.sendMessage({ type: "newCashin", data: data.data });
+          this.viewType = "table";
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {
@@ -597,25 +600,57 @@ export class CashInComponent implements OnInit, OnDestroy {
           });
 
           if (TransactionStatus.Approved === this.previousCI.status) {
-            console.log("----------------edit approved");
-            this.transactionDetails.runbal_cash_on_hand -=
-              this.previousCI.amount;
-            this.transactionDetails.runbal_gcash +=
-              this.previousCI.amount - this.previousCI.fee;
-            const updatedCI = this.cashinForm.value;
-
-            this.transactionDetails.runbal_cash_on_hand += updatedCI.amount;
-            this.transactionDetails.runbal_gcash -=
-              updatedCI.amount - updatedCI.fee;
-
+            //removed the calculation of recent transaction
+            this.transactionDetailsService.update({
+              runbal_gcash: {
+                data: this.previousCI.amount - this.previousCI.fee,
+                operation: "sum",
+              },
+              runbal_cash_on_hand: {
+                data: this.previousCI.amount,
+                operation: "subtract",
+              },
+            });
             this.socket.sendMessage({
               type: "updateTransactionDetails",
               data: {
-                runbal_gcash: this.transactionDetails.runbal_gcash,
-                runbal_cash_on_hand:
-                  this.transactionDetails.runbal_cash_on_hand,
+                runbal_gcash: {
+                  data: this.previousCI.amount - this.previousCI.fee,
+                  operation: "sum",
+                },
+                runbal_cash_on_hand: {
+                  data: this.previousCI.amount,
+                  operation: "subtract",
+                },
               },
             });
+            //end
+
+            //added the calculation of new transaction
+            this.transactionDetailsService.update({
+              runbal_gcash: {
+                data: updatedCI.amount - updatedCI.fee,
+                operation: "subtract",
+              },
+              runbal_cash_on_hand: {
+                data: updatedCI.amount,
+                operation: "sum",
+              },
+            });
+            this.socket.sendMessage({
+              type: "updateTransactionDetails",
+              data: {
+                runbal_gcash: {
+                  data: updatedCI.amount - updatedCI.fee,
+                  operation: "subtract",
+                },
+                runbal_cash_on_hand: {
+                  data: updatedCI.amount,
+                  operation: "sum",
+                },
+              },
+            });
+            //end
           }
           this.socket.sendMessage({ type: "updateCashin", data: updatedCI });
 
@@ -651,7 +686,9 @@ export class CashInComponent implements OnInit, OnDestroy {
     );
   }
   cancel() {
-    this.viewType = "table";
+    if (_.size(this.cashIns) === 0) this.viewType = "noTransaction";
+    else this.viewType = "table";
+
     this.resetCashinForm();
     this.resetApproveCashinForm();
     this.hideMainButton.emit(false);

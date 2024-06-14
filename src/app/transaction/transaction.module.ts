@@ -24,6 +24,7 @@ import { SharedModule } from "../shared/shared.module";
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { MatListModule } from "@angular/material/list";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { NothingToDisplayComponent } from './shared/components/nothing-to-display/nothing-to-display.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
     TransactionStatusPipe,
     PaymentTypePipe,
     CreateTransactionComponent,
+    NothingToDisplayComponent,
   ],
   imports: [
     CommonModule,

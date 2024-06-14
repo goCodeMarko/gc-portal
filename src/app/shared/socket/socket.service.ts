@@ -21,12 +21,14 @@ export class SocketService {
   }
 
   public sendMessage(message: { type: strings; data: any }): void {
+    console.log("sendMessage");
     this.socket.emit("message", message);
   }
 
   public onMessage(): Observable<{ type: strings; data: any }> {
     return new Observable<{ type: strings; data: any }>((observer) => {
       this.socket.on("message", (message: { type: strings; data: any }) => {
+        console.log("socket-service");
         observer.next(message);
       });
     });

@@ -5,6 +5,8 @@ import * as moment from "moment";
 import { Location } from "@angular/common";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
 import { PopUpModalComponent } from "src/app/modals/pop-up-modal/pop-up-modal.component";
+import { Router, NavigationStart } from "@angular/router";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "app-create-transaction",
@@ -12,12 +14,20 @@ import { PopUpModalComponent } from "src/app/modals/pop-up-modal/pop-up-modal.co
   styleUrls: ["./create-transaction.component.scss"],
 })
 export class CreateTransactionComponent implements OnInit {
+  @Output() hideMainButton = new EventEmitter<boolean>();
+  @Output() getTransactionLoading = new EventEmitter<boolean>();
+  @Output() viewTypeTransaction = new EventEmitter<string>();
+  @Output() selectedRoutes = new EventEmitter<string>();
   public transactionForm: FormGroup;
+  private previousUrl!: string;
+  public hideForm = false;
+
   constructor(
     private fb: FormBuilder,
     private hrs: HttpRequestService,
     private dialog: MatDialog,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {
     this.transactionForm = this.fb.group({
       date: ["", Validators.required],
@@ -25,11 +35,32 @@ export class CreateTransactionComponent implements OnInit {
       cash_on_hand: ["", Validators.required],
       gcashNumber: ["", [Validators.required, Validators.pattern(/^09\d{9}$/)]],
     });
+
+    //gets the previous url
+    this.previousUrl =
+      this.router
+        .getCurrentNavigation()
+        ?.previousNavigation?.finalUrl?.toString() || "";
+    //end
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.hideMainButton.emit(true);
+  }
 
   goBack(): void {
+    const queryparams = this.previousUrl.split("?")[1];
+    const url = this.previousUrl.split("?")[0];
+
+    this.hideForm = true;
+    if (queryparams) {
+      this.viewTypeTransaction.emit("");
+      this.getTransactionLoading.emit(true);
+    } else {
+      this.viewTypeTransaction.emit("noTransaction");
+      this.getTransactionLoading.emit(false);
+    }
+    this.hideMainButton.emit(false);
     this.location.back();
   }
 
@@ -48,8 +79,11 @@ export class CreateTransactionComponent implements OnInit {
       "post",
       `transaction/createTransaction`,
       this.transactionForm.value,
-      async (data: any) => {
-        if (data.success) {
+      async (res: any) => {
+        if (res.success) {
+          // hides the create transaction form
+          this.hideForm = true;
+
           this.dialog.open(PopUpModalComponent, {
             width: "500px",
             data: {
@@ -59,9 +93,44 @@ export class CreateTransactionComponent implements OnInit {
             },
           });
 
+          this.hideMainButton.emit(false);
+          this.viewTypeTransaction.emit("");
           this.transactionForm.reset();
+
+          // Check if the previous URL is "/transaction"
+          if (this.previousUrl === "/transaction") {
+            // Update the previous URL to include the "/cashout" route
+            this.previousUrl = `${this.previousUrl}/cashout`;
+
+            // Emit an event with the value "cashout"
+            this.selectedRoutes.emit("cashout");
+          }
+
+          // Check if the response data contains an ID
+          if (res.data?._id) {
+            // Extract query parameters from the previous URL, if any
+            const queryparams = this.previousUrl.split("?")[1];
+
+            // If there are query parameters
+            if (queryparams) {
+              // Go back to the previous URL
+              this.goBack();
+            } else {
+              // Create a params object with the ID from the response data
+              const params = { tid: res.data?._id };
+
+              // Navigate to the previous URL with the new query parameters, merging them with any existing ones
+              this.router.navigate([this.previousUrl], {
+                queryParams: params,
+                queryParamsHandling: "merge",
+              });
+            }
+          } else {
+            // Go back to the previous URL
+            this.goBack();
+          }
         } else {
-          if (data.message == "Restricted") {
+          if (res.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {
               width: "500px",
               data: {
@@ -77,7 +146,7 @@ export class CreateTransactionComponent implements OnInit {
             data: {
               deletebutton: false,
               title: "Server Error",
-              message: data?.error?.message,
+              message: res?.error?.message,
             },
           });
         }

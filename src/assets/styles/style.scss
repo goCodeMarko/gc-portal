@@ -133,3 +133,7 @@ button:disabled {
 .gs-no-select {
   user-select: none; /* Prevent text selection */
 }
+
+mat-card {
+  margin: 0px !important;
+}

@@ -1,12 +1,24 @@
 import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { AuthService } from "../authorization/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import * as moment from "moment";
 import { HttpRequestService } from "../http-request/http-request.service";
 import { MatDialog } from "@angular/material/dialog";
 import { PopUpModalComponent } from "../modals/pop-up-modal/pop-up-modal.component";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { SocketService } from "../shared/socket/socket.service";
+import { Subscription } from "rxjs";
+import { TransactionDetailsService } from "./shared/services/transaction-details/transaction-details.service";
+import * as _ from "lodash";
 
+interface ITransactionDetail {
+  _id: string;
+  gcash: number;
+  runbal_gcash: number;
+  date: string;
+  gcashNumber: string;
+  cash_on_hand: number;
+  runbal_cash_on_hand: number;
+}
 @Component({
   selector: "app-transaction",
   templateUrl: "./transaction.component.html",
@@ -14,34 +26,179 @@ import { Router } from "@angular/router";
   encapsulation: ViewEncapsulation.None, // Optional: Disable view encapsulation if necessary
 })
 export class TransactionComponent implements OnInit {
-  viewType: string = "cashout";
+  public viewTypeTransaction: string = "cashout";
   public hideMainButton = false;
   public tabActiveCashout = true;
   public tabActiveCashin = false;
-  private viewTypeBefore: string = "";
-  selectedRoutes: string;
+  public selectedRoutes!: string;
   public role: string = "";
   public routerOutletComponent: any;
+  public transactionDetails!: ITransactionDetail;
   public type = "OUT";
   public pre = "REQUEST";
+  private socketSubscription: Subscription;
+  private transactionDetailsSubscription: Subscription;
+  private routeSubscription: Subscription;
+  public getTransactionLoading = false;
+  public hideRouterOutlet = false;
   constructor(
     private auth: AuthService,
-    private fb: FormBuilder,
     private hrs: HttpRequestService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private socket: SocketService,
+    private transactionDetailsService: TransactionDetailsService
   ) {
-    if (this.router.url === "/transaction/cashin")
+    this.socketSubscription = this.socket.onMessage().subscribe((message) => {
+      if (message.type === "updateTransactionDetails") {
+        //it will update the transaction details
+        if (message.data.runbal_gcash.operation === "sum") {
+          this.transactionDetails.runbal_gcash +=
+            message.data.runbal_gcash.data;
+        } else if (message.data.runbal_gcash.operation === "subtract") {
+          this.transactionDetails.runbal_gcash -=
+            message.data.runbal_gcash.data;
+        }
+
+        if (message.data.runbal_cash_on_hand.operation === "sum") {
+          this.transactionDetails.runbal_cash_on_hand +=
+            message.data.runbal_cash_on_hand.data;
+        } else if (message.data.runbal_cash_on_hand.operation === "subtract") {
+          this.transactionDetails.runbal_cash_on_hand -=
+            message.data.runbal_cash_on_hand.data;
+        }
+        //end
+      }
+    });
+
+    this.transactionDetailsSubscription = this.transactionDetailsService
+      .everyNewUpdate()
+      .subscribe((message) => {
+        //it will update the transaction details
+        if (message.runbal_gcash.operation === "sum") {
+          this.transactionDetails.runbal_gcash += message.runbal_gcash.data;
+        } else if (message.runbal_gcash.operation === "subtract") {
+          this.transactionDetails.runbal_gcash -= message.runbal_gcash.data;
+        }
+
+        if (message.runbal_cash_on_hand.operation === "sum") {
+          this.transactionDetails.runbal_cash_on_hand +=
+            message.runbal_cash_on_hand.data;
+        } else if (message.runbal_cash_on_hand.operation === "subtract") {
+          this.transactionDetails.runbal_cash_on_hand -=
+            message.runbal_cash_on_hand.data;
+        }
+        //end
+      });
+
+    //Checks if route has tid param
+    this.routeSubscription = this.route.queryParams.subscribe(
+      async (params: any) => {
+        if (!params["tid"]) this.viewTypeTransaction = "noTransaction";
+        else await this.getTransaction();
+      }
+    );
+    //end
+
+    //It will change hte color of active button based on the current route
+    const currentUrlWithoutQueryParams = this.router.url.split("?")[0];
+    if (currentUrlWithoutQueryParams === "/transaction/cashin")
       this.selectedRoutes = "cashin";
-    else this.selectedRoutes = "cashout";
+    else if (currentUrlWithoutQueryParams === "/transaction/cashout")
+      this.selectedRoutes = "cashout";
+    //end
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<any> {
     this.checkRole();
+  }
+
+  async ngOnDestroy() {
+    this.socketSubscription.unsubscribe();
+    this.transactionDetailsSubscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
+  }
+
+  fromRouterOutlet(component: any) {
+    this.routerOutletComponent = component;
+
+    if (component.hideMainButton) {
+      component.hideMainButton.subscribe((value: boolean) => {
+        this.hideMainButton = value;
+      });
+    }
+
+    if (component.viewTypeTransaction) {
+      component.viewTypeTransaction.subscribe((value: string) => {
+        this.viewTypeTransaction = value;
+      });
+    }
+
+    if (component.getTransactionLoading) {
+      component.getTransactionLoading.subscribe((value: boolean) => {
+        this.getTransactionLoading = value;
+      });
+    }
+
+    if (component.selectedRoutes) {
+      component.selectedRoutes.subscribe((value: string) => {
+        this.selectedRoutes = value;
+      });
+    }
+
+    if (component.cashinForm) this.type = "IN";
+    else if (component.cashoutForm) this.type = "OUT";
+  }
+
+  public getTransaction(): Promise<void> {
+    this.getTransactionLoading = true;
+    return new Promise((resolve, reject) => {
+      // Parse the client's local timezone
+      const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");
+      const endDate = moment().endOf("day").format("YYYY-MM-DDTHH:mm:ss");
+
+      this.hrs.request(
+        "get",
+        "transaction/getTransaction",
+        { startDate, endDate },
+        async (res: any) => {
+          console.log("-----------TransactionComponent:getTransaction()", res);
+          this.getTransactionLoading = false;
+
+          if (res.success && _.has(res, "data")) {
+            this.hideRouterOutlet = false;
+            this.transactionDetails = res.data;
+
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: { tid: this.transactionDetails._id },
+              queryParamsHandling: "merge",
+            });
+            this.viewTypeTransaction = "";
+          } else {
+            this.hideRouterOutlet = true;
+            this.viewTypeTransaction = "noTransaction";
+          }
+
+          resolve();
+        }
+      );
+    });
   }
 
   selectOption(option: string) {
     this.selectedRoutes = option;
+  }
+
+  navigate(url: string) {
+    let params = {};
+    if (this.transactionDetails?._id)
+      params = { tid: this.transactionDetails._id };
+    this.router.navigate([url], {
+      queryParams: params,
+      queryParamsHandling: "merge",
+    });
   }
 
   async checkRole() {
@@ -55,19 +212,6 @@ export class TransactionComponent implements OnInit {
   createTransactionPage() {
     this.hideMainButton = true;
     this.router.navigate(["/transaction/create"]);
-  }
-
-  fromRouterOutlet(component: any) {
-    this.routerOutletComponent = component;
-    if (component.hideMainButton) {
-      this.hideMainButton = false;
-      component.hideMainButton.subscribe((value: boolean) => {
-        this.hideMainButton = value;
-      });
-    }
-
-    if (component.cashinForm) this.type = "IN";
-    else this.type = "OUT";
   }
 
   addTransaction() {

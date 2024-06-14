@@ -7,7 +7,7 @@
   <div [class.active-cashin]="tabActiveCashin"></div>
 </div> -->
 
-<!-- <div [ngSwitch]="this.viewType"> -->
+<!-- <div [ngSwitch]="this.viewTypeTransaction"> -->
 <!-- <ng-container *ngSwitchCase="'cashin'">
     <app-cash-in (hideMainButton)="mainButton($event)"> </app-cash-in>
   </ng-container> -->
@@ -18,39 +18,109 @@
 
 <!-- </ng-container> -->
 <!-- </div> -->
-
-<mat-button-toggle-group class="ms-tabs-container" [(ngModel)]="selectedRoutes">
-  <mat-button-toggle value="cashout" routerLink="/transaction/cashout">
-    CASH OUT
-  </mat-button-toggle>
-
-  <mat-button-toggle value="cashin" routerLink="/transaction/cashin"
-    >CASH IN</mat-button-toggle
+<ng-container *ngIf="!hideMainButton">
+  <ng-container
+    *ngIf="this.viewTypeTransaction === 'noTransaction'; else details"
   >
-</mat-button-toggle-group>
+    <nothing-to-display>
+      <ng-container *ngIf="role === 'admin'">
+        <ng-container *ngTemplateOutlet="btnCreateTransaction"></ng-container>
+      </ng-container>
+    </nothing-to-display>
+  </ng-container>
 
-<router-outlet (activate)="fromRouterOutlet($event)"></router-outlet>
+  <ng-template #details>
+    <mat-button-toggle-group
+      class="ms-tabs-container"
+      [(ngModel)]="selectedRoutes"
+    >
+      <mat-button-toggle
+        value="cashout"
+        (click)="navigate('/transaction/cashout')"
+      >
+        CASH OUT
+      </mat-button-toggle>
+
+      <mat-button-toggle
+        value="cashin"
+        (click)="navigate('/transaction/cashin')"
+        >CASH IN</mat-button-toggle
+      >
+    </mat-button-toggle-group>
+
+    <mat-card style="margin-bottom: 1em !important">
+      <ng-container *ngIf="!getTransactionLoading; else detailLoader">
+        <section id="cssportal-grid">
+          <div id="div0">
+            <!-- <mat-icon class="material-icons material-symbols-rounded"
+              >calendar_month</mat-icon
+            >  -->
+            DATE
+          </div>
+          <div id="div1">
+            <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
+          </div>
+          <div id="div2">ACCOUNT</div>
+          <div id="div3">{{ transactionDetails.gcashNumber }}</div>
+          <div id="div4">CASH</div>
+
+          <section id="div5">
+            <div id="div5-1">
+              {{ transactionDetails.cash_on_hand | currency : "₱" : "symbol" }}
+            </div>
+            <div id="div5-2">
+              {{
+                transactionDetails.runbal_cash_on_hand
+                  | currency : "₱" : "symbol"
+              }}
+            </div>
+          </section>
+          <div id="div6">GCASH</div>
+          <section id="div7">
+            <div id="div7-1">
+              {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
+            </div>
+            <div id="div7-2">
+              {{ transactionDetails.runbal_gcash | currency : "₱" : "symbol" }}
+            </div>
+          </section>
+        </section>
+      </ng-container>
+
+      <ng-template #detailLoader>
+        <div class="ms-trans-detail-loader">
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+          <div class="ms-line"></div>
+        </div>
+      </ng-template>
+    </mat-card>
+  </ng-template>
+</ng-container>
+
+<ng-container *ngIf="!hideRouterOutlet">
+  <router-outlet (activate)="fromRouterOutlet($event)"></router-outlet>
+</ng-container>
 
 <ng-container *ngIf="!hideMainButton">
   <mat-card class="gs-button-group">
     <div class="gs-button-group-horizontal">
-      <button
-        mat-flat-button
-        color="main-green"
-        (click)="addTransaction()"
-        class="btn-block fw-bold"
-      >
-        {{ pre }} CASH {{ type }}
-      </button>
-      <ng-container *ngIf="role === 'admin'">
+      <ng-container *ngIf="this.viewTypeTransaction !== 'noTransaction'">
         <button
           mat-flat-button
           color="main-green"
+          (click)="addTransaction()"
           class="btn-block fw-bold"
-          (click)="createTransactionPage()"
         >
-          CREATE TRANSACTION
+          {{ pre }} CASH {{ type }}
         </button>
+      </ng-container>
+
+      <ng-container *ngIf="role === 'admin'">
+        <ng-container *ngIf="this.viewTypeTransaction !== 'noTransaction'">
+          <ng-container *ngTemplateOutlet="btnCreateTransaction"></ng-container>
+        </ng-container>
 
         <button
           mat-flat-button
@@ -79,3 +149,14 @@
     </div>
   </mat-card>
 </ng-container>
+
+<ng-template #btnCreateTransaction>
+  <button
+    mat-flat-button
+    color="main-green"
+    class="btn-block fw-bold"
+    (click)="createTransactionPage()"
+  >
+    CREATE TRANSACTION
+  </button>
+</ng-template>

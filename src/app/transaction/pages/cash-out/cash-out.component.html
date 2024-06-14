@@ -168,69 +168,6 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="viewType === 'table'">
-    <mat-card>
-      <ng-container *ngIf="!cashOutTableOnLoad; else detailLoader">
-        <section id="cssportal-grid">
-          <div id="div0">
-            <!-- <mat-icon class="material-icons material-symbols-rounded"
-              >calendar_month</mat-icon
-            > -->
-            DATE
-          </div>
-          <div id="div1">
-            <b>{{ transactionDetails.date | date : "MMMM d, y EE" }}</b>
-          </div>
-          <div id="div2">
-            <!-- <mat-icon class="material-icons material-symbols-rounded"
-              >phone_android</mat-icon
-            > -->
-            ACCOUNT
-          </div>
-          <div id="div3">{{ transactionDetails.gcashNumber }}</div>
-          <div id="div4">
-            <!-- <mat-icon class="material-icons material-symbols-rounded"
-              >account_balance_wallet</mat-icon
-            > -->
-            CASH
-          </div>
-
-          <section id="div5">
-            <div id="div5-1">
-              {{ transactionDetails.cash_on_hand | currency : "₱" : "symbol" }}
-            </div>
-            <div id="div5-2">
-              {{
-                transactionDetails.runbal_cash_on_hand
-                  | currency : "₱" : "symbol"
-              }}
-            </div>
-          </section>
-          <div id="div6">
-            <!-- <mat-icon class="material-icons material-symbols-rounded"
-              >rss_feed</mat-icon
-            > -->
-            GCASH
-          </div>
-          <section id="div7">
-            <div id="div7-1">
-              {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
-            </div>
-            <div id="div7-2">
-              {{ transactionDetails.runbal_gcash | currency : "₱" : "symbol" }}
-            </div>
-          </section>
-        </section>
-      </ng-container>
-
-      <ng-template #detailLoader>
-        <div class="ms-trans-detail-loader">
-          <div class="ms-line"></div>
-          <div class="ms-line"></div>
-          <div class="ms-line"></div>
-          <div class="ms-line"></div>
-        </div>
-      </ng-template>
-    </mat-card>
     <app-table
       [componentName]="'cashout'"
       [headers]="['TIME', 'FEE', 'AMOUNT']"
@@ -249,7 +186,7 @@
     ></app-table>
   </ng-container>
   <ng-container *ngSwitchCase="viewType === 'noTransaction'">
-    <p>No Transaction</p>
+    <nothing-to-display> </nothing-to-display>
   </ng-container>
 </div>
 

@@ -25,6 +25,8 @@ import * as moment from "moment";
 import * as _ from "lodash";
 import { ViewNoteModalComponent } from "src/app/modals/view-note-modal/view-note-modal.component";
 import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/view-snapshot-modal.component";
+import { ActivatedRoute } from "@angular/router";
+import { TransactionDetailsService } from "../../shared/services/transaction-details/transaction-details.service";
 
 interface ICashOuts {
   _id: string;
@@ -102,6 +104,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   >();
 
   private socketSubscription: Subscription;
+  private routeSubscription: Subscription;
   public cashoutForm: FormGroup;
   public transactionDetails: any = {};
   public sendRequestBtnOnLoad = false;
@@ -113,7 +116,8 @@ export class CashOutComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     public audio: AudioService,
     private socket: SocketService,
-    private elRef: ElementRef
+    private transactionDetailsService: TransactionDetailsService,
+    private route: ActivatedRoute
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
@@ -136,17 +140,19 @@ export class CashOutComponent implements OnInit, OnDestroy {
       }
 
       if (message.type === "newCashout") {
+        console.log("-----------", message);
         if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
-        if (_.size(this.cashOuts) === 0) this.currentPage = 1;
+        if (_.size(this.cashOuts) === 0) {
+          this.viewType = "table";
+          this.currentPage = 1;
+        }
         this.cashOuts.unshift(message.data);
         this.counts += 1;
         this.pages = Math.ceil(this.counts / 3);
       }
 
       if (message.type === "updateCashout") {
-        console.log("----------", message.data);
         this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
-          console.log("----------cashout", cashout);
           if (cashout._id === message.data.cid) {
             cashout.amount =
               message.data.fee_payment_is_gcash === "true"
@@ -161,47 +167,27 @@ export class CashOutComponent implements OnInit, OnDestroy {
           return { ...cashout };
         });
       }
+    });
 
-      if (message.type === "updateTransactionDetails") {
-        this.transactionDetails.runbal_gcash = message.data.runbal_gcash;
-        this.transactionDetails.runbal_cash_on_hand =
-          message.data.runbal_cash_on_hand;
+    //Checks if route has tid param
+    this.routeSubscription = this.route.queryParams.subscribe((params: any) => {
+      if (params["tid"]) {
+        this.transactionDetails._id = params["tid"];
+        this.getCashOuts();
+      } else {
+        this.viewType = "noTransaction";
       }
     });
+    //end
   }
 
-  async ngOnInit(): Promise<any> {
-    await this.getTransaction();
+  ngOnInit(): void {
     this.readAvailableVideoInputs();
   }
 
   ngOnDestroy(): void {
     this.socketSubscription.unsubscribe();
-  }
-
-  public getTransaction(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Parse the client date and assume it's in the client's local timezone
-      const startDate = moment().startOf("day").format("YYYY-MM-DDTHH:mm:ss");
-      const endDate = moment().endOf("day").format("YYYY-MM-DDTHH:mm:ss");
-
-      this.hrs.request(
-        "get",
-        "transaction/getTransaction",
-        { startDate, endDate },
-        async (res: any) => {
-          if (!_.has(res, "data")) {
-            this.viewType = "noTransaction";
-          } else if (res.success) {
-            this.transactionDetails = res.data;
-
-            this.getCashOuts();
-          }
-
-          resolve();
-        }
-      );
-    });
+    this.routeSubscription.unsubscribe();
   }
 
   public getCashOuts() {
@@ -211,13 +197,15 @@ export class CashOutComponent implements OnInit, OnDestroy {
       "transaction/getCashOuts",
       { ...this.filters, transaction_id: this.transactionDetails?._id },
       async (res: IResponse) => {
-        if (!_.has(res, "data")) {
-        } else if (res.success) {
+        if (res.success && _.has(res, "data")) {
+          this.hideMainButton.emit(false);
           const { total, page, pages } = res.data.meta;
           this.cashOuts = res.data.items;
           this.currentPage = page;
           this.counts = total;
           this.pages = pages;
+        } else {
+          this.viewType = "noTransaction";
         }
 
         this.cashOutTableOnLoad = false;
@@ -295,7 +283,9 @@ export class CashOutComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.viewType = "table";
+    if (_.size(this.cashOuts) === 0) this.viewType = "noTransaction";
+    else this.viewType = "table";
+
     this.resetCashoutForm();
     this.hideMainButton.emit(false);
   }
@@ -364,21 +354,95 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
           this.cashOuts = this.cashOuts.map((cashout: any) => {
             if (cashout._id === event.cid) {
+              // from pending, failed, cancelled to approve
               if (
-                newStatus === TransactionStatus.Approved &&
                 [
                   TransactionStatus.Cancelled,
                   TransactionStatus.Failed,
                   TransactionStatus.Pending,
-                ].includes(cashout.status)
+                ].includes(cashout.status) &&
+                newStatus === TransactionStatus.Approved
               ) {
-                this.transactionDetails.runbal_gcash += cashout.amount;
-                this.transactionDetails.runbal_cash_on_hand -=
-                  cashout.amount - cashout.fee;
+                //to update transaction details for current user
+                this.transactionDetailsService.update({
+                  runbal_gcash: {
+                    data: cashout.amount,
+                    operation: "sum",
+                  },
+                  runbal_cash_on_hand: {
+                    data: cashout.amount - cashout.fee,
+                    operation: "subtract",
+                  },
+                });
+                //end
+
+                //to update transaction details for all users
+                this.socket.sendMessage({
+                  type: "updateTransactionDetails",
+                  data: {
+                    runbal_gcash: {
+                      data: cashout.amount,
+                      operation: "sum",
+                    },
+                    runbal_cash_on_hand: {
+                      data: cashout.amount - cashout.fee,
+                      operation: "subtract",
+                    },
+                  },
+                });
+                //end
                 cashout.status = newStatus;
                 COhaveChanges = true;
-              } else if (
-                cashout.status === TransactionStatus.Pending &&
+              }
+              // from approved to cancelled or failed
+              else if (
+                cashout.status === TransactionStatus.Approved &&
+                [
+                  TransactionStatus.Cancelled,
+                  TransactionStatus.Failed,
+                ].includes(newStatus)
+              ) {
+                //to update transaction details for current user
+                this.transactionDetailsService.update({
+                  runbal_gcash: {
+                    data: cashout.amount,
+                    operation: "subtract",
+                  },
+                  runbal_cash_on_hand: {
+                    data: cashout.amount - cashout.fee,
+                    operation: "sum",
+                  },
+                });
+                //end
+
+                //to update transaction details for all users
+                this.socket.sendMessage({
+                  type: "updateTransactionDetails",
+                  data: {
+                    runbal_gcash: {
+                      data: cashout.amount,
+                      operation: "subtract",
+                    },
+                    runbal_cash_on_hand: {
+                      data: cashout.amount - cashout.fee,
+                      operation: "sum",
+                    },
+                  },
+                });
+                //end
+                cashout.status = newStatus;
+                COhaveChanges = true;
+              }
+              // from failed  to cancelled
+              // from cancelled to failed
+              // from pending  to cancelled
+              // from pending  to failed
+              else if (
+                [
+                  TransactionStatus.Cancelled,
+                  TransactionStatus.Failed,
+                  TransactionStatus.Pending,
+                ].includes(cashout.status) &&
                 [
                   TransactionStatus.Cancelled,
                   TransactionStatus.Failed,
@@ -386,43 +450,16 @@ export class CashOutComponent implements OnInit, OnDestroy {
               ) {
                 cashout.status = newStatus;
                 COhaveChanges = true;
-              } else if (
-                ([
-                  TransactionStatus.Cancelled,
-                  TransactionStatus.Failed,
-                  TransactionStatus.Pending,
-                ].includes(newStatus) &&
-                  cashout.status === TransactionStatus.Approved) ||
-                ([
-                  TransactionStatus.Cancelled,
-                  TransactionStatus.Pending,
-                ].includes(newStatus) &&
-                  cashout.status === TransactionStatus.Failed) ||
-                ([TransactionStatus.Failed, TransactionStatus.Pending].includes(
-                  newStatus
-                ) &&
-                  cashout.status === TransactionStatus.Cancelled)
-              ) {
-                if (
-                  [
-                    TransactionStatus.Cancelled,
-                    TransactionStatus.Failed,
-                    TransactionStatus.Pending,
-                  ].includes(newStatus) &&
-                  cashout.status === TransactionStatus.Approved
-                ) {
-                  this.transactionDetails.runbal_gcash -= cashout.amount;
-                  this.transactionDetails.runbal_cash_on_hand +=
-                    cashout.amount - cashout.fee;
-                }
-                cashout.status = newStatus;
-                COhaveChanges = true;
               }
             }
             return { ...cashout };
           });
+
           if (COhaveChanges) {
-            console.log(232, "yowwwww");
+            this.socket.sendMessage({
+              type: "updateTransactionStatus",
+              data: { _id: event.cid, status: newStatus },
+            });
 
             this.dialog.open(PopUpModalComponent, {
               width: "500px",
@@ -432,41 +469,27 @@ export class CashOutComponent implements OnInit, OnDestroy {
                 message: "Transaction status <b>has been updated</b>.",
               },
             });
-
-            this.socket.sendMessage({
-              type: "updateTransactionDetails",
-              data: {
-                runbal_gcash: this.transactionDetails.runbal_gcash,
-                runbal_cash_on_hand:
-                  this.transactionDetails.runbal_cash_on_hand,
-              },
-            });
-
-            this.socket.sendMessage({
-              type: "updateTransactionStatus",
-              data: { _id: event.cid, status: newStatus },
-            });
-          }
-        } else {
-          if (data.error.message == "Restricted") {
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                title: "Access Denied",
-                message:
-                  "Oops, It looks like you <b>dont have access</b> on this feature.",
-              },
-            });
           } else {
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                title: "Server Error",
-                message: data?.error?.message,
-              },
-            });
+            if (data.error.message == "Restricted") {
+              this.dialog.open(PopUpModalComponent, {
+                width: "500px",
+                data: {
+                  deletebutton: false,
+                  title: "Access Denied",
+                  message:
+                    "Oops, It looks like you <b>dont have access</b> on this feature.",
+                },
+              });
+            } else {
+              this.dialog.open(PopUpModalComponent, {
+                width: "500px",
+                data: {
+                  deletebutton: false,
+                  title: "Server Error",
+                  message: data?.error?.message,
+                },
+              });
+            }
           }
         }
       }
@@ -489,11 +512,11 @@ export class CashOutComponent implements OnInit, OnDestroy {
               message: "Cashout Request <b>has been sent</b>.",
             },
           });
-          this.viewType = "table";
-          this.resetCashoutForm();
-          this.getCashOuts();
-          this.hideMainButton.emit(false);
+          await this.getCashOuts();
           this.socket.sendMessage({ type: "newCashout", data: data.data });
+          this.resetCashoutForm();
+          this.hideMainButton.emit(false);
+          this.viewType = "table";
         } else {
           if (data.message == "Restricted") {
             this.dialog.open(PopUpModalComponent, {
@@ -542,41 +565,110 @@ export class CashOutComponent implements OnInit, OnDestroy {
               message: "Cashout Request <b>has been updated</b>.",
             },
           });
-          console.log("--------previous CO", this.previousCO);
+
           if (TransactionStatus.Approved === this.previousCO.status) {
             //it will adjust the running balance based from previous CO
             if (this.previousCO.fee_payment_is_gcash) {
-              this.transactionDetails.runbal_gcash -=
-                this.previousCO.amount + this.previousCO.fee;
-              this.transactionDetails.runbal_cash_on_hand +=
-                this.previousCO.amount;
+              this.transactionDetailsService.update({
+                runbal_gcash: {
+                  data: this.previousCO.amount + this.previousCO.fee,
+                  operation: "subtract",
+                },
+                runbal_cash_on_hand: {
+                  data: this.previousCO.amount,
+                  operation: "sum",
+                },
+              });
+              this.socket.sendMessage({
+                type: "updateTransactionDetails",
+                data: {
+                  runbal_gcash: {
+                    data: this.previousCO.amount + this.previousCO.fee,
+                    operation: "subtract",
+                  },
+                  runbal_cash_on_hand: {
+                    data: this.previousCO.amount,
+                    operation: "sum",
+                  },
+                },
+              });
             } else {
-              this.transactionDetails.runbal_gcash -= this.previousCO.amount;
-              this.transactionDetails.runbal_cash_on_hand +=
-                this.previousCO.amount - this.previousCO.fee;
+              this.transactionDetailsService.update({
+                runbal_gcash: {
+                  data: this.previousCO.amount,
+                  operation: "subtract",
+                },
+                runbal_cash_on_hand: {
+                  data: this.previousCO.amount - this.previousCO.fee,
+                  operation: "sum",
+                },
+              });
+              this.socket.sendMessage({
+                type: "updateTransactionDetails",
+                data: {
+                  runbal_gcash: {
+                    data: this.previousCO.amount,
+                    operation: "subtract",
+                  },
+                  runbal_cash_on_hand: {
+                    data: this.previousCO.amount - this.previousCO.fee,
+                    operation: "sum",
+                  },
+                },
+              });
             }
 
             //it will uodate the running balance based from updated CO
             if (updatedCO.fee_payment_is_gcash === "true") {
-              this.transactionDetails.runbal_gcash +=
-                updatedCO.amount + updatedCO.fee;
-              this.transactionDetails.runbal_cash_on_hand -= updatedCO.amount;
+              this.transactionDetailsService.update({
+                runbal_gcash: {
+                  data: updatedCO.amount + updatedCO.fee,
+                  operation: "sum",
+                },
+                runbal_cash_on_hand: {
+                  data: updatedCO.amount,
+                  operation: "subtract",
+                },
+              });
+              this.socket.sendMessage({
+                type: "updateTransactionDetails",
+                data: {
+                  runbal_gcash: {
+                    data: updatedCO.amount + updatedCO.fee,
+                    operation: "sum",
+                  },
+                  runbal_cash_on_hand: {
+                    data: updatedCO.amount,
+                    operation: "subtract",
+                  },
+                },
+              });
             } else {
-              this.transactionDetails.runbal_gcash += updatedCO.amount;
-              this.transactionDetails.runbal_cash_on_hand -=
-                updatedCO.amount - updatedCO.fee;
+              this.transactionDetailsService.update({
+                runbal_gcash: {
+                  data: updatedCO.amount,
+                  operation: "sum",
+                },
+                runbal_cash_on_hand: {
+                  data: updatedCO.amount - updatedCO.fee,
+                  operation: "subtract",
+                },
+              });
+              this.socket.sendMessage({
+                type: "updateTransactionDetails",
+                data: {
+                  runbal_gcash: {
+                    data: updatedCO.amount + updatedCO.fee,
+                    operation: "sum",
+                  },
+                  runbal_cash_on_hand: {
+                    data: updatedCO.amount,
+                    operation: "subtract",
+                  },
+                },
+              });
             }
-
-            this.socket.sendMessage({
-              type: "updateTransactionDetails",
-              data: {
-                runbal_gcash: this.transactionDetails.runbal_gcash,
-                runbal_cash_on_hand:
-                  this.transactionDetails.runbal_cash_on_hand,
-              },
-            });
           }
-          console.log("--------trigger socket updateCashout");
           this.socket.sendMessage({ type: "updateCashout", data: updatedCO });
 
           this.viewType = "table";

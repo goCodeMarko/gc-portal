@@ -8,12 +8,18 @@ body {
 }
 
 .gs-main-button-group {
-  margin: 0.6em 0px 0px 0px !important;
+  position: fixed !important;
+  bottom: 64px;
+  left: 0px;
+  width: 100vw !important;
+  background-color: #f3f3f3;
+  padding: 5px;
 
   .gs-main-button-group-horizontal {
     display: flex !important;
     gap: 0.5em !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
+    justify-content: space-evenly;
   }
 }
 
@@ -51,6 +57,44 @@ body {
       margin: 0;
     }
   }
+}
+
+.ms-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  min-height: 40px;
+  justify-content: flex-start;
+  max-width: 80px;
+  min-width: 80px;
+
+  .mat-icon-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  button {
+    width: 100%;
+
+    mat-icon {
+      font-size: 40px !important;
+      text-align: center !important;
+      width: 100%;
+    }
+  }
+
+  .ms-icon-text {
+    margin-top: 4px;
+    font-size: x-small;
+    font-weight: 800;
+  }
+}
+
+.material-icons-two-tone {
+  font-size: 60px; /* Adjust size as needed */
+  color: #767676; /* Adjust color as needed */
 }
 
 /*

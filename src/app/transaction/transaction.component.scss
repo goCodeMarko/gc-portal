@@ -19,7 +19,10 @@ body {
 
 .ms-tabs-container {
   width: 100% !important;
-  margin: 1em 0px;
+  position: fixed !important;
+  bottom: 0px;
+  left: 0px;
+  z-index: 1;
 
   mat-button-toggle {
     flex: 1 1 auto !important;

@@ -7,6 +7,16 @@ body {
   margin: 0;
 }
 
+.gs-main-button-group {
+  margin: 2em 0px 0px 0px !important;
+
+  .gs-main-button-group-horizontal {
+    display: flex !important;
+    gap: 0.5em !important;
+    flex-direction: column !important;
+  }
+}
+
 .ms-tabs-container {
   width: 100% !important;
   margin: 1em 0px;

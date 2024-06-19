@@ -74,23 +74,33 @@ export class TransactionComponent implements OnInit {
 
     this.transactionDetailsSubscription = this.transactionDetailsService
       .everyNewUpdate()
-      .subscribe((message) => {
-        //it will update the transaction details
-        if (message.runbal_gcash.operation === "sum") {
-          this.transactionDetails.runbal_gcash += message.runbal_gcash.data;
-        } else if (message.runbal_gcash.operation === "subtract") {
-          this.transactionDetails.runbal_gcash -= message.runbal_gcash.data;
-        }
+      .subscribe(
+        (message) => {
+          //it will update the transaction details
+          console.log(11111, message);
 
-        if (message.runbal_cash_on_hand.operation === "sum") {
-          this.transactionDetails.runbal_cash_on_hand +=
-            message.runbal_cash_on_hand.data;
-        } else if (message.runbal_cash_on_hand.operation === "subtract") {
-          this.transactionDetails.runbal_cash_on_hand -=
-            message.runbal_cash_on_hand.data;
+          if (message.runbal_gcash.operation === "sum") {
+            this.transactionDetails.runbal_gcash += message.runbal_gcash.data;
+          } else if (message.runbal_gcash.operation === "subtract") {
+            this.transactionDetails.runbal_gcash -= message.runbal_gcash.data;
+          }
+
+          if (message.runbal_cash_on_hand.operation === "sum") {
+            this.transactionDetails.runbal_cash_on_hand +=
+              message.runbal_cash_on_hand.data;
+          } else if (message.runbal_cash_on_hand.operation === "subtract") {
+            this.transactionDetails.runbal_cash_on_hand -=
+              message.runbal_cash_on_hand.data;
+          }
+          //end
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          console.log("complete");
         }
-        //end
-      });
+      );
 
     //Checks if route has tid param
     this.routeSubscription = this.route.queryParams.subscribe(

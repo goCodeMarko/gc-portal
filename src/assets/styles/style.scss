@@ -97,7 +97,13 @@ button:disabled {
 }
 
 .gs-button-group {
-  margin: 2em 0px 0px 0px !important;
+  width: 100vw !important;
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background-color: #f3f3f3;
+  padding: 10px !important;
 
   .gs-button-group-horizontal {
     display: flex !important;
@@ -136,4 +142,12 @@ button:disabled {
 
 mat-card {
   margin: 0px !important;
+}
+
+.custom-badge {
+  background-color: $main-color;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 2px 4px;
+  font-weight: 600;
 }

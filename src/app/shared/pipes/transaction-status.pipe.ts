@@ -5,29 +5,8 @@ import { TransactionStatus, TransactionStatusLabels } from "../../shared/enums";
 export class TransactionStatusPipe implements PipeTransform {
   transform(value: any, ...args: any[]) {
     let result = "";
-    switch (value) {
-      case TransactionStatus.Pending:
-        result = `<span class='badge text-bg-light'>${
-          TransactionStatusLabels[TransactionStatus.Pending]
-        }</span>`;
-        break;
 
-      case TransactionStatus.Approved:
-        result = `<span class='badge text-bg-info'>${
-          TransactionStatusLabels[TransactionStatus.Approved]
-        }</span>`;
-        break;
-      case TransactionStatus.Failed:
-        result = `<span class='badge text-bg-danger'>${
-          TransactionStatusLabels[TransactionStatus.Failed]
-        }</span>`;
-        break;
-      case TransactionStatus.Cancelled:
-        result = `<span class='badge text-bg-secondary'>${
-          TransactionStatusLabels[TransactionStatus.Cancelled]
-        }</span>`;
-        break;
-    }
+    result = `<span class='custom-badge'>${TransactionStatusLabels[value]}</span>`;
 
     return result;
   }

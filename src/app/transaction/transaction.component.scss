@@ -13,7 +13,7 @@ body {
   left: 0px;
   width: 100vw !important;
   background-color: #f3f3f3;
-  padding: 5px;
+  padding: 5px 5px 8px 5px;
 
   .gs-main-button-group-horizontal {
     display: flex !important;
@@ -34,10 +34,10 @@ body {
     flex: 1 1 auto !important;
     padding: 10px 10px 13px 10px !important;
     font-weight: bold;
+    background-color: #f3f3f3 !important;
   }
   .mat-button-toggle-checked.mat-button-toggle-appearance-standard {
     background-color: $main-color !important;
-    color: #fff !important;
   }
 }
 
@@ -95,6 +95,48 @@ body {
 .material-icons-two-tone {
   font-size: 60px; /* Adjust size as needed */
   color: #767676; /* Adjust color as needed */
+}
+
+.ms-details-bg {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 100vw;
+  height: 150px;
+  background: linear-gradient(135deg, #0000 20.5%, #ffffff 0 29.5%, #0000 0) 0
+      26.5px,
+    linear-gradient(45deg, #0000 8%, #ffffff 0 17%, #0000 0 58%) 53px 0,
+    linear-gradient(
+      135deg,
+      #0000 8%,
+      #ffffff 0 17%,
+      #0000 0 58%,
+      #ffffff 0 67%,
+      #0000 0
+    ),
+    linear-gradient(
+      45deg,
+      #0000 8%,
+      #ffffff 0 17%,
+      #0000 0 58%,
+      #ffffff 0 67%,
+      #0000 0 83%,
+      #ffffff 0 92%,
+      #0000 0
+    ),
+    #aaaaaa;
+  background-size: 106px 106px;
+}
+
+.ms-details {
+  position: absolute;
+  top: 1.5em;
+  width: 96vw;
+  z-index: 1;
+
+  mat-card {
+    color: #000000de;
+  }
 }
 
 /*

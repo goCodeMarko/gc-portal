@@ -32,46 +32,10 @@
     </ng-container>
 
     <ng-template #details>
-      <div
-        style="
-          position: absolute;
-          top: 0px;
-          right: 0px;
-          width: 100vw;
-          height: 150px;
-          background: linear-gradient(
-                135deg,
-                #0000 20.5%,
-                #ffffff 0 29.5%,
-                #0000 0
-              )
-              0 26.5px,
-            linear-gradient(45deg, #0000 8%, #ffffff 0 17%, #0000 0 58%) 53px 0,
-            linear-gradient(
-              135deg,
-              #0000 8%,
-              #ffffff 0 17%,
-              #0000 0 58%,
-              #ffffff 0 67%,
-              #0000 0
-            ),
-            linear-gradient(
-              45deg,
-              #0000 8%,
-              #ffffff 0 17%,
-              #0000 0 58%,
-              #ffffff 0 67%,
-              #0000 0 83%,
-              #ffffff 0 92%,
-              #0000 0
-            ),
-            #90ac8e;
-          background-size: 106px 106px;
-        "
-      ></div>
+      <div class="ms-details-bg"></div>
 
-      <div style="position: absolute; top: 1.5em; width: 96vw; z-index: 1">
-        <mat-card style="color: #000000de">
+      <div class="ms-details">
+        <mat-card>
           <ng-container *ngIf="!getTransactionLoading; else detailLoader">
             <section id="cssportal-grid">
               <div id="div0">

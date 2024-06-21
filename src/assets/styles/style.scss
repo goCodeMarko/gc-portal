@@ -52,21 +52,25 @@ File: scss
 }
 
 .mat-main-green {
-  background-color: #90ac8e !important;
+  background-color: $main-color !important;
   color: white !important;
 }
 
 .mat-main-green-basic {
-  color: #90ac8e;
+  color: $main-color;
+}
+
+.mat-flat-button {
+  height: 60px; /* Set the desired height */
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-  border-color: #90ac8e;
+  border-color: $main-color;
 }
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle {
-  color: #90ac8e;
-  background-color: #90ac8e;
+  color: $main-color;
+  background-color: $main-color;
 }
 
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
@@ -74,7 +78,7 @@ File: scss
 }
 
 button:disabled {
-  background-color: #90ac8e !important;
+  background-color: $main-color !important;
   color: white !important;
 }
 

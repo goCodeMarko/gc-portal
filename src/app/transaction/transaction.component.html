@@ -136,27 +136,19 @@
               *ngTemplateOutlet="btnCreateTransaction"
             ></ng-container>
           </ng-container>
-
-          <div
-            class="ms-icon-container"
-            (click)="generateReport()"
-            [disabled]="generateReportBtnOnLoad"
-          >
+          <!--  [ngClass]="{ 'class1': isCondition1, 'class2': isCondition2 }" -->
+          <div class="ms-icon-container" (click)="generateReport()">
             <button mat-icon-button>
               <mat-icon class="material-icons-two-tone two-tone-custom-class"
                 >leaderboard</mat-icon
               >
             </button>
-            <div class="ms-icon-text">
-              <ng-container
-                *ngIf="!generateReportBtnOnLoad; else loadgenreport"
-              >
-                GENERATE REPORT
-              </ng-container>
-              <ng-template #loadgenreport>
+            <div class="ms-icon-text">GENERATE REPORT</div>
+            <ng-container *ngIf="generateReportBtnOnLoad">
+              <div class="ms-mini-loader">
                 <i class="fas fa-circle-notch fa-spin"></i>
-              </ng-template>
-            </div>
+              </div>
+            </ng-container>
           </div>
         </ng-container>
 

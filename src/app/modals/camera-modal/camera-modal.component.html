@@ -1,0 +1,29 @@
+<div class="webcam-container">
+  <div class="ls-loader" *ngIf="onLoad">
+    <div><i class="fas fa-circle-notch fa-spin"></i></div>
+  </div>
+  <webcam
+    [width]="331"
+    [trigger]="triggerObservable"
+    (imageCapture)="handleImage($event)"
+    [allowCameraSwitch]="true"
+    [switchCamera]="nextWebcamObservable"
+    [videoOptions]="videoOptions"
+    (cameraSwitched)="cameraWasSwitched($event)"
+    (initError)="handleInitError($event)"
+    (cameraInit)="handleInit(true)"
+  ></webcam>
+
+  <br />
+  <div class="ls-buttons" *ngIf="!onLoad">
+    <button
+      mat-flat-button
+      color="main-green"
+      (click)="triggerSnapshot()"
+      class="fw-bold"
+    >
+      <!-- <span class="material-symbols-outlined"> photo_camera </span> -->
+      TAKE PICTURE
+    </button>
+  </div>
+</div>

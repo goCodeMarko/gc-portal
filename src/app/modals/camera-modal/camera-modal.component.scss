@@ -1,0 +1,21 @@
+.ls-buttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: absolute;
+  bottom: 10px;
+}
+
+.ls-loader {
+  background-color: white;
+  position: absolute;
+  top: 0px;
+  z-index: 2;
+  right: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -8,9 +8,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { WebcamImage, WebcamInitError, WebcamUtil } from "ngx-webcam";
-import { Subject, Subscription } from "rxjs";
-import { Observable } from "rxjs-compat";
+import { Subscription } from "rxjs";
 import { HttpRequestService } from "src/app/http-request/http-request.service";
 import { PopUpModalComponent } from "../../../modals/pop-up-modal/pop-up-modal.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -21,12 +19,12 @@ import {
 } from "../../../shared/enums";
 import { SocketService } from "src/app/shared/socket/socket.service";
 import { AudioService } from "src/app/shared/audio/audio.service";
-import * as moment from "moment";
 import * as _ from "lodash";
 import { ViewNoteModalComponent } from "src/app/modals/view-note-modal/view-note-modal.component";
 import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/view-snapshot-modal.component";
 import { ActivatedRoute } from "@angular/router";
 import { TransactionDetailsService } from "../../shared/services/transaction-details/transaction-details.service";
+import { CameraModalComponent } from "src/app/modals/camera-modal/camera-modal.component";
 
 interface ICashOuts {
   _id: string;
@@ -89,26 +87,13 @@ export class CashOutComponent implements OnInit, OnDestroy {
   };
   cashOutTableOnLoad: boolean = true;
 
-  // toggle webcam on/off
-  public showWebcam = true;
-  public multipleWebcamsAvailable = false;
-
-  // latest snapshot
-  public webcamImage: object | null = null;
-
-  // webcam snapshot trigger
-  private trigger: Subject<void> = new Subject<void>();
-  // switch to next / previous / specific webcam; true/false: forward/backwards, string: deviceId
-  private nextWebcam: Subject<boolean | string> = new Subject<
-    boolean | string
-  >();
-
   private socketSubscription: Subscription;
   private routeSubscription: Subscription;
   public cashoutForm: FormGroup;
   public transactionDetails: any = {};
   public sendRequestBtnOnLoad = false;
   public updateRequestBtnOnLoad = false;
+  public webcamImage: object | null = null; //latest snapshot
 
   constructor(
     private fb: FormBuilder,
@@ -181,9 +166,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
     //end
   }
 
-  ngOnInit(): void {
-    this.readAvailableVideoInputs();
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.socketSubscription.unsubscribe();
@@ -211,6 +194,27 @@ export class CashOutComponent implements OnInit, OnDestroy {
         this.cashOutTableOnLoad = false;
       }
     );
+  }
+
+  public openCamera(): void {
+    this.dialog
+      .open(CameraModalComponent, {
+        hasBackdrop: true,
+        data: {},
+      })
+      .componentInstance.result.subscribe((data) => {
+        console.log("CASHOUT COMPONENT: ", data);
+        this.webcamImage = data;
+        this.cashoutForm.patchValue({
+          snapshot: data?._imageAsDataUrl,
+        });
+      });
+  }
+  public recapture(): void {
+    this.cashoutForm.patchValue({
+      snapshot: "",
+    });
+    this.webcamImage = null;
   }
 
   private previousCO!: {
@@ -699,60 +703,6 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
           this.updateRequestBtnOnLoad = false;
         }
-      }
-    );
-  }
-
-  public triggerSnapshot(): void {
-    this.trigger.next();
-  }
-
-  public recapture(): void {
-    this.cashoutForm.patchValue({
-      snapshot: "",
-    });
-    this.webcamImage = null;
-  }
-
-  public handleInitError(error: WebcamInitError): void {
-    if (
-      error.mediaStreamError &&
-      error.mediaStreamError.name === "NotAllowedError"
-    ) {
-    }
-  }
-
-  public handleImage(webcamImage: any): void {
-    this.webcamImage = webcamImage;
-    this.cashoutForm.patchValue({
-      snapshot: webcamImage?._imageAsDataUrl,
-    });
-  }
-
-  public get triggerObservable(): Observable<void> {
-    return this.trigger.asObservable();
-  }
-
-  public get nextWebcamObservable(): Observable<boolean | string> {
-    return this.nextWebcam.asObservable();
-  }
-
-  public get videoOptions(): MediaTrackConstraints {
-    const result: MediaTrackConstraints = {};
-
-    result.facingMode = { ideal: "environment" };
-
-    return result;
-  }
-
-  public cameraWasSwitched(deviceId: string): void {
-    this.readAvailableVideoInputs();
-  }
-
-  private readAvailableVideoInputs() {
-    WebcamUtil.getAvailableVideoInputs().then(
-      (mediaDevices: MediaDeviceInfo[]) => {
-        this.multipleWebcamsAvailable = mediaDevices && mediaDevices.length > 1;
       }
     );
   }

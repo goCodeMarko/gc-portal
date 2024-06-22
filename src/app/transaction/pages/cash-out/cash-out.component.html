@@ -66,48 +66,25 @@
         </div>
 
         <div class="gs-form-control">
+          <button
+            mat-flat-button
+            color="main-green"
+            (click)="openCamera()"
+            class="fw-bold"
+          >
+            <!-- <span class="material-symbols-outlined"> photo_camera </span> -->
+            OPEN CAMERA
+          </button>
+        </div>
+
+        <div class="gs-form-control">
+          <div class="ls-snapshot" *ngIf="webcamImage">
+            <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+          </div>
           <mat-form-field style="display: none">
             <input type="text" matInput formControlName="snapshot" />
           </mat-form-field>
-          <div class="webcam-container">
-            <webcam
-              [height]="367"
-              [width]="367"
-              [trigger]="triggerObservable"
-              (imageCapture)="handleImage($event)"
-              [allowCameraSwitch]="true"
-              [switchCamera]="nextWebcamObservable"
-              [videoOptions]="videoOptions"
-              (cameraSwitched)="cameraWasSwitched($event)"
-              (initError)="handleInitError($event)"
-              *ngIf="!webcamImage"
-            ></webcam>
-            <div class="ls-snapshot" *ngIf="webcamImage">
-              <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
-            </div>
-            <br />
-            <div class="ls-buttons">
-              <button
-                mat-flat-button
-                color="main-green"
-                (click)="triggerSnapshot()"
-                *ngIf="!webcamImage"
-                class="fw-bold"
-              >
-                <!-- <span class="material-symbols-outlined"> photo_camera </span> -->
-                TAKE PICTURE
-              </button>
-              <button
-                mat-flat-button
-                color="danger"
-                (click)="recapture()"
-                *ngIf="webcamImage"
-                class="fw-bold"
-              >
-                REMOVE PICTURE
-              </button>
-            </div>
-          </div>
+
           <mat-error *ngIf="checkFormControlErrors('snapshot')">
             <small
               *ngIf="
@@ -118,6 +95,15 @@
               Snapshot is required
             </small>
           </mat-error>
+          <!-- <button
+            mat-flat-button
+            color="danger"
+            (click)="recapture()"
+            *ngIf="webcamImage"
+            class="fw-bold"
+          >
+            REMOVE PICTURE
+          </button> -->
         </div>
 
         <div class="gs-button-group">

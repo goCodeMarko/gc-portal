@@ -46,6 +46,10 @@ File: scss
   font-weight: 900;
 }
 
+.mat-dialog-container {
+  padding: 0px !important;
+}
+
 .mat-danger {
   background-color: #d9534f;
   color: white;
@@ -154,4 +158,26 @@ mat-card {
   font-size: 12px;
   padding: 2px 4px;
   font-weight: 600;
+}
+
+//ngx-webcam style
+
+.webcam-container {
+  position: relative;
+  .webcam-wrapper {
+    video {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+
+      .mirrored {
+        // width: 100% !important;
+      }
+    }
+
+    .camera-switch {
+      top: 25px !important;
+      right: 35px !important;
+    }
+  }
 }

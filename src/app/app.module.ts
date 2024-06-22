@@ -17,15 +17,11 @@ import { AppHeaderComponent } from "./layouts/full/header/header.component";
 import { AppSidebarComponent } from "./layouts/full/sidebar/sidebar.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { DemoMaterialModule } from "./demo-material-module";
-
 import { SharedModule } from "./shared/shared.module";
 import { SpinnerComponent } from "./shared/spinner.component";
 import { HttpRequestService } from "./http-request/http-request.service";
 import { PopUpModalComponent } from "./modals/pop-up-modal/pop-up-modal.component";
-import { EditBookComponent } from "./modals/edit-book/edit-book.component";
 import { MatInputModule } from "@angular/material/input";
-import { AddBookComponent } from "./modals/add-book/add-book.component";
-import { EditSessionHandlingComponent } from "./modals/edit-session-handling/edit-session-handling.component";
 import { AuthService } from "./authorization/auth.service";
 import { TokenInterceptorServiceService } from "./token-interceptor/token-interceptor-service.service";
 import { LoginComponent } from "./login/login.component";
@@ -37,6 +33,8 @@ import { InternetConnectionService } from "./shared/internet-connection/internet
 import { ViewNoteModalComponent } from "./modals/view-note-modal/view-note-modal.component";
 import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-snapshot-modal.component";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { CameraModalComponent } from "./modals/camera-modal/camera-modal.component";
+import { WebcamModule } from "ngx-webcam";
 
 @NgModule({
   declarations: [
@@ -47,12 +45,10 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
     AppSidebarComponent,
     PopUpModalComponent,
     ViewNoteModalComponent,
-    EditBookComponent,
-    AddBookComponent,
-    EditSessionHandlingComponent,
     LoginComponent,
     ViewNoteModalComponent,
     ViewSnapshotModalComponent,
+    CameraModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,6 +64,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
     MatTooltipModule,
     TransactionModule,
     MatButtonToggleModule,
+    WebcamModule,
     RouterModule.forRoot(AppRoutes),
   ],
   providers: [

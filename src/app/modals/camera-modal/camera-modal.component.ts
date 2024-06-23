@@ -55,7 +55,7 @@ export class CameraModalComponent implements OnInit, OnDestroy {
         this.onLoad = false;
         console.log("Element exists in the DOM");
       }
-    }, 500);
+    }, 1000);
   }
 
   // Method to trigger the snapshot

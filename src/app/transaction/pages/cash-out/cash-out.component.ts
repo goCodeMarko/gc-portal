@@ -199,6 +199,8 @@ export class CashOutComponent implements OnInit, OnDestroy {
   public openCamera(): void {
     this.dialog
       .open(CameraModalComponent, {
+        height: "465px",
+        width: "331px",
         hasBackdrop: true,
         data: {},
       })

@@ -111,3 +111,22 @@
     }
   }
 }
+
+@media (max-width: 400px) {
+  #cssportal-grid {
+    grid-template-columns: 100px 200px;
+  }
+}
+
+@media (max-width: 350px) {
+  #cssportal-grid {
+    padding: 5px 8px;
+  }
+  #cssportal-grid #div5 {
+    grid-template-columns: 85px 95px;
+  }
+
+  #cssportal-grid #div7 {
+    grid-template-columns: 85px 95px;
+  }
+}

@@ -17,6 +17,7 @@ body {
 
   .gs-main-button-group-horizontal {
     display: flex !important;
+    flex-wrap: wrap;
     gap: 0.5em !important;
     flex-direction: row !important;
     justify-content: space-evenly;
@@ -93,6 +94,13 @@ body {
     font-weight: 800;
   }
 }
+@media (max-width: 355px) {
+  .ms-icon-container {
+    max-width: 60px;
+    min-width: 60px;
+  }
+}
+
 .ms-mini-loader {
   position: absolute;
   top: 50%; /* Position 50% from the top */

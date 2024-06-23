@@ -167,7 +167,6 @@ mat-card {
 
 .webcam-container {
   position: relative;
-  height: 65.3vh;
   .webcam-wrapper {
     video {
       width: 100% !important;
@@ -183,5 +182,21 @@ mat-card {
       top: 20px !important;
       right: 20px !important;
     }
+  }
+}
+
+@media (max-width: 400px) {
+  #cssportal-grid {
+    grid-template-columns: 100px 200px;
+  }
+}
+
+@media (max-width: 350px) {
+  #cssportal-grid #div5 {
+    grid-template-columns: 85px 95px;
+  }
+
+  #cssportal-grid #div7 {
+    grid-template-columns: 85px 95px;
   }
 }

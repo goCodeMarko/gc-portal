@@ -34,7 +34,7 @@ import { ViewNoteModalComponent } from "./modals/view-note-modal/view-note-modal
 import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-snapshot-modal.component";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { CameraModalComponent } from "./modals/camera-modal/camera-modal.component";
-import { WebcamModule } from "ngx-webcam";
+// import { WebcamModule } from "ngx-webcam";
 
 @NgModule({
   declarations: [
@@ -64,7 +64,7 @@ import { WebcamModule } from "ngx-webcam";
     MatTooltipModule,
     TransactionModule,
     MatButtonToggleModule,
-    WebcamModule,
+    // WebcamModule,
     RouterModule.forRoot(AppRoutes),
   ],
   providers: [

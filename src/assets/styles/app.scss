@@ -909,6 +909,11 @@ list inline
   color: #90ac8e !important;
 }
 
+.mat-icon {
+  width: auto !important;
+  height: auto !important;
+}
+
 //input fields
 .mat-form-field-appearance-outline:not(.mat-form-field-disabled)
   .mat-form-field-flex:hover

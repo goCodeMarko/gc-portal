@@ -70,7 +70,8 @@ interface IResponse {
 export class CashOutComponent implements OnInit, OnDestroy {
   @Output() hideMainButton = new EventEmitter<boolean>();
   @ViewChild("triggerAudioBtn") triggerAudioBtn!: ElementRef;
-
+  @ViewChild("imageContainer") imageContainer!: ElementRef;
+  @ViewChild("openCameraInput") openCameraInput!: ElementRef;
   //tables
   cashOuts: ICashOuts[] = [];
   viewType = "table";
@@ -93,7 +94,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   public transactionDetails: any = {};
   public sendRequestBtnOnLoad = false;
   public updateRequestBtnOnLoad = false;
-  public webcamImage: object | null = null; //latest snapshot
+  public webcamImage: object | null | string = null; //latest snapshot
 
   constructor(
     private fb: FormBuilder,
@@ -173,6 +174,37 @@ export class CashOutComponent implements OnInit, OnDestroy {
     this.routeSubscription.unsubscribe();
   }
 
+  public openCamera(): void {
+    this.openCameraInput.nativeElement.click();
+  }
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.webcamImage = e.target!.result;
+        this.cashoutForm.patchValue({
+          snapshot: e.target?.result,
+        });
+
+        const img = document.createElement("img");
+        img.src = e.target?.result as string;
+        img.style.maxWidth = "100%"; // Optional: Style the image
+        img.style.height = "auto";
+        console.log(2343242, e.target?.result);
+        // Clear previous content if any
+        this.imageContainer.nativeElement.innerHTML = "";
+
+        // Append the new image
+        this.imageContainer.nativeElement.appendChild(img);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }
+
   public getCashOuts() {
     this.cashOutTableOnLoad = true;
     this.hrs.request(
@@ -195,29 +227,28 @@ export class CashOutComponent implements OnInit, OnDestroy {
       }
     );
   }
-
-  public openCamera(): void {
-    this.dialog
-      .open(CameraModalComponent, {
-        height: "465px",
-        width: "331px",
-        hasBackdrop: true,
-        data: {},
-      })
-      .componentInstance.result.subscribe((data) => {
-        console.log("CASHOUT COMPONENT: ", data);
-        this.webcamImage = data;
-        this.cashoutForm.patchValue({
-          snapshot: data?._imageAsDataUrl,
-        });
-      });
-  }
-  public recapture(): void {
-    this.cashoutForm.patchValue({
-      snapshot: "",
-    });
-    this.webcamImage = null;
-  }
+  // public openCamera(): void {
+  //   this.dialog
+  //     .open(CameraModalComponent, {
+  //       height: "465px",
+  //       width: "331px",
+  //       hasBackdrop: true,
+  //       data: {},
+  //     })
+  //     .componentInstance.result.subscribe((data) => {
+  //       console.log("CASHOUT COMPONENT: ", data);
+  //       this.webcamImage = data;
+  //       this.cashoutForm.patchValue({
+  //         snapshot: data?._imageAsDataUrl,
+  //       });
+  //     });
+  // }
+  // public recapture(): void {
+  //   this.cashoutForm.patchValue({
+  //     snapshot: "",
+  //   });
+  //   this.webcamImage = null;
+  // }
 
   private previousCO!: {
     fee_payment_is_gcash: boolean;

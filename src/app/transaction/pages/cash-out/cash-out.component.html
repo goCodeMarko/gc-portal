@@ -68,6 +68,25 @@
         <div class="gs-form-control">
           <div class="ls-webcam-remote">
             <div class="ls-controls">
+              <!-- <button
+                mat-flat-button
+                color="main-green"
+                (click)="openCamera()"
+                class="btn-block fw-bold"
+              >
+                CAMERA
+              </button> -->
+
+              <input
+                #openCameraInput
+                type="file"
+                id="picture"
+                name="picture"
+                accept="image/*"
+                capture="environment"
+                (change)="onFileChange($event)"
+                hidden
+              />
               <button
                 mat-flat-button
                 color="main-green"
@@ -79,11 +98,9 @@
             </div>
 
             <div class="ls-snapshot">
-              <ng-container *ngIf="webcamImage; else blank">
-                <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
-              </ng-container>
+              <div #imageContainer></div>
 
-              <ng-template #blank>
+              <ng-container *ngIf="!webcamImage">
                 <div class="blank">
                   <span
                     class="material-symbols-outlined"
@@ -92,7 +109,7 @@
                     wallpaper
                   </span>
                 </div>
-              </ng-template>
+              </ng-container>
             </div>
           </div>
         </div>
@@ -134,6 +151,9 @@
               class="btn-block fw-bold"
             >
               <ng-container *ngIf="!sendRequestBtnOnLoad; else loadsend">
+                <mat-icon class="material-icons-two-tone two-tone-custom-class"
+                  >done_outline</mat-icon
+                >
                 SEND REQUEST
               </ng-container>
               <ng-template #loadsend>

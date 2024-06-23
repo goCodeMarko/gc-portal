@@ -66,21 +66,38 @@
         </div>
 
         <div class="gs-form-control">
-          <button
-            mat-flat-button
-            color="main-green"
-            (click)="openCamera()"
-            class="fw-bold"
-          >
-            <!-- <span class="material-symbols-outlined"> photo_camera </span> -->
-            OPEN CAMERA
-          </button>
+          <div class="ls-webcam-remote">
+            <div class="ls-controls">
+              <button
+                mat-flat-button
+                color="main-green"
+                (click)="openCamera()"
+                class="btn-block fw-bold"
+              >
+                CAMERA
+              </button>
+            </div>
+
+            <div class="ls-snapshot">
+              <ng-container *ngIf="webcamImage; else blank">
+                <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
+              </ng-container>
+
+              <ng-template #blank>
+                <div class="blank">
+                  <span
+                    class="material-symbols-outlined"
+                    style="color: darkgray; font-size: 50px"
+                  >
+                    wallpaper
+                  </span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
         </div>
 
         <div class="gs-form-control">
-          <div class="ls-snapshot" *ngIf="webcamImage">
-            <img [src]="webcamImage.imageAsDataUrl" alt="webcam image" />
-          </div>
           <mat-form-field style="display: none">
             <input type="text" matInput formControlName="snapshot" />
           </mat-form-field>

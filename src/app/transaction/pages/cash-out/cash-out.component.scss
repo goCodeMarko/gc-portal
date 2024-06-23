@@ -4,10 +4,40 @@ body {
   margin: 0;
 }
 
-.ls-snapshot {
-  text-align: center;
+.ls-webcam-remote {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
 
-  img {
-    width: 100%;
+  .ls-controls {
+    flex: 0 0 30%;
+  }
+
+  .ls-snapshot {
+    text-align: center;
+
+    .blank {
+      width: 250px; /* or any custom size */
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      object-fit: contain;
+      background: #f3f3f3;
+      border-radius: 20px;
+      border: darkgray dashed 3px;
+    }
+
+    img {
+      width: 100%; /* or any custom size */
+      height: 100%;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+  }
+}
+@media (max-width: 360px) {
+  .blank {
+    width: 210px !important;
   }
 }

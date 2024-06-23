@@ -29,7 +29,7 @@ export class CameraModalComponent implements OnInit, OnDestroy {
   private nextWebcam: Subject<boolean | string> = new Subject<
     boolean | string
   >(); // switch to next / previous / specific webcam; true/false: forward/backwards, string: deviceId
-  public elementChecker!: any;
+  // public elementChecker!: any;
   @Output() result = new EventEmitter();
   constructor(
     private dialog: MatDialogRef<CameraModalComponent>,
@@ -44,18 +44,18 @@ export class CameraModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.elementChecker);
+    // clearInterval(this.elementChecker);
   }
 
   private checkForElement(): void {
-    this.elementChecker = setInterval(() => {
-      const element = this.el.nativeElement.querySelector(".webcam-wrapper");
-      if (element) {
-        clearInterval(this.elementChecker);
-        this.onLoad = false;
-        console.log("Element exists in the DOM");
-      }
-    }, 1000);
+    // this.elementChecker = setInterval(() => {
+    //   const element = this.el.nativeElement.querySelector(".webcam-wrapper");
+    //   if (element) {
+    //     clearInterval(this.elementChecker);
+    //     this.onLoad = false;
+    //     console.log("Element exists in the DOM");
+    //   }
+    // }, 1000);
   }
 
   // Method to trigger the snapshot
@@ -97,7 +97,11 @@ export class CameraModalComponent implements OnInit, OnDestroy {
   }
 
   public cameraWasSwitched(deviceId: string): void {
+    this.onLoad = true;
     this.readAvailableVideoInputs();
+    setTimeout(() => {
+      this.onLoad = false;
+    }, 500);
   }
   private readAvailableVideoInputs() {
     WebcamUtil.getAvailableVideoInputs().then(

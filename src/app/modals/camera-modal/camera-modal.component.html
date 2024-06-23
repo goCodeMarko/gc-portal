@@ -6,7 +6,7 @@
     [width]="331"
     [trigger]="triggerObservable"
     (imageCapture)="handleImage($event)"
-    [allowCameraSwitch]="true"
+    [allowCameraSwitch]="false"
     [switchCamera]="nextWebcamObservable"
     [videoOptions]="videoOptions"
     (cameraSwitched)="cameraWasSwitched($event)"
@@ -22,12 +22,9 @@
       (click)="triggerSnapshot()"
       class="fw-bold"
     >
-      <span
-        class="material-symbols-outlined"
-        style="color: darkgray; font-size: 50px"
+      <mat-icon class="material-icons-two-tone two-tone-custom-class"
+        >photo_camera</mat-icon
       >
-        photo_camera
-      </span>
     </button>
   </div>
 </div>

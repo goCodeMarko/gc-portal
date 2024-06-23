@@ -41,6 +41,13 @@ export class CameraModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.readAvailableVideoInputs();
     this.checkForElement();
+
+    this.renderer.listen("window", "click", (e: Event) => {
+      const target = e.target as HTMLElement;
+
+      if (target.className === "camera-switch ng-star-inserted")
+        this.onLoad = true;
+    });
   }
 
   ngOnDestroy(): void {

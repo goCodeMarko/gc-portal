@@ -182,6 +182,10 @@ export class CashOutComponent implements OnInit, OnDestroy {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       const reader = new FileReader();
+      const MAX_SIZE = 200 * 1024; // 200 KB
+
+      // Slice the file if it's larger than 200KB
+      const blob = file.slice(0, MAX_SIZE);
 
       reader.onload = (e: ProgressEvent<FileReader>) => {
         this.webcamImage = e.target!.result;
@@ -193,7 +197,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
         img.src = e.target?.result as string;
         img.style.maxWidth = "100%"; // Optional: Style the image
         img.style.height = "auto";
-        console.log(2343242, e.target?.result);
+
         // Clear previous content if any
         this.imageContainer.nativeElement.innerHTML = "";
 
@@ -201,7 +205,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
         this.imageContainer.nativeElement.appendChild(img);
       };
 
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(blob);
     }
   }
 

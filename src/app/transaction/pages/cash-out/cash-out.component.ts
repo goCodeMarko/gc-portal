@@ -6,6 +6,7 @@ import {
   Output,
   ElementRef,
   ViewChild,
+  AfterViewInit,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Subscription } from "rxjs";
@@ -67,7 +68,7 @@ interface IResponse {
     ]),
   ],
 })
-export class CashOutComponent implements OnInit, OnDestroy {
+export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() hideMainButton = new EventEmitter<boolean>();
   @ViewChild("triggerAudioBtn") triggerAudioBtn!: ElementRef;
   @ViewChild("imageContainer") imageContainer!: ElementRef;
@@ -170,6 +171,10 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {}
 
+  ngAfterViewInit(): void {
+    console.log("ngAfterViewInit");
+  }
+
   ngOnDestroy(): void {
     this.socketSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
@@ -263,6 +268,8 @@ export class CashOutComponent implements OnInit, OnDestroy {
     fee: number;
     status: number;
   };
+
+  public snapshotView: any;
   emittedButton(event: { type: string; data: any }) {
     switch (event.type) {
       case "approve":
@@ -309,22 +316,25 @@ export class CashOutComponent implements OnInit, OnDestroy {
           status: status,
         };
         this.viewType = "editCashout";
-        const img = document.createElement("img");
-        img.src = snapshot;
-        img.style.maxWidth = "100%"; // Optional: Style the image
-        img.style.height = "auto";
+        this.snapshotView = snapshot;
+        // console.log("-----", this.imageContainer);
+        // const img = document.createElement("img");
+        // img.src = snapshot;
+        // img.style.maxWidth = "100%"; // Optional: Style the image
+        // img.style.height = "auto";
 
         // Clear previous content if any
-        this.imageContainer.nativeElement.innerHTML = "";
+        // this.imageContainer.nativeElement.innerHTML = "";
 
         // Append the new image
-        this.imageContainer.nativeElement.appendChild(img);
+        // this.imageContainer.nativeElement.appendChild(img);
 
-        this.webcamImage = { imageAsDataUrl: event.data.snapshot };
+        this.webcamImage = snapshot;
         // this.cashoutForm.patchValue({
         //   snapshot: file.name,
         // });
         // this.snapshotFile = file;
+        this.snapshotFile = snapshot;
 
         break;
       case "viewNote":
@@ -621,12 +631,24 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
   updateRequest() {
     this.updateRequestBtnOnLoad = true;
+
+    const formData = new FormData();
+    formData.append("type", this.cashoutForm.controls["type"].value);
+    formData.append(
+      "fee_payment_is_gcash",
+      this.cashoutForm.controls["fee_payment_is_gcash"].value
+    );
+    formData.append("snapshot", this.snapshotFile);
+    formData.append("amount", this.cashoutForm.controls["amount"].value);
+    formData.append("fee", this.cashoutForm.controls["fee"].value);
+    formData.append("note", this.cashoutForm.controls["note"].value);
+    console.log("-----snapshot", this.snapshotFile);
     this.hrs.request(
       "put",
       `transaction/updateCICO?trans_id=${this.transactionDetails?._id}&cid=${
         this.cashoutForm.get("cid")!.value
       }`,
-      this.cashoutForm.value,
+      formData,
       async (data: any) => {
         if (data.success) {
           const updatedCO = this.cashoutForm.value;

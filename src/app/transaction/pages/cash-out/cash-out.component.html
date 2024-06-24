@@ -105,7 +105,13 @@
             </div>
 
             <div class="ls-snapshot">
-              <div #imageContainer></div>
+              <div #imageContainer>
+                <img
+                  *ngIf="this.viewType == 'editCashout'"
+                  [src]="snapshotView"
+                  alt=""
+                />
+              </div>
 
               <ng-container *ngIf="!webcamImage">
                 <div class="blank">

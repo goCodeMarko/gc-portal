@@ -182,10 +182,10 @@ export class CashOutComponent implements OnInit, OnDestroy {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       const reader = new FileReader();
-      // const MAX_SIZE = 500 * 1024; // 200 KB
+      const MAX_SIZE = 900 * 1024; // 900 KB
 
-      // Slice the file if it's larger than 200KB
-      // const blob = file.slice(0, MAX_SIZE);
+      // Slice the file if it's larger than 900KB
+      const blob = file.slice(0, MAX_SIZE);
 
       reader.onload = (e: ProgressEvent<FileReader>) => {
         this.webcamImage = e.target!.result;

@@ -91,6 +91,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
   private socketSubscription: Subscription;
   private routeSubscription: Subscription;
   public cashoutForm: FormGroup;
+  public snapshotFile: any;
   public transactionDetails: any = {};
   public sendRequestBtnOnLoad = false;
   public updateRequestBtnOnLoad = false;
@@ -182,16 +183,18 @@ export class CashOutComponent implements OnInit, OnDestroy {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       const reader = new FileReader();
-      const MAX_SIZE = 900 * 1024; // 900 KB
+      // const MAX_SIZE = 900 * 1024; // 900 KB
 
       // Slice the file if it's larger than 900KB
-      const blob = file.slice(0, MAX_SIZE);
+      // const blob = file.slice(0, MAX_SIZE);
 
       reader.onload = (e: ProgressEvent<FileReader>) => {
         this.webcamImage = e.target!.result;
+
         this.cashoutForm.patchValue({
-          snapshot: e.target?.result,
+          snapshot: file.name,
         });
+        this.snapshotFile = file;
 
         const img = document.createElement("img");
         img.src = e.target?.result as string;
@@ -205,7 +208,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
         this.imageContainer.nativeElement.appendChild(img);
       };
 
-      reader.readAsDataURL(blob);
+      reader.readAsDataURL(file);
     }
   }
 
@@ -289,7 +292,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
           status,
           snapshot,
         } = event.data;
-
+        console.log("--------------------2", event.data);
         this.cashoutForm.patchValue({
           phone_number: phone_number,
           cid: _id,
@@ -305,8 +308,24 @@ export class CashOutComponent implements OnInit, OnDestroy {
           fee: fee,
           status: status,
         };
-        this.webcamImage = { imageAsDataUrl: event.data.snapshot };
         this.viewType = "editCashout";
+        const img = document.createElement("img");
+        img.src = snapshot;
+        img.style.maxWidth = "100%"; // Optional: Style the image
+        img.style.height = "auto";
+
+        // Clear previous content if any
+        this.imageContainer.nativeElement.innerHTML = "";
+
+        // Append the new image
+        this.imageContainer.nativeElement.appendChild(img);
+
+        this.webcamImage = { imageAsDataUrl: event.data.snapshot };
+        // this.cashoutForm.patchValue({
+        //   snapshot: file.name,
+        // });
+        // this.snapshotFile = file;
+
         break;
       case "viewNote":
         this.dialog.open(ViewNoteModalComponent, {
@@ -539,10 +558,24 @@ export class CashOutComponent implements OnInit, OnDestroy {
 
   sendRequest() {
     this.sendRequestBtnOnLoad = true;
+
+    const formData = new FormData();
+    formData.append("type", this.cashoutForm.controls["type"].value);
+    formData.append(
+      "fee_payment_is_gcash",
+      this.cashoutForm.controls["fee_payment_is_gcash"].value
+    );
+    formData.append("snapshot", this.snapshotFile);
+    formData.append("amount", this.cashoutForm.controls["amount"].value);
+    formData.append("fee", this.cashoutForm.controls["fee"].value);
+    formData.append("note", this.cashoutForm.controls["note"].value);
+
+    console.log("---2", formData);
+    console.log("---3", this.cashoutForm.value);
     this.hrs.request(
       "post",
       `transaction/addTransaction?trans_id=${this.transactionDetails?._id}`,
-      this.cashoutForm.value,
+      formData,
       async (data: any) => {
         if (data.success) {
           this.dialog.open(PopUpModalComponent, {

@@ -186,6 +186,7 @@ export class CashInComponent implements OnInit, OnDestroy {
     this.approveCashinForm.patchValue({
       screenshot: event.target.files[0].name,
     });
+    console.log("--------------", this.approveCashinForm);
     this.screenshotFile = event.target.files[0];
   }
 
@@ -598,7 +599,7 @@ export class CashInComponent implements OnInit, OnDestroy {
               message: "Cashin Request <b>has been updated</b>.",
             },
           });
-
+          console.log("--------2", this.cashinForm.value);
           if (TransactionStatus.Approved === this.previousCI.status) {
             //removed the calculation of recent transaction
             this.transactionDetailsService.update({

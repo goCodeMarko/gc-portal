@@ -65,6 +65,13 @@
           </mat-form-field>
         </div>
 
+        <div class="gs-form-control" hidden>
+          <mat-form-field appearance="outline">
+            <mat-label>Note</mat-label>
+            <input type="text" matInput formControlName="snapshot" />
+          </mat-form-field>
+        </div>
+
         <div class="gs-form-control">
           <div class="ls-webcam-remote">
             <div class="ls-controls">
@@ -115,9 +122,9 @@
         </div>
 
         <div class="gs-form-control">
-          <mat-form-field style="display: none">
+          <!-- <mat-form-field style="display: none">
             <input type="text" matInput formControlName="snapshot" />
-          </mat-form-field>
+          </mat-form-field> -->
 
           <mat-error *ngIf="checkFormControlErrors('snapshot')">
             <small

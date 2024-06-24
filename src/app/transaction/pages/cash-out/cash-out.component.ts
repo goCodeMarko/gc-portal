@@ -205,7 +205,7 @@ export class CashOutComponent implements OnInit, OnDestroy {
         this.imageContainer.nativeElement.appendChild(img);
       };
 
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(blob);
     }
   }
 

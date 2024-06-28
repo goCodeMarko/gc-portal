@@ -1,24 +1,211 @@
-<mat-card>
+<div
+  style="
+    background-color: white;
+    box-sizing: border-box;
+    padding: 0px 15px 15px 15px;
+  "
+>
   <ng-container *ngIf="!tableOnLoad; else tableLoader">
     <ng-container *ngIf="data.length >= 1; else noData">
       <ng-container *ngTemplateOutlet="tableButtons"></ng-container>
 
       <table class="table">
         <thead>
-          <tr>
-            <!-- <th></th> -->
-            <th *ngFor="let head of headers; let i = index" scope="col">
+          <!-- <tr> -->
+          <!-- <th></th> -->
+          <!-- <th *ngFor="let head of headers; let i = index" scope="col">
               {{ head }}
             </th>
-          </tr>
+          </tr> -->
         </thead>
         <tbody>
-          <tr *ngFor="let data of data; let i = index">
-            <!-- <td>
+          <div *ngFor="let data of data; let i = index">
+            <div
+              style="
+                background-color: #727fe9;
+                border-radius: 20px;
+                margin-bottom: 0.2em;
+                position: relative;
+                border: 10px solid #727fe9;
+                min-height: 125px;
+                color: white;
+              "
+              (longPress)="onLongPress(data)"
+              class="gs-no-select"
+            >
+              <div style="position: absolute; top: 0px; right: 0px">
+                <div [innerHTML]="data.status | transactionStatus"></div>
+              </div>
+              <div
+                style="
+                  position: absolute;
+                  top: 17px;
+                  left: 0px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-start;
+                "
+              >
+                <div
+                  style="
+                    font-size: 22px;
+                    font-weight: bold;
+                    border-radius: 50px;
+                  "
+                >
+                  {{ data["amount"] | currency : "₱" : "symbol" }}
+                </div>
+                <div
+                  style="
+                    vertical-align: middle;
+                    font-size: 14px;
+                    font-weight: bolder;
+                    display: flex;
+                    gap: 5px;
+                    flex-direction: row;
+                    align-items: center;
+                  "
+                >
+                  <b>{{ data["fee"] | currency : "₱" : "symbol" }}</b>
+                  <div
+                    [innerHTML]="data.fee_payment_is_gcash | paymentType"
+                  ></div>
+                </div>
+              </div>
+              <div
+                style="
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  font-size: 12px;
+                  display: flex;
+                  flex-direction: row-reverse;
+                  align-items: end;
+                  gap: 5px;
+                "
+              >
+                <div>
+                  {{ data["createdBy"] }}
+                </div>
+
+                <div>
+                  {{ data["createdAt"] | date : "shortTime" }}
+                </div>
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  position: absolute;
+                  bottom: 0px;
+                  right: 0px;
+                  font-size: 14px;
+                  flex-direction: column;
+                  text-align: center;
+                  gap: 5px;
+                "
+              >
+                <ng-container *ngIf="data['phone_number']">
+                  <div
+                    style="
+                      background: #3647d057;
+                      border-radius: 50px;
+                      padding: 2px 5px;
+                      cursor: pointer;
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      min-width: 140px;
+                    "
+                  >
+                    <span>{{ data["phone_number"] }}</span>
+
+                    <span
+                      class="material-icons"
+                      style="font-size: 14px; vertical-align: middle"
+                    >
+                      content_copy
+                    </span>
+                  </div>
+                </ng-container>
+
+                <div
+                  style="
+                    background: #3647d057;
+                    border-radius: 50px;
+                    padding: 2px 5px;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-between;
+                    min-width: 140px;
+                    align-items: center;
+                  "
+                >
+                  <span>View Note</span>
+                  <span
+                    class="material-icons"
+                    style="font-size: 18px; vertical-align: middle"
+                  >
+                    search
+                  </span>
+                </div>
+
+                <div
+                  style="
+                    background: #3647d057;
+                    border-radius: 50px;
+                    padding: 2px 5px;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    min-width: 140px;
+                  "
+                >
+                  <span>View Reference</span>
+
+                  <span
+                    class="material-icons"
+                    style="font-size: 18px; vertical-align: middle"
+                  >
+                    search
+                  </span>
+                </div>
+              </div>
+
+              <div
+                style="
+                  background: #3647d057;
+                  border-radius: 50px;
+                  padding: 2px 5px;
+                  cursor: pointer;
+                  bottom: 0px;
+                  left: 0px;
+                  font-size: 14px;
+                  position: absolute;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  min-width: 60px;
+                "
+              >
+                <span>Edit</span>
+                <span
+                  class="material-icons"
+                  style="font-size: 14px; vertical-align: middle"
+                >
+                  edit
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- <td>
             {{
               this.filters.limit * this.currentPage - (this.filters.limit - 1) + i
             }}
           </td> -->
+
+          <!-- <tr *ngFor="let data of data; let i = index"> 
             <td
               (longPress)="onLongPress(data)"
               *ngFor="let dataName of dataNames"
@@ -49,8 +236,8 @@
                   {{ data[dataName] }}
                 </ng-container>
               </ng-container>
-            </td>
-          </tr>
+            </td> 
+             </tr> -->
         </tbody>
       </table>
 
@@ -130,7 +317,7 @@
       <div class="ls-line"></div>
     </div>
   </ng-template>
-</mat-card>
+</div>
 
 <ng-template #tableButtons>
   <div

@@ -156,11 +156,41 @@ mat-card {
 }
 
 .custom-badge {
-  background-color: $main-color;
-  border-radius: 5px;
   font-size: 12px;
-  padding: 2px 4px;
   font-weight: 600;
+  display: flex;
+  gap: 2px;
+  text-align: center;
+  align-items: center;
+}
+
+.gs-circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: sub;
+  box-sizing: border-box;
+  border: 3px white solid;
+}
+.bg-pending {
+  background: #ffc107;
+}
+.bg-approved {
+  background: #0dcaf0;
+}
+.bg-failed {
+  background: #dc3545;
+}
+.bg-cancelled {
+  background: #f3f3f3;
+}
+
+.gs-image-bg {
+  vertical-align: middle;
+  background: white;
+  border-radius: 50%;
+  padding: 1px;
 }
 
 //ngx-webcam style

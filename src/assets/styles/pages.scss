@@ -32,14 +32,15 @@ html .page-wrapper {
   height: 100vh; //calc(100vh - 64px);
   // background: url("../../assets/images/bg-sandbox.png") no-repeat center center
   //   fixed;
-  background-color: white;
+  background-color: #ffffff;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   .page-content {
     // padding: 15px;
-    margin: 2% 2%;
+    // margin: 2% 2%;
+    padding-bottom: 160px;
   }
 }
 

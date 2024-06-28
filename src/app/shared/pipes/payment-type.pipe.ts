@@ -6,10 +6,9 @@ export class PaymentTypePipe implements PipeTransform {
     let result = "";
 
     if (value) {
-      // result = `<img src="assets/images/gcash.png" width="25" alt="user">`;
-      result = `<span class='custom-badge'>Gcash</span>`;
+      result = `<img  class="gs-image-bg" src="assets/images/gcash.png" width="23" alt="user">`;
     } else {
-      result = `<span class='custom-badge'>Cash</span>`;
+      result = `<img class="gs-image-bg" src="assets/images/cash.png" width="23" alt="user">`;
     }
 
     return result;

@@ -36,7 +36,16 @@
         <div class="ms-details-bg"></div>
 
         <div class="ms-details">
-          <mat-card>
+          <div
+            style="
+              border-radius: 20px;
+              margin-bottom: 0.2em;
+              position: relative;
+              border: 10px solid #e6dadaba;
+              min-height: 110px;
+              color: white;
+            "
+          >
             <ng-container *ngIf="!getTransactionLoading; else detailLoader">
               <section id="cssportal-grid">
                 <div id="div0">
@@ -89,7 +98,7 @@
                 <div class="ms-line"></div>
               </div>
             </ng-template>
-          </mat-card>
+          </div>
         </div>
       </div>
 

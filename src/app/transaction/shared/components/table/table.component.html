@@ -1,9 +1,5 @@
 <div
-  style="
-    background-color: white;
-    box-sizing: border-box;
-    padding: 0px 15px 15px 15px;
-  "
+  style="box-sizing: border-box; padding: 0px 15px 5px 15px; background: white"
 >
   <ng-container *ngIf="!tableOnLoad; else tableLoader">
     <ng-container *ngIf="data.length >= 1; else noData">
@@ -27,7 +23,7 @@
                 margin-bottom: 0.2em;
                 position: relative;
                 border: 10px solid #727fe9;
-                min-height: 125px;
+                min-height: 110px;
                 color: white;
               "
               (longPress)="onLongPress(data)"
@@ -39,7 +35,7 @@
               <div
                 style="
                   position: absolute;
-                  top: 17px;
+                  top: 0px;
                   left: 0px;
                   display: flex;
                   flex-direction: column;
@@ -58,7 +54,7 @@
                 <div
                   style="
                     vertical-align: middle;
-                    font-size: 14px;
+                    font-size: 18px;
                     font-weight: bolder;
                     display: flex;
                     gap: 5px;
@@ -75,7 +71,7 @@
               <div
                 style="
                   position: absolute;
-                  top: 0px;
+                  bottom: 0px;
                   left: 0px;
                   font-size: 12px;
                   display: flex;
@@ -97,7 +93,7 @@
                 style="
                   display: flex;
                   position: absolute;
-                  bottom: 0px;
+                  top: 23px;
                   right: 0px;
                   font-size: 14px;
                   flex-direction: column;
@@ -117,6 +113,12 @@
                       align-items: center;
                       min-width: 140px;
                     "
+                    (click)="
+                      buttonClicked({
+                        type: 'copy',
+                        data: data.phone_number
+                      })
+                    "
                   >
                     <span>{{ data["phone_number"] }}</span>
 
@@ -128,74 +130,104 @@
                     </span>
                   </div>
                 </ng-container>
-
-                <div
-                  style="
-                    background: #3647d057;
-                    border-radius: 50px;
-                    padding: 2px 5px;
-                    cursor: pointer;
-                    display: flex;
-                    justify-content: space-between;
-                    min-width: 140px;
-                    align-items: center;
-                  "
-                >
-                  <span>View Note</span>
-                  <span
-                    class="material-icons"
-                    style="font-size: 18px; vertical-align: middle"
-                  >
-                    search
-                  </span>
-                </div>
-
-                <div
-                  style="
-                    background: #3647d057;
-                    border-radius: 50px;
-                    padding: 2px 5px;
-                    cursor: pointer;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    min-width: 140px;
-                  "
-                >
-                  <span>View Reference</span>
-
-                  <span
-                    class="material-icons"
-                    style="font-size: 18px; vertical-align: middle"
-                  >
-                    search
-                  </span>
-                </div>
               </div>
 
               <div
                 style="
-                  background: #3647d057;
-                  border-radius: 50px;
-                  padding: 2px 5px;
-                  cursor: pointer;
-                  bottom: 0px;
-                  left: 0px;
-                  font-size: 14px;
-                  position: absolute;
                   display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  min-width: 60px;
+                  position: absolute;
+                  bottom: 0px;
+                  right: 0px;
+                  font-size: 14px;
+                  flex-direction: row;
+                  text-align: center;
+                  gap: 5px;
                 "
               >
-                <span>Edit</span>
-                <span
-                  class="material-icons"
-                  style="font-size: 14px; vertical-align: middle"
+                <ng-container *ngIf="data.note">
+                  <div
+                    style="
+                      background: #3647d057;
+                      border-radius: 50%;
+                      padding: 2px 5px;
+                      display: flex;
+                      width: 35px;
+                      height: 35px;
+                      justify-content: center;
+                      align-items: center;
+                      cursor: pointer;
+                    "
+                    (click)="
+                      buttonClicked({
+                        type: 'viewNote',
+                        data: data
+                      })
+                    "
+                  >
+                    <span
+                      class="material-icons"
+                      style="font-size: 18px; vertical-align: middle"
+                    >
+                      receipt
+                    </span>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="data.snapshot">
+                  <div
+                    style="
+                      background: #3647d057;
+                      border-radius: 50%;
+                      padding: 2px 5px;
+                      display: flex;
+                      width: 35px;
+                      height: 35px;
+                      justify-content: center;
+                      align-items: center;
+                      cursor: pointer;
+                    "
+                    (click)="
+                      buttonClicked({
+                        type: 'viewSnapshot',
+                        data: data
+                      })
+                    "
+                  >
+                    <span
+                      class="material-icons"
+                      style="font-size: 18px; vertical-align: middle"
+                    >
+                      image
+                    </span>
+                  </div>
+                </ng-container>
+
+                <div
+                  style="
+                    background: #3647d057;
+                    border-radius: 50%;
+                    padding: 2px 5px;
+                    display: flex;
+                    width: 35px;
+                    height: 35px;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                  "
+                  (click)="
+                    buttonClicked({
+                      type: 'edit',
+                      data: data
+                    })
+                  "
                 >
-                  edit
-                </span>
+                  <span
+                    class="material-icons"
+                    style="font-size: 14px; vertical-align: middle"
+                  >
+                    edit
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -246,8 +278,10 @@
           display: flex;
           justify-content: space-between;
           align-items: baseline;
-          padding-left: 15px;
-          margin-top: 1em;
+          background: #727fe9;
+          border-radius: 15px;
+          border: #727fe9 solid 10px;
+          color: white;
         "
       >
         <div>
@@ -255,8 +289,16 @@
         </div>
 
         <div>
-          <div>
-            <button
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <!-- <button
               [disabled]="this.currentPage == 1"
               (click)="this.emitPrev()"
               mat-icon-button
@@ -264,9 +306,57 @@
               style="margin-right: 1em"
             >
               <span class="material-symbols-outlined"> navigate_before </span>
-            </button>
-            Page {{ this.currentPage }} of {{ this.totalPages }}
-            <button
+            </button> -->
+
+            <div
+              (click)="this.emitPrev()"
+              style="
+                background: #3647d057;
+                border-radius: 50%;
+                padding: 2px 5px;
+                display: flex;
+                width: 35px;
+                height: 35px;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+              "
+            >
+              <!-- <span>Edit</span> -->
+              <span
+                class="material-icons"
+                style="font-size: 14px; vertical-align: middle"
+              >
+                arrow_back_ios
+              </span>
+            </div>
+
+            <div>Page {{ this.currentPage }} of {{ this.totalPages }}</div>
+
+            <div
+              (click)="this.emitNext()"
+              style="
+                background: #3647d057;
+                border-radius: 50%;
+                padding: 2px 5px;
+                display: flex;
+                width: 35px;
+                height: 35px;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+              "
+            >
+              <!-- <span>Edit</span> -->
+              <span
+                class="material-icons"
+                style="font-size: 14px; vertical-align: middle"
+              >
+                arrow_forward_ios
+              </span>
+            </div>
+
+            <!-- <button
               [disabled]="this.currentPage == this.totalPages"
               (click)="this.emitNext()"
               mat-icon-button
@@ -274,7 +364,7 @@
               style="margin-left: 1em"
             >
               <span class="material-symbols-outlined"> navigate_next </span>
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -285,36 +375,11 @@
   </ng-container>
 
   <ng-template #tableLoader>
-    <!-- <div
-      class="ls-line-container"
-      style="
-        flex-direction: row-reverse;
-        margin-bottom: 1em;
-        justify-content: end;
-      "
-    >
-      <div class="ls-line" style="width: 40%"></div>
-    </div> -->
-
     <div class="ls-line-container">
-      <div class="ls-line"></div>
-      <div class="ls-line"></div>
-      <div class="ls-line"></div>
-      <div class="ls-line"></div>
-    </div>
-
-    <div
-      class="ls-line-container"
-      style="
-        width: 100%;
-        display: flex;
-        gap: 50px;
-        flex-direction: row;
-        margin-top: 1em;
-      "
-    >
-      <div class="ls-line"></div>
-      <div class="ls-line"></div>
+      <div class="ls-item"></div>
+      <div class="ls-item"></div>
+      <div class="ls-item"></div>
+      <div class="ls-footer"></div>
     </div>
   </ng-template>
 </div>
@@ -522,40 +587,5 @@
     >
       <span mat-line>CANCEL</span>
     </button>
-
-    <button
-      mat-list-item
-      (click)="buttonClicked({ type: 'edit', data: selectedDataInLongPress })"
-    >
-      <span mat-line>EDIT</span>
-    </button>
-
-    <ng-container *ngIf="selectedDataInLongPress.note">
-      <button
-        (click)="
-          buttonClicked({ type: 'viewNote', data: selectedDataInLongPress })
-        "
-        mat-list-item
-      >
-        <span mat-line>VIEW NOTE</span>
-      </button>
-    </ng-container>
-
-    <ng-container *ngIf="selectedDataInLongPress.snapshot">
-      <button
-        (click)="
-          buttonClicked({ type: 'viewSnapshot', data: selectedDataInLongPress })
-        "
-        mat-list-item
-      >
-        <span mat-line>VIEW REFERENCE</span>
-      </button>
-    </ng-container>
-
-    <ng-container *ngIf="selectedDataInLongPress.phone_number">
-      <button (click)="copy()" mat-list-item>
-        <span mat-line>COPY ACCOUNT NUMBER</span>
-      </button>
-    </ng-container>
   </mat-nav-list>
 </ng-template>

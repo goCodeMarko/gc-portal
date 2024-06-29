@@ -24,7 +24,8 @@ import { ViewNoteModalComponent } from "src/app/modals/view-note-modal/view-note
 import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/view-snapshot-modal.component";
 import { TransactionDetailsService } from "../../shared/services/transaction-details/transaction-details.service";
 import { ActivatedRoute } from "@angular/router";
-
+import { Clipboard } from "@angular/cdk/clipboard";
+import { MatSnackBar } from "@angular/material/snack-bar";
 interface ICashIns {
   _id: string;
   amount: number;
@@ -103,7 +104,9 @@ export class CashInComponent implements OnInit, OnDestroy {
     private socket: SocketService,
     public audio: AudioService,
     private transactionDetailsService: TransactionDetailsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
@@ -240,44 +243,17 @@ export class CashInComponent implements OnInit, OnDestroy {
         this.sendRequestBtnOnLoad = false;
         break;
       case "edit":
-        this.hideMainButton.emit(true);
-        this.updateRequestBtnOnLoad = false;
-        const {
-          phone_number,
-          _id,
-          fee_payment_is_gcash,
-          amount,
-          fee,
-          note,
-          status,
-        } = event.data;
-        this.cashinForm.patchValue({
-          phone_number: phone_number,
-          cid: _id,
-          fee_payment_is_gcash: String(fee_payment_is_gcash),
-          amount: fee_payment_is_gcash ? amount + fee : amount,
-          fee: fee,
-          note: note,
-        });
-        this.previousCI = {
-          fee_payment_is_gcash: fee_payment_is_gcash,
-          amount: fee_payment_is_gcash ? amount + fee : amount,
-          fee: fee,
-          status: status,
-        };
-        this.viewType = "editCashin";
+        this.edit(event);
         break;
       case "viewNote":
-        this.dialog.open(ViewNoteModalComponent, {
-          width: "500px",
-          data: event.data,
-        });
+        this.viewNote(event);
         break;
       case "viewSnapshot":
-        this.dialog.open(ViewSnapshotModalComponent, {
-          width: "500px",
-          data: event.data,
-        });
+        this.viewSnapshot(event);
+        break;
+      case "copy":
+        this.copy(event.data);
+        break;
     }
   }
 
@@ -436,6 +412,7 @@ export class CashInComponent implements OnInit, OnDestroy {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Success!",
                 message: "Transaction status <b>has been updated</b>.",
               },
@@ -447,6 +424,7 @@ export class CashInComponent implements OnInit, OnDestroy {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -457,6 +435,7 @@ export class CashInComponent implements OnInit, OnDestroy {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Server Error",
                 message: data?.error?.message,
               },
@@ -542,6 +521,7 @@ export class CashInComponent implements OnInit, OnDestroy {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Success!",
               message: "Cashin Request <b>has been sent</b>.",
             },
@@ -567,6 +547,7 @@ export class CashInComponent implements OnInit, OnDestroy {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Server Error",
               message: data?.error?.message,
             },
@@ -595,6 +576,7 @@ export class CashInComponent implements OnInit, OnDestroy {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Success!",
               message: "Cashin Request <b>has been updated</b>.",
             },
@@ -665,6 +647,7 @@ export class CashInComponent implements OnInit, OnDestroy {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -676,6 +659,7 @@ export class CashInComponent implements OnInit, OnDestroy {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Server Error",
               message: data?.error?.message,
             },
@@ -707,6 +691,70 @@ export class CashInComponent implements OnInit, OnDestroy {
     this.approveCashinForm.reset();
     this.approveCashinForm.patchValue({
       screenshot: "",
+    });
+  }
+
+  private edit(event: any) {
+    this.hideMainButton.emit(true);
+    this.updateRequestBtnOnLoad = false;
+    const {
+      phone_number,
+      _id,
+      fee_payment_is_gcash,
+      amount,
+      fee,
+      note,
+      status,
+    } = event.data;
+    this.cashinForm.patchValue({
+      phone_number: phone_number,
+      cid: _id,
+      fee_payment_is_gcash: String(fee_payment_is_gcash),
+      amount: fee_payment_is_gcash ? amount + fee : amount,
+      fee: fee,
+      note: note,
+    });
+    this.previousCI = {
+      fee_payment_is_gcash: fee_payment_is_gcash,
+      amount: fee_payment_is_gcash ? amount + fee : amount,
+      fee: fee,
+      status: status,
+    };
+    this.viewType = "editCashin";
+  }
+
+  private viewNote(event: any) {
+    this.dialog.open(ViewNoteModalComponent, {
+      width: "500px",
+      data: event.data,
+    });
+  }
+
+  private viewSnapshot(event: any) {
+    this.dialog.open(ViewSnapshotModalComponent, {
+      width: "500px",
+      data: event.data,
+    });
+  }
+
+  private copy(event: string) {
+    let phone_number = event.slice(1, 11);
+    this.clipboard.copy(phone_number);
+
+    const dialog = this.dialog.open(PopUpModalComponent, {
+      width: "200px",
+      data: {
+        deletebutton: false,
+        okaybutton: false,
+        title: "",
+        message: "Copy!",
+      },
+    });
+
+    dialog.afterOpened().subscribe((_) => {
+      setTimeout(() => {
+        dialog.close();
+      }, 2000);
     });
   }
 }

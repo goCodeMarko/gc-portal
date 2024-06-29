@@ -88,6 +88,7 @@ export class CreateTransactionComponent implements OnInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Success!",
               message: "Transaction <b>has been created</b>.",
             },
@@ -135,6 +136,7 @@ export class CreateTransactionComponent implements OnInit {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -145,6 +147,7 @@ export class CreateTransactionComponent implements OnInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Server Error",
               message: res?.error?.message,
             },

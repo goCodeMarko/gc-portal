@@ -8,7 +8,6 @@ import {
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { HttpRequestService } from "../../http-request/http-request.service";
-import { AddBookComponent } from "../../modals/add-book/add-book.component";
 import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
 import { trigger, style, animate, transition } from "@angular/animations";
 
@@ -125,13 +124,13 @@ export class ViewBooksComponent implements OnInit {
     );
   }
 
-  openAddBookModal() {
-    this.dialog
-      .open(AddBookComponent, { width: "500px" })
-      .componentInstance.result.subscribe((data: any) => {
-        this.addBook(data.data);
-      });
-  }
+  // openAddBookModal() {
+  //   this.dialog
+  //     .open(AddBookComponent, { width: "500px" })
+  //     .componentInstance.result.subscribe((data: any) => {
+  //       this.addBook(data.data);
+  //     });
+  // }
 
   private viewBook(data: object) {
     this.hrs.request(
@@ -147,6 +146,7 @@ export class ViewBooksComponent implements OnInit {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -169,6 +169,7 @@ export class ViewBooksComponent implements OnInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Access Denied",
               message:
                 "Oops, It looks like you <b>dont have access</b> on this feature.",

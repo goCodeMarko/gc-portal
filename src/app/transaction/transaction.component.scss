@@ -156,10 +156,8 @@ body {
   top: 1.5em;
   width: 96vw;
   z-index: 1;
-
-  mat-card {
-    color: #000000de;
-  }
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /*

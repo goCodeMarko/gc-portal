@@ -10,7 +10,6 @@ import {
   TemplateRef,
 } from "@angular/core";
 import { AuthService } from "src/app/authorization/auth.service";
-import { Clipboard } from "@angular/cdk/clipboard";
 import {
   MatBottomSheet,
   MatBottomSheetRef,
@@ -85,7 +84,6 @@ export class TableComponent implements OnInit, OnChanges {
 
   constructor(
     private auth: AuthService,
-    private clipboard: Clipboard,
     private bottomSheet: MatBottomSheet,
     private snackBar: MatSnackBar
   ) {}
@@ -105,34 +103,6 @@ export class TableComponent implements OnInit, OnChanges {
   async checkRole() {
     const user = JSON.parse(await this.auth.getUserData());
     this.role = user.role;
-  }
-
-  copy() {
-    // const element = document.getElementById(event.target.id);
-    let phone_number: string;
-
-    if (this.selectedDataInLongPress.phone_number) {
-      phone_number = this.selectedDataInLongPress.phone_number.slice(1, 11);
-      this.clipboard.copy(phone_number);
-    }
-
-    this.snackBar.open("Copied to Clipboard!", "", {
-      horizontalPosition: "center",
-      verticalPosition: "top",
-      duration: 3000,
-      panelClass: ["gs-custom-snackbar"],
-    });
-    // element!.style.color = "#90ac8e";
-    // element!.style.fontSize = "12px";
-    // element!.style.fontWeight = "bold";
-    // element!.textContent = "COPIED!";
-
-    // setTimeout(() => {
-    //   element!.style.color = "#000000";
-    //   element!.style.fontSize = "16px";
-    //   element!.style.fontWeight = "normal";
-    //   element!.textContent = phoneNumber;
-    // }, 1000);
   }
 
   emitNext() {

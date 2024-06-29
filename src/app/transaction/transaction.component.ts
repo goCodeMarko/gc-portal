@@ -173,7 +173,6 @@ export class TransactionComponent implements OnInit {
         "transaction/getTransaction",
         { startDate, endDate },
         async (res: any) => {
-          console.log("-----------TransactionComponent:getTransaction()", res);
           this.getTransactionLoading = false;
 
           if (res.success && _.has(res, "data")) {
@@ -260,6 +259,7 @@ export class TransactionComponent implements OnInit {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Success!",
                 message: "Daily report <b>has been sent</b> to your email.",
               },
@@ -270,6 +270,7 @@ export class TransactionComponent implements OnInit {
                 width: "500px",
                 data: {
                   deletebutton: false,
+                  okaybutton: true,
                   title: "Access Denied",
                   message:
                     "Oops, It looks like you <b>dont have access</b> on this feature.",

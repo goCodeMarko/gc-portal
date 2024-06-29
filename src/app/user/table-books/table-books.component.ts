@@ -10,7 +10,6 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { PopUpModalComponent } from "../../modals/pop-up-modal/pop-up-modal.component";
 import { HttpRequestService } from "../../http-request/http-request.service";
-import { EditBookComponent } from "../../modals/edit-book/edit-book.component";
 import { saveAs } from "file-saver";
 interface IBooks {
   author: string;
@@ -110,20 +109,20 @@ export class TableBooksComponent implements OnInit, OnChanges {
       });
   }
 
-  openEditModal(book: object) {
-    this.dialog
-      .open(EditBookComponent, {
-        width: "500px",
-        data: {
-          data: book,
-        },
-      })
-      .componentInstance.result.subscribe(
-        (newData: { save: boolean; newData: object }) => {
-          if (newData.save) this.editBook(book, newData);
-        }
-      );
-  }
+  // openEditModal(book: object) {
+  //   this.dialog
+  //     .open(EditBookComponent, {
+  //       width: "500px",
+  //       data: {
+  //         data: book,
+  //       },
+  //     })
+  //     .componentInstance.result.subscribe(
+  //       (newData: { save: boolean; newData: object }) => {
+  //         if (newData.save) this.editBook(book, newData);
+  //       }
+  //     );
+  // }
 
   private editBook(oldData: any, newData: any) {
     this.hrs.request(
@@ -139,6 +138,7 @@ export class TableBooksComponent implements OnInit, OnChanges {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -166,6 +166,7 @@ export class TableBooksComponent implements OnInit, OnChanges {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",

@@ -535,6 +535,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Success!",
                 message: "Transaction status <b>has been updated</b>.",
               },
@@ -545,6 +546,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
                 width: "500px",
                 data: {
                   deletebutton: false,
+                  okaybutton: true,
                   title: "Access Denied",
                   message:
                     "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -555,6 +557,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
                 width: "500px",
                 data: {
                   deletebutton: false,
+                  okaybutton: true,
                   title: "Server Error",
                   message: data?.error?.message,
                 },
@@ -592,6 +595,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Success!",
               message: "Cashout Request <b>has been sent</b>.",
             },
@@ -607,6 +611,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -618,6 +623,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Server Error",
               message: data?.error?.message,
             },
@@ -657,6 +663,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Success!",
               message: "Cashout Request <b>has been updated</b>.",
             },
@@ -777,6 +784,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
               width: "500px",
               data: {
                 deletebutton: false,
+                okaybutton: true,
                 title: "Access Denied",
                 message:
                   "Oops, It looks like you <b>dont have access</b> on this feature.",
@@ -788,6 +796,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
             width: "500px",
             data: {
               deletebutton: false,
+              okaybutton: true,
               title: "Server Error",
               message: data?.error?.message,
             },

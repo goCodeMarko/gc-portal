@@ -8,7 +8,7 @@ import {
 } from "./accordion";
 import { MatCardModule } from "@angular/material/card";
 import { CommonModule } from "@angular/common";
-import { LongPressDirective } from "./directives/long-press.directive";
+import { LongPressDirective } from "./directives/long-press/long-press.directive";
 
 @NgModule({
   declarations: [

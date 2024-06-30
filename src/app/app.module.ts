@@ -34,6 +34,7 @@ import { ViewNoteModalComponent } from "./modals/view-note-modal/view-note-modal
 import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-snapshot-modal.component";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { CameraModalComponent } from "./modals/camera-modal/camera-modal.component";
+import { ImagePreloadService } from "./shared/services/image-preload.service";
 // import { WebcamModule } from "ngx-webcam";
 
 @NgModule({
@@ -73,6 +74,7 @@ import { CameraModalComponent } from "./modals/camera-modal/camera-modal.compone
     AudioService,
     AuthService,
     InternetConnectionService,
+    ImagePreloadService,
     {
       provide: LocationStrategy,
       useClass: PathLocationStrategy,

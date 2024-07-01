@@ -35,6 +35,7 @@ export class AppComponent {
     const imagesToPreload = [
       "assets/images/gcash.png",
       "assets/images/cash.png",
+      "assets/images/noDataFound.png",
     ];
     // Preload the listed images
     imagePreloadService.preload(imagesToPreload);

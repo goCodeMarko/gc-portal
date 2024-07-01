@@ -225,7 +225,6 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
       "transaction/getCashOuts",
       { ...this.filters, transaction_id: this.transactionDetails?._id },
       async (res: IResponse) => {
-        console.log("-----------res", res);
         if (res.success && _.has(res, "data")) {
           const preloadPromises = res.data.items.map((cashout) => {
             if (cashout.snapshot)
@@ -233,7 +232,6 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
           });
           await Promise.all(preloadPromises);
 
-          console.log("loaded");
           this.hideMainButton.emit(false);
           const { total, page, pages } = res.data.meta;
           this.cashOuts = res.data.items;

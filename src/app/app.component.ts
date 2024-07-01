@@ -32,12 +32,12 @@ export class AppComponent {
     else console.log("Production!");
 
     // List of images to be preloaded
-    // const imagesToPreload = [
-    //   "assets/images/gcash.png",
-    //   "assets/images/cash.png",
-    //   "assets/images/noDataFound.png",
-    // ];
-    // // Preload the listed images
-    // imagePreloadService.preload(imagesToPreload);
+    const imagesToPreload = [
+      "assets/images/gcash.png",
+      "assets/images/cash.png",
+      "assets/images/noDataFound.png",
+    ];
+    // Preload the listed images
+    imagePreloadService.preload(imagesToPreload);
   }
 }

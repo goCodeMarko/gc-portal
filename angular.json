@@ -83,14 +83,12 @@
                   "maximumWarning": "6kb"
                 }
               ],
-              "optimization": true,
-              "outputHashing": "all",
+              "optimization": false,
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
+              "namedChunks": true,
+              "extractLicenses": false,
+              "vendorChunk": true,
+              "buildOptimizer": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -108,6 +106,9 @@
           "configurations": {
             "production": {
               "browserTarget": "material:build:production"
+            },
+            "development": {
+              "browserTarget": "material:build:development"
             }
           }
         },

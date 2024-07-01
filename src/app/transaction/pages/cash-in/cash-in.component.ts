@@ -26,6 +26,7 @@ import { TransactionDetailsService } from "../../shared/services/transaction-det
 import { ActivatedRoute } from "@angular/router";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ImagePreloadService } from "src/app/shared/services/image-preload.service";
 interface ICashIns {
   _id: string;
   amount: number;
@@ -59,6 +60,14 @@ interface IResponse {
   selector: "app-cash-in",
   templateUrl: "./cash-in.component.html",
   styleUrls: ["./cash-in.component.scss"],
+  animations: [
+    trigger("fade", [
+      transition("void => *", [
+        style({ opacity: 0 }),
+        animate(300, style({ opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class CashInComponent implements OnInit, OnDestroy {
   @Output() hideMainButton = new EventEmitter<boolean>();
@@ -106,7 +115,8 @@ export class CashInComponent implements OnInit, OnDestroy {
     private transactionDetailsService: TransactionDetailsService,
     private route: ActivatedRoute,
     private clipboard: Clipboard,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private imagePreloadService: ImagePreloadService
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
@@ -205,6 +215,12 @@ export class CashInComponent implements OnInit, OnDestroy {
       },
       async (res: IResponse) => {
         if (res.success && _.has(res, "data")) {
+          const preloadPromises = res.data.items.map((cashin) => {
+            if (cashin.snapshot)
+              this.imagePreloadService.preload([cashin.snapshot]);
+          });
+          await Promise.all(preloadPromises);
+
           const { total, page, pages } = res.data.meta;
           this.cashIns = res.data.items;
           this.currentPage = page;

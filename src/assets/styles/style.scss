@@ -239,3 +239,25 @@ mat-card {
   border: 10px solid #727fe9;
   min-height: 110px;
 }
+
+.gs-image-loader {
+  margin-bottom: 0.2em;
+  width: 100px;
+  position: relative;
+  background: linear-gradient(90deg, #f0f0f0, #d8d6d6, #f0f0f0) 0 0/ 80vh 100% fixed;
+  background-color: linear-gradient(90deg, #f0f0f0, #d8d6d6, #f0f0f0) 0 0/ 80vh 100%
+    fixed;
+  animation: ghost 750ms infinite linear;
+}
+@keyframes ghost {
+  from {
+    background-position: 0vw 0;
+  }
+  to {
+    background-position: 100vw 0;
+  }
+}
+
+#ghost-element {
+  padding-top: 80px;
+}

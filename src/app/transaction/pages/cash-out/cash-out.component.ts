@@ -26,6 +26,7 @@ import { ViewSnapshotModalComponent } from "src/app/modals/view-snapshot-modal/v
 import { ActivatedRoute } from "@angular/router";
 import { TransactionDetailsService } from "../../shared/services/transaction-details/transaction-details.service";
 import { CameraModalComponent } from "src/app/modals/camera-modal/camera-modal.component";
+import { ImagePreloadService } from "src/app/shared/services/image-preload.service";
 
 interface ICashOuts {
   _id: string;
@@ -105,7 +106,8 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
     public audio: AudioService,
     private socket: SocketService,
     private transactionDetailsService: TransactionDetailsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private imagePreloadService: ImagePreloadService
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
@@ -128,7 +130,6 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       if (message.type === "newCashout") {
-        console.log("-----------", message);
         if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
         if (_.size(this.cashOuts) === 0) {
           this.viewType = "table";
@@ -224,7 +225,15 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
       "transaction/getCashOuts",
       { ...this.filters, transaction_id: this.transactionDetails?._id },
       async (res: IResponse) => {
+        console.log("-----------res", res);
         if (res.success && _.has(res, "data")) {
+          const preloadPromises = res.data.items.map((cashout) => {
+            if (cashout.snapshot)
+              this.imagePreloadService.preload([cashout.snapshot]);
+          });
+          await Promise.all(preloadPromises);
+
+          console.log("loaded");
           this.hideMainButton.emit(false);
           const { total, page, pages } = res.data.meta;
           this.cashOuts = res.data.items;

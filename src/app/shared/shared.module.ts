@@ -9,6 +9,7 @@ import {
 import { MatCardModule } from "@angular/material/card";
 import { CommonModule } from "@angular/common";
 import { LongPressDirective } from "./directives/long-press/long-press.directive";
+import { ImageHandlerDirective } from "./directives/image-handler/image-handler.directive";
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { LongPressDirective } from "./directives/long-press/long-press.directive
     AccordionLinkDirective,
     AccordionDirective,
     LongPressDirective,
+    ImageHandlerDirective,
   ],
   imports: [MatCardModule, CommonModule],
   exports: [
@@ -23,6 +25,7 @@ import { LongPressDirective } from "./directives/long-press/long-press.directive
     AccordionLinkDirective,
     AccordionDirective,
     LongPressDirective,
+    ImageHandlerDirective,
   ],
   providers: [MenuItems],
 })

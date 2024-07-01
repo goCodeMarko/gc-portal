@@ -32,67 +32,71 @@
     </ng-container>
 
     <ng-template #details>
-      <div style="background-color: red">
-        <div class="ms-details-bg"></div>
+      <!-- <img
+        imageHandler
+        loaderImage="/assets/images/810.gif"
+        src="/assets/images/logo/logo.png"
+        alt="snapshot"
+        class="gs-image-loader"
+      /> -->
 
-        <div class="ms-details">
-          <div
-            style="
-              border-radius: 20px;
-              margin-bottom: 0.2em;
-              position: relative;
-              min-height: 110px;
-              color: white;
-            "
-          >
-            <ng-container *ngIf="!getTransactionLoading; else detailLoader">
-              <section id="cssportal-grid">
-                <div id="div0">
-                  <!-- <mat-icon class="material-icons material-symbols-rounded"
+      <div class="ms-details-bg"></div>
+
+      <div class="ms-details">
+        <div
+          style="
+            border-radius: 20px;
+            margin-bottom: 0.2em;
+            position: relative;
+            min-height: 110px;
+            color: white;
+          "
+        >
+          <ng-container *ngIf="!getTransactionLoading; else detailLoader">
+            <section id="cssportal-grid">
+              <div id="div0">
+                <!-- <mat-icon class="material-icons material-symbols-rounded"
               >calendar_month</mat-icon
             >  -->
-                  DATE
-                </div>
-                <div id="div1">
-                  {{ transactionDetails.date | date : "MMMM d, y EE" }}
-                </div>
-                <div id="div2">ACCOUNT</div>
-                <div id="div3">{{ transactionDetails.gcashNumber }}</div>
-                <div id="div4">CASH</div>
+                DATE
+              </div>
+              <div id="div1">
+                {{ transactionDetails.date | date : "MMMM d, y EE" }}
+              </div>
+              <div id="div2">ACCOUNT</div>
+              <div id="div3">{{ transactionDetails.gcashNumber }}</div>
+              <div id="div4">CASH</div>
 
-                <section id="div5">
-                  <div id="div5-1">
-                    {{
-                      transactionDetails.cash_on_hand
-                        | currency : "₱" : "symbol"
-                    }}
-                  </div>
-                  <div id="div5-2">
-                    {{
-                      transactionDetails.runbal_cash_on_hand
-                        | currency : "₱" : "symbol"
-                    }}
-                  </div>
-                </section>
-                <div id="div6">GCASH</div>
-                <section id="div7">
-                  <div id="div7-1">
-                    {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
-                  </div>
-                  <div id="div7-2">
-                    {{
-                      transactionDetails.runbal_gcash
-                        | currency : "₱" : "symbol"
-                    }}
-                  </div>
-                </section>
+              <section id="div5">
+                <div id="div5-1">
+                  {{
+                    transactionDetails.cash_on_hand | currency : "₱" : "symbol"
+                  }}
+                </div>
+                <div id="div5-2">
+                  {{
+                    transactionDetails.runbal_cash_on_hand
+                      | currency : "₱" : "symbol"
+                  }}
+                </div>
               </section>
-            </ng-container>
+              <div id="div6">GCASH</div>
+              <section id="div7">
+                <div id="div7-1">
+                  {{ transactionDetails.gcash | currency : "₱" : "symbol" }}
+                </div>
+                <div id="div7-2">
+                  {{
+                    transactionDetails.runbal_gcash | currency : "₱" : "symbol"
+                  }}
+                </div>
+              </section>
+            </section>
+          </ng-container>
 
-            <ng-template #detailLoader>
-              <div class="ms-trans-detail-loader"></div>
-            </ng-template>
-          </div>
+          <ng-template #detailLoader>
+            <div class="ms-trans-detail-loader"></div>
+          </ng-template>
         </div>
       </div>
 

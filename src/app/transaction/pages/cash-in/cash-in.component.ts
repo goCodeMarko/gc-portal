@@ -307,7 +307,11 @@ export class CashInComponent implements OnInit, OnDestroy {
 
             this.cashIns = this.cashIns.map((cashin: any) => {
               if (cashin._id === event.cid) {
+                const [updatedCashin] = data.data.cashin.filter(
+                  (udpdatedCashin: any) => udpdatedCashin._id === event.cid
+                );
                 cashin.status = newStatus;
+                cashin.snapshot = updatedCashin.snapshot;
 
                 //to update transaction details for current user
                 this.transactionDetailsService.update({

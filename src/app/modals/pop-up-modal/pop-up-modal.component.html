@@ -1,25 +1,27 @@
-<h3>{{ this.data.title }}</h3>
-<p [innerHtml]="this.data.message"></p>
+<div class="gs-modal-content">
+  <h3>{{ this.data.title }}</h3>
+  <p [innerHtml]="this.data.message"></p>
 
-<div class="buttons">
-  <button mat-button (click)="delete()" *ngIf="this.data.deletebutton">
-    Yep
-  </button>
+  <div class="buttons">
+    <button mat-button (click)="delete()" *ngIf="this.data.deletebutton">
+      Yep
+    </button>
 
-  <button
-    mat-flat-button
-    color="main-green"
-    *ngIf="this.data.deletebutton"
-    (click)="close()"
-  >
-    Nope
-  </button>
-  <button
-    mat-flat-button
-    color="main-green"
-    *ngIf="this.data.okaybutton"
-    (click)="close()"
-  >
-    Okay
-  </button>
+    <button
+      mat-flat-button
+      color="main-green"
+      *ngIf="this.data.deletebutton"
+      (click)="close()"
+    >
+      Nope
+    </button>
+    <button
+      mat-flat-button
+      color="main-green"
+      *ngIf="this.data.okaybutton"
+      (click)="close()"
+    >
+      Okay
+    </button>
+  </div>
 </div>

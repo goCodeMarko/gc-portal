@@ -141,6 +141,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       if (message.type === "updateCashout") {
+        console.log("---------message.data", message.data);
         this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
           if (cashout._id === message.data.cid) {
             cashout.amount =
@@ -781,7 +782,11 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
               });
             }
           }
-          this.socket.sendMessage({ type: "updateCashout", data: updatedCO });
+          console.log("---------data", data);
+          this.socket.sendMessage({
+            type: "updateCashout",
+            data: { ...updatedCO, snapshot: data.data.snapshot },
+          });
 
           this.viewType = "table";
           this.resetCashoutForm();

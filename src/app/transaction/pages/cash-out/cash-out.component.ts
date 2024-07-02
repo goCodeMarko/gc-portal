@@ -119,45 +119,57 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
       note: [""],
     });
 
-    this.socketSubscription = this.socket.onMessage().subscribe((message) => {
-      if (message.type === "updateTransactionStatus") {
-        this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
-          if (cashout._id === message.data._id) {
-            cashout.status = message.data.status;
-          }
-          return { ...cashout };
-        });
-      }
-
-      if (message.type === "newCashout") {
-        if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
-        if (_.size(this.cashOuts) === 0) {
-          this.viewType = "table";
-          this.currentPage = 1;
+    this.socketSubscription = this.socket
+      .onMessage()
+      .subscribe(async (message) => {
+        if (message.type === "updateTransactionStatus") {
+          this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
+            if (cashout._id === message.data._id) {
+              cashout.status = message.data.status;
+            }
+            return { ...cashout };
+          });
         }
-        this.cashOuts.unshift(message.data);
-        this.counts += 1;
-        this.pages = Math.ceil(this.counts / 3);
-      }
 
-      if (message.type === "updateCashout") {
-        console.log("---------message.data", message.data);
-        this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
-          if (cashout._id === message.data.cid) {
-            cashout.amount =
-              message.data.fee_payment_is_gcash === "true"
-                ? message.data.amount + message.data.fee
-                : message.data.amount;
-            cashout.fee = message.data.fee;
-            cashout.fee_payment_is_gcash =
-              message.data.fee_payment_is_gcash === "true";
-            cashout.note = message.data.note;
-            cashout.snapshot = message.data.snapshot;
+        if (message.type === "newCashout") {
+          if (_.size(this.cashOuts) === 3) this.cashOuts.pop();
+          if (_.size(this.cashOuts) === 0) {
+            this.viewType = "table";
+            this.currentPage = 1;
           }
-          return { ...cashout };
-        });
-      }
-    });
+
+          await this.imagePreloadService.preload([message.data.snapshot]);
+
+          this.cashOuts.unshift(message.data);
+          this.counts += 1;
+          this.pages = Math.ceil(this.counts / 3);
+        }
+
+        if (message.type === "updateCashout") {
+          let found = 0;
+
+          this.cashOuts = this.cashOuts.map((cashout: ICashOuts) => {
+            if (cashout._id === message.data.cid) {
+              cashout.amount =
+                message.data.fee_payment_is_gcash === "true"
+                  ? message.data.amount + message.data.fee
+                  : message.data.amount;
+              cashout.fee = message.data.fee;
+              cashout.fee_payment_is_gcash =
+                message.data.fee_payment_is_gcash === "true";
+              cashout.note = message.data.note;
+              cashout.snapshot = message.data.snapshot;
+
+              found = 1;
+            }
+            return { ...cashout };
+          });
+
+          if (found === 1) {
+            await this.imagePreloadService.preload([message.data.snapshot]);
+          }
+        }
+      });
 
     //Checks if route has tid param
     this.routeSubscription = this.route.queryParams.subscribe((params: any) => {

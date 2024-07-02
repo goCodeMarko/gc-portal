@@ -135,46 +135,55 @@ export class CashInComponent implements OnInit, OnDestroy {
       screenshot: ["", Validators.required],
     });
 
-    this.socketSubscription = this.socket.onMessage().subscribe((message) => {
-      if (message.type === "updateTransactionStatus") {
-        this.cashIns = this.cashIns.map((cashin: ICashIns) => {
-          if (cashin._id === message.data._id) {
-            cashin.status = message.data.status;
-            cashin.snapshot = message.data.snapshot;
-          }
-          return { ...cashin };
-        });
-      }
+    this.socketSubscription = this.socket
+      .onMessage()
+      .subscribe(async (message) => {
+        if (message.type === "updateTransactionStatus") {
+          let found = 0;
+          this.cashIns = this.cashIns.map((cashin: ICashIns) => {
+            if (cashin._id === message.data._id) {
+              cashin.status = message.data.status;
+              cashin.snapshot = message.data.snapshot;
+              found = 1;
+            }
+            return { ...cashin };
+          });
 
-      if (message.type === "newCashin") {
-        if (_.size(this.cashIns) === 3) this.cashIns.pop();
-        if (_.size(this.cashIns) === 0) {
-          this.currentPage = 1;
-          this.viewType = "table";
+          if (found === 1) {
+            await this.imagePreloadService.preload([message.data.snapshot]);
+          }
         }
-        this.cashIns.unshift(message.data);
-        this.counts += 1;
-        this.pages = Math.ceil(this.counts / 3);
-      }
 
-      if (message.type === "updateCashin") {
-        this.cashIns = this.cashIns.map((cashin: ICashIns) => {
-          if (cashin._id === message.data.cid) {
-            cashin.amount =
-              message.data.fee_payment_is_gcash === "true"
-                ? message.data.amount - message.data.fee
-                : message.data.amount;
-            cashin.fee = message.data.fee;
-            cashin.fee_payment_is_gcash =
-              message.data.fee_payment_is_gcash === "true";
-            cashin.note = message.data.note;
-            cashin.phone_number = message.data.phone_number;
-            cashin.snapshot = message.data.snapshot;
+        if (message.type === "newCashin") {
+          if (_.size(this.cashIns) === 3) this.cashIns.pop();
+          if (_.size(this.cashIns) === 0) {
+            this.currentPage = 1;
+            this.viewType = "table";
           }
-          return { ...cashin };
-        });
-      }
-    });
+
+          this.cashIns.unshift(message.data);
+          this.counts += 1;
+          this.pages = Math.ceil(this.counts / 3);
+        }
+
+        if (message.type === "updateCashin") {
+          this.cashIns = this.cashIns.map((cashin: ICashIns) => {
+            if (cashin._id === message.data.cid) {
+              cashin.amount =
+                message.data.fee_payment_is_gcash === "true"
+                  ? message.data.amount - message.data.fee
+                  : message.data.amount;
+              cashin.fee = message.data.fee;
+              cashin.fee_payment_is_gcash =
+                message.data.fee_payment_is_gcash === "true";
+              cashin.note = message.data.note;
+              cashin.phone_number = message.data.phone_number;
+              cashin.snapshot = message.data.snapshot;
+            }
+            return { ...cashin };
+          });
+        }
+      });
 
     //Checks if route has tid param
     this.routeSubscription = this.route.queryParams.subscribe((params: any) => {

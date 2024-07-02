@@ -558,7 +558,10 @@
       (click)="
         buttonClicked({
           type: 'approve',
-          data: { cid: selectedDataInLongPress._id }
+          data: {
+            cid: selectedDataInLongPress._id,
+            currentStatus: selectedDataInLongPress.status
+          }
         })
       "
     >
@@ -570,7 +573,10 @@
       (click)="
         buttonClicked({
           type: 'fail',
-          data: { cid: selectedDataInLongPress._id }
+          data: {
+            cid: selectedDataInLongPress._id,
+            currentStatus: selectedDataInLongPress.status
+          }
         })
       "
     >
@@ -581,7 +587,10 @@
       (click)="
         buttonClicked({
           type: 'cancel',
-          data: { cid: selectedDataInLongPress._id }
+          data: {
+            cid: selectedDataInLongPress._id,
+            currentStatus: selectedDataInLongPress.status
+          }
         })
       "
     >

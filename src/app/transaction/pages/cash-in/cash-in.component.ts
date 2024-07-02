@@ -243,9 +243,11 @@ export class CashInComponent implements OnInit, OnDestroy {
   emittedButton(event: { type: string; data: any }) {
     switch (event.type) {
       case "approve":
-        this.viewType = "approveCashin";
-        this.hideMainButton.emit(true);
-        this.approveTransactionDetails = event.data;
+        if (event.data.currentStatus !== 2) {
+          this.viewType = "approveCashin";
+          this.hideMainButton.emit(true);
+          this.approveTransactionDetails = event.data;
+        }
         break;
       case "cancel":
         this.updateTransactionStatus(TransactionStatus.Cancelled, event.data);
@@ -287,93 +289,87 @@ export class CashInComponent implements OnInit, OnDestroy {
     event: any,
     formData?: any
   ) {
-    if (newStatus === TransactionStatus.Approved)
-      this.approveReqBtnOnLoad = true;
-    this.hrs.request(
-      "put",
-      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${event.cid}`,
-      formData ? formData : { status: newStatus, type: 1 },
-      async (data: any) => {
-        if (data.success) {
-          let CIhaveChanges = false;
+    if (event.currentStatus !== newStatus) {
+      if (newStatus === TransactionStatus.Approved) {
+        // Indicate that the approve request button is in loading state
+        this.approveReqBtnOnLoad = true;
+      }
 
-          // from pending, cancelled, failed to approved
-          if (formData) {
-            this.viewType = "table";
-            this.resetApproveCashinForm();
-            this.hideMainButton.emit(false);
-            this.approveTransactionDetails = {};
-            this.approveReqBtnOnLoad = false;
+      // Make an HTTP PUT request to update the transaction status
+      this.hrs.request(
+        "put",
+        `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${event.cid}`,
+        formData ? formData : { status: newStatus, type: 1 },
+        async (data: any) => {
+          if (data.success) {
+            let CIhaveChanges = false;
 
-            this.cashIns = this.cashIns.map((cashin: any) => {
-              if (cashin._id === event.cid) {
-                const [updatedCashin] = data.data.cashin.filter(
-                  (udpdatedCashin: any) => udpdatedCashin._id === event.cid
-                );
-                cashin.status = newStatus;
-                cashin.snapshot = updatedCashin.snapshot;
+            // If transitioning from pending, failed, or cancelled to approved
+            if (formData) {
+              // Update the view type, reset the approval form, and hide the main button
+              this.viewType = "table";
+              this.resetApproveCashinForm();
+              this.hideMainButton.emit(false);
+              this.approveTransactionDetails = {};
+              this.approveReqBtnOnLoad = false;
 
-                //to update transaction details for current user
-                this.transactionDetailsService.update({
-                  runbal_gcash: {
-                    data: cashin.amount,
-                    operation: "subtract",
-                  },
-                  runbal_cash_on_hand: {
-                    data: cashin.amount + cashin.fee,
-                    operation: "sum",
-                  },
-                });
-                //end
-                //to update transaction details for all users
-                this.socket.sendMessage({
-                  type: "updateTransactionDetails",
-                  data: {
-                    runbal_gcash: {
-                      data: cashin.amount,
-                      operation: "subtract",
-                    },
-                    runbal_cash_on_hand: {
-                      data: cashin.amount + cashin.fee,
-                      operation: "sum",
-                    },
-                  },
-                });
-                //end
-              }
+              // Update the cashIns array based on the new status
+              this.cashIns = this.cashIns.map((cashin: any) => {
+                if (cashin._id === event.cid) {
+                  // Find the updated cashin details from the response
+                  const [updatedCashin] = data.data.cashin.filter(
+                    (udpdatedCashin: any) => udpdatedCashin._id === event.cid
+                  );
+                  cashin.status = newStatus;
+                  cashin.snapshot = updatedCashin.snapshot;
 
-              return { ...cashin };
-            });
-
-            CIhaveChanges = true;
-          } else {
-            this.cashIns = this.cashIns.map((cashin: any) => {
-              if (cashin._id === event.cid) {
-                // from approved to cancelled or failed
-                if (
-                  cashin.status === TransactionStatus.Approved &&
-                  [
-                    TransactionStatus.Cancelled,
-                    TransactionStatus.Failed,
-                  ].includes(newStatus)
-                ) {
-                  //to update transaction details for current user
+                  // Update the state of transaction details
                   this.transactionDetailsService.update({
                     runbal_gcash: {
                       data: cashin.amount,
-                      operation: "sum",
+                      operation: "subtract",
                     },
                     runbal_cash_on_hand: {
                       data: cashin.amount + cashin.fee,
-                      operation: "subtract",
+                      operation: "sum",
                     },
                   });
-                  //end
 
-                  //to update transaction details for all users
+                  // Notify all users about the updated transaction details via WebSocket
                   this.socket.sendMessage({
                     type: "updateTransactionDetails",
                     data: {
+                      runbal_gcash: {
+                        data: cashin.amount,
+                        operation: "subtract",
+                      },
+                      runbal_cash_on_hand: {
+                        data: cashin.amount + cashin.fee,
+                        operation: "sum",
+                      },
+                    },
+                  });
+                }
+
+                return { ...cashin };
+              });
+
+              CIhaveChanges = true;
+            } else {
+              // Handle non-approval status changes
+
+              this.cashIns = this.cashIns.map((cashin: any) => {
+                if (cashin._id === event.cid) {
+                  // Handle status transition from approved to cancelled or failed
+                  if (
+                    cashin.status === TransactionStatus.Approved &&
+                    [
+                      TransactionStatus.Cancelled,
+                      TransactionStatus.Failed,
+                    ].includes(newStatus)
+                  ) {
+                    // Update the state of transaction details
+                    this.transactionDetailsService.update({
                       runbal_gcash: {
                         data: cashin.amount,
                         operation: "sum",
@@ -382,88 +378,107 @@ export class CashInComponent implements OnInit, OnDestroy {
                         data: cashin.amount + cashin.fee,
                         operation: "subtract",
                       },
-                    },
-                  });
-                  //end
+                    });
 
-                  cashin.status = newStatus;
-                  CIhaveChanges = true;
+                    // Notify all users about the updated transaction details via WebSocket
+                    this.socket.sendMessage({
+                      type: "updateTransactionDetails",
+                      data: {
+                        runbal_gcash: {
+                          data: cashin.amount,
+                          operation: "sum",
+                        },
+                        runbal_cash_on_hand: {
+                          data: cashin.amount + cashin.fee,
+                          operation: "subtract",
+                        },
+                      },
+                    });
+
+                    // Update the cashout status to the new status
+                    cashin.status = newStatus;
+                    CIhaveChanges = true;
+                  }
+
+                  // If transitioning between failed to cancelled, cancelled to failed, pending to cancelled, or pending to failed
+                  else if (
+                    [
+                      TransactionStatus.Cancelled,
+                      TransactionStatus.Failed,
+                      TransactionStatus.Pending,
+                    ].includes(cashin.status) &&
+                    [
+                      TransactionStatus.Cancelled,
+                      TransactionStatus.Failed,
+                    ].includes(newStatus)
+                  ) {
+                    cashin.status = newStatus;
+                    CIhaveChanges = true;
+                  }
                 }
-                // from failed  to cancelled
-                // from cancelled to failed
-                // from pending  to cancelled
-                // from pending  to failed
-                else if (
-                  [
-                    TransactionStatus.Cancelled,
-                    TransactionStatus.Failed,
-                    TransactionStatus.Pending,
-                  ].includes(cashin.status) &&
-                  [
-                    TransactionStatus.Cancelled,
-                    TransactionStatus.Failed,
-                  ].includes(newStatus)
-                ) {
-                  cashin.status = newStatus;
-                  CIhaveChanges = true;
-                }
-              }
 
-              return { ...cashin };
-            });
-          }
+                return { ...cashin };
+              });
+            }
 
-          if (CIhaveChanges) {
-            //to cashin/cashout detail for all users
-            const [updatedData] = data.data.cashin.filter((data: any) => {
-              if (data._id === event.cid) return data;
-            });
-            this.socket.sendMessage({
-              type: "updateTransactionStatus",
-              data: {
-                _id: event.cid,
-                status: newStatus,
-                snapshot: updatedData.snapshot,
-              },
-            });
-            //end
+            // If there were changes to any cashins, notify via WebSocket and show success dialog
+            if (CIhaveChanges) {
+              // Find the updated cashin details from the response
+              const [updatedData] = data.data.cashin.filter((data: any) => {
+                if (data._id === event.cid) return data;
+              });
 
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                okaybutton: true,
-                title: "Success!",
-                message: "Transaction status <b>has been updated</b>.",
-              },
-            });
-          }
-        } else {
-          if (data.error.message == "Restricted") {
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                okaybutton: true,
-                title: "Access Denied",
-                message:
-                  "Oops, It looks like you <b>dont have access</b> on this feature.",
-              },
-            });
+              // Notify all users about the updated transaction details via WebSocket
+              this.socket.sendMessage({
+                type: "updateTransactionStatus",
+                data: {
+                  _id: event.cid,
+                  status: newStatus,
+                  snapshot: updatedData.snapshot,
+                },
+              });
+
+              // Show a success dialog
+              this.dialog.open(PopUpModalComponent, {
+                width: "500px",
+                data: {
+                  deletebutton: false,
+                  okaybutton: true,
+                  title: "Success!",
+                  message: "Transaction status <b>has been updated</b>.",
+                },
+              });
+            }
           } else {
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                okaybutton: true,
-                title: "Server Error",
-                message: data?.error?.message,
-              },
-            });
+            // Handle error responses
+            if (data.error.message == "Restricted") {
+              // Show an access denied dialog
+              this.dialog.open(PopUpModalComponent, {
+                width: "500px",
+                data: {
+                  deletebutton: false,
+                  okaybutton: true,
+                  title: "Access Denied",
+                  message:
+                    "Oops, It looks like you <b>dont have access</b> on this feature.",
+                },
+              });
+            } else {
+              // Show a server error dialog
+              this.dialog.open(PopUpModalComponent, {
+                width: "500px",
+                data: {
+                  deletebutton: false,
+                  okaybutton: true,
+                  title: "Server Error",
+                  message: data?.error?.message,
+                },
+              });
+            }
           }
         }
-      }
-    );
+      );
+    }
   }
 
   public currencyStrict(event: any) {

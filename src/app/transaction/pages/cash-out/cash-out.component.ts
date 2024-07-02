@@ -417,164 +417,172 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public updateTransactionStatus(newStatus: number, event: any) {
-    this.hrs.request(
-      "put",
-      `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${event.cid}`,
-      { status: newStatus, type: 2 },
-      async (data: any) => {
-        if (data.success) {
-          this.socket.sendMessage({
-            type: "updateTransactionStatus",
-            data: { _id: data.cid, status },
-          });
-
-          let COhaveChanges = false;
-
-          this.cashOuts = this.cashOuts.map((cashout: any) => {
-            if (cashout._id === event.cid) {
-              // from pending, failed, cancelled to approve
-              if (
-                [
-                  TransactionStatus.Cancelled,
-                  TransactionStatus.Failed,
-                  TransactionStatus.Pending,
-                ].includes(cashout.status) &&
-                newStatus === TransactionStatus.Approved
-              ) {
-                //to update transaction details for current user
-                this.transactionDetailsService.update({
-                  runbal_gcash: {
-                    data: cashout.amount,
-                    operation: "sum",
-                  },
-                  runbal_cash_on_hand: {
-                    data: cashout.amount - cashout.fee,
-                    operation: "subtract",
-                  },
-                });
-                //end
-
-                //to update transaction details for all users
-                this.socket.sendMessage({
-                  type: "updateTransactionDetails",
-                  data: {
-                    runbal_gcash: {
-                      data: cashout.amount,
-                      operation: "sum",
-                    },
-                    runbal_cash_on_hand: {
-                      data: cashout.amount - cashout.fee,
-                      operation: "subtract",
-                    },
-                  },
-                });
-                //end
-                cashout.status = newStatus;
-                COhaveChanges = true;
-              }
-              // from approved to cancelled or failed
-              else if (
-                cashout.status === TransactionStatus.Approved &&
-                [
-                  TransactionStatus.Cancelled,
-                  TransactionStatus.Failed,
-                ].includes(newStatus)
-              ) {
-                //to update transaction details for current user
-                this.transactionDetailsService.update({
-                  runbal_gcash: {
-                    data: cashout.amount,
-                    operation: "subtract",
-                  },
-                  runbal_cash_on_hand: {
-                    data: cashout.amount - cashout.fee,
-                    operation: "sum",
-                  },
-                });
-                //end
-
-                //to update transaction details for all users
-                this.socket.sendMessage({
-                  type: "updateTransactionDetails",
-                  data: {
-                    runbal_gcash: {
-                      data: cashout.amount,
-                      operation: "subtract",
-                    },
-                    runbal_cash_on_hand: {
-                      data: cashout.amount - cashout.fee,
-                      operation: "sum",
-                    },
-                  },
-                });
-                //end
-                cashout.status = newStatus;
-                COhaveChanges = true;
-              }
-              // from failed  to cancelled
-              // from cancelled to failed
-              // from pending  to cancelled
-              // from pending  to failed
-              else if (
-                [
-                  TransactionStatus.Cancelled,
-                  TransactionStatus.Failed,
-                  TransactionStatus.Pending,
-                ].includes(cashout.status) &&
-                [
-                  TransactionStatus.Cancelled,
-                  TransactionStatus.Failed,
-                ].includes(newStatus)
-              ) {
-                cashout.status = newStatus;
-                COhaveChanges = true;
-              }
-            }
-            return { ...cashout };
-          });
-
-          if (COhaveChanges) {
+    if (event.currentStatus !== newStatus) {
+      // Make an HTTP PUT request to update the transaction status
+      this.hrs.request(
+        "put",
+        `transaction/updateTransactionStatus?trans_id=${this.transactionDetails?._id}&cid=${event.cid}`,
+        { status: newStatus, type: 2 },
+        async (data: any) => {
+          if (data.success) {
+            // Notify other clients about the status update via WebSocket
             this.socket.sendMessage({
               type: "updateTransactionStatus",
-              data: { _id: event.cid, status: newStatus },
+              data: { _id: data.cid, status },
             });
 
-            this.dialog.open(PopUpModalComponent, {
-              width: "500px",
-              data: {
-                deletebutton: false,
-                okaybutton: true,
-                title: "Success!",
-                message: "Transaction status <b>has been updated</b>.",
-              },
+            let COhaveChanges = false;
+
+            // Update the cashOuts array based on the new transaction status
+            this.cashOuts = this.cashOuts.map((cashout: any) => {
+              if (cashout._id === event.cid) {
+                // If transitioning from pending, failed, or cancelled to approved
+                if (
+                  [
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                    TransactionStatus.Pending,
+                  ].includes(cashout.status) &&
+                  newStatus === TransactionStatus.Approved
+                ) {
+                  // Update the state of transaction details
+                  this.transactionDetailsService.update({
+                    runbal_gcash: {
+                      data: cashout.amount,
+                      operation: "sum",
+                    },
+                    runbal_cash_on_hand: {
+                      data: cashout.amount - cashout.fee,
+                      operation: "subtract",
+                    },
+                  });
+
+                  // Notify all users about the updated transaction details via WebSocket
+                  this.socket.sendMessage({
+                    type: "updateTransactionDetails",
+                    data: {
+                      runbal_gcash: {
+                        data: cashout.amount,
+                        operation: "sum",
+                      },
+                      runbal_cash_on_hand: {
+                        data: cashout.amount - cashout.fee,
+                        operation: "subtract",
+                      },
+                    },
+                  });
+
+                  // Update the cashout status to the new status
+                  cashout.status = newStatus;
+                  COhaveChanges = true;
+                }
+                // If transitioning from approved to cancelled or failed
+                else if (
+                  cashout.status === TransactionStatus.Approved &&
+                  [
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                  ].includes(newStatus)
+                ) {
+                  // Update the state of transaction details
+                  this.transactionDetailsService.update({
+                    runbal_gcash: {
+                      data: cashout.amount,
+                      operation: "subtract",
+                    },
+                    runbal_cash_on_hand: {
+                      data: cashout.amount - cashout.fee,
+                      operation: "sum",
+                    },
+                  });
+
+                  // Notify all users about the updated transaction details via WebSocket
+                  this.socket.sendMessage({
+                    type: "updateTransactionDetails",
+                    data: {
+                      runbal_gcash: {
+                        data: cashout.amount,
+                        operation: "subtract",
+                      },
+                      runbal_cash_on_hand: {
+                        data: cashout.amount - cashout.fee,
+                        operation: "sum",
+                      },
+                    },
+                  });
+
+                  // Update the cashout status to the new status
+                  cashout.status = newStatus;
+                  COhaveChanges = true;
+                }
+
+                // If transitioning between failed to cancelled, cancelled to failed, pending to cancelled, or pending to failed
+                else if (
+                  [
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                    TransactionStatus.Pending,
+                  ].includes(cashout.status) &&
+                  [
+                    TransactionStatus.Cancelled,
+                    TransactionStatus.Failed,
+                  ].includes(newStatus)
+                ) {
+                  // Update the cashout status to the new status
+                  cashout.status = newStatus;
+                  COhaveChanges = true;
+                }
+              }
+              return { ...cashout };
             });
-          } else {
-            if (data.error.message == "Restricted") {
+
+            // If there were changes to any cashouts, notify via WebSocket and show success dialog
+            if (COhaveChanges) {
+              this.socket.sendMessage({
+                type: "updateTransactionStatus",
+                data: { _id: event.cid, status: newStatus },
+              });
+
               this.dialog.open(PopUpModalComponent, {
                 width: "500px",
                 data: {
                   deletebutton: false,
                   okaybutton: true,
-                  title: "Access Denied",
-                  message:
-                    "Oops, It looks like you <b>dont have access</b> on this feature.",
+                  title: "Success!",
+                  message: "Transaction status <b>has been updated</b>.",
                 },
               });
             } else {
-              this.dialog.open(PopUpModalComponent, {
-                width: "500px",
-                data: {
-                  deletebutton: false,
-                  okaybutton: true,
-                  title: "Server Error",
-                  message: data?.error?.message,
-                },
-              });
+              // Handle error cases
+              if (data.error.message == "Restricted") {
+                // Show an access denied dialog
+                this.dialog.open(PopUpModalComponent, {
+                  width: "500px",
+                  data: {
+                    deletebutton: false,
+                    okaybutton: true,
+                    title: "Access Denied",
+                    message:
+                      "Oops, It looks like you <b>dont have access</b> on this feature.",
+                  },
+                });
+              } else {
+                // Show a server error dialog
+                this.dialog.open(PopUpModalComponent, {
+                  width: "500px",
+                  data: {
+                    deletebutton: false,
+                    okaybutton: true,
+                    title: "Server Error",
+                    message: data?.error?.message,
+                  },
+                });
+              }
             }
           }
         }
-      }
-    );
+      );
+    }
   }
 
   sendRequest() {

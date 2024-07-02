@@ -783,7 +783,10 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
           console.log("---------data", data);
           this.socket.sendMessage({
             type: "updateCashout",
-            data: { ...updatedCO, snapshot: data.data.snapshot },
+            data: {
+              ...updatedCO,
+              snapshot: data.data.snapshot ?? updatedCO.snapshot,
+            },
           });
 
           this.viewType = "table";

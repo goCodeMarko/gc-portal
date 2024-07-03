@@ -49,30 +49,30 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     console.log("-----------this.swPush.isEnabled", this.swPush.isEnabled);
-    // if (this.swPush.isEnabled) {
-    this.swPush
-      .requestSubscription({
-        serverPublicKey: this.VAPID_PUBLIC_KEY,
-      })
-      .then((sub) => this.sendToServer(sub))
-      .catch((err) =>
-        console.error("Could not subscribe to notifications", err)
-      );
+    if (this.swPush.isEnabled) {
+      this.swPush
+        .requestSubscription({
+          serverPublicKey: this.VAPID_PUBLIC_KEY,
+        })
+        .then((sub) => this.sendToServer(sub))
+        .catch((err) =>
+          console.error("Could not subscribe to notifications", err)
+        );
 
-    this.swPush.messages.subscribe((message) => {
-      console.log("Received a push message", message);
-    });
+      this.swPush.messages.subscribe((message) => {
+        console.log("Received a push message", message);
+      });
 
-    this.swPush.notificationClicks.subscribe((click) => {
-      console.log("Notification clicked", click);
-    });
-    // }
+      this.swPush.notificationClicks.subscribe((click) => {
+        console.log("Notification clicked", click);
+      });
+    }
   }
 
   sendToServer(subscription: PushSubscription) {
     // Send subscription to the server
     return this.http
-      .post("http://localhost:3001/subscribe", subscription)
+      .post("https://api.gcportal.space:444/subscribe", subscription)
       .subscribe((response) => console.log("Subscription sent to server"));
   }
 }

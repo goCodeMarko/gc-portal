@@ -35,6 +35,8 @@ import { ViewSnapshotModalComponent } from "./modals/view-snapshot-modal/view-sn
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { CameraModalComponent } from "./modals/camera-modal/camera-modal.component";
 import { ImagePreloadService } from "./shared/services/image-preload.service";
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 // import { WebcamModule } from "ngx-webcam";
 
 @NgModule({
@@ -67,6 +69,12 @@ import { ImagePreloadService } from "./shared/services/image-preload.service";
     MatButtonToggleModule,
     // WebcamModule,
     RouterModule.forRoot(AppRoutes),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     HttpRequestService,

@@ -27,6 +27,7 @@ import { ActivatedRoute } from "@angular/router";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ImagePreloadService } from "src/app/shared/services/image-preload.service";
+import { PushNotificationService } from "src/app/shared/services/push-notification/push-notification.service";
 interface ICashIns {
   _id: string;
   amount: number;
@@ -116,7 +117,8 @@ export class CashInComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-    private imagePreloadService: ImagePreloadService
+    private imagePreloadService: ImagePreloadService,
+    private pushNotificationService: PushNotificationService
   ) {
     this.cashinForm = this.fb.group({
       type: [1],
@@ -561,6 +563,7 @@ export class CashInComponent implements OnInit, OnDestroy {
       this.cashinForm.value,
       async (data: any) => {
         if (data.success) {
+          this.pushNotificationService.notifyMe();
           this.dialog.open(PopUpModalComponent, {
             width: "500px",
             data: {

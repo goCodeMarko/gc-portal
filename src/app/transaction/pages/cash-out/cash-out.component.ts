@@ -27,6 +27,7 @@ import { ActivatedRoute } from "@angular/router";
 import { TransactionDetailsService } from "../../shared/services/transaction-details/transaction-details.service";
 import { CameraModalComponent } from "src/app/modals/camera-modal/camera-modal.component";
 import { ImagePreloadService } from "src/app/shared/services/image-preload.service";
+import { PushNotificationService } from "src/app/shared/services/push-notification/push-notification.service";
 
 interface ICashOuts {
   _id: string;
@@ -107,7 +108,8 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
     private socket: SocketService,
     private transactionDetailsService: TransactionDetailsService,
     private route: ActivatedRoute,
-    private imagePreloadService: ImagePreloadService
+    private imagePreloadService: ImagePreloadService,
+    private pushNotificationService: PushNotificationService
   ) {
     this.cashoutForm = this.fb.group({
       type: [2],
@@ -437,6 +439,7 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
         { status: newStatus, type: 2 },
         async (data: any) => {
           if (data.success) {
+            this.pushNotificationService.notifyMe();
             // Notify other clients about the status update via WebSocket
             this.socket.sendMessage({
               type: "updateTransactionStatus",

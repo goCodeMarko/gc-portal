@@ -18,19 +18,8 @@ export class PushNotificationService {
         body: `Lorem ipsum dolor sit amet. Ut ullam tempora ut explicabo praesentium in 
         iste eius et minus sint sed nesciunt numquam est similique mollitia. 
         Ea eius rerum id consectetur minus est quas veritatis eum quaerat atque.`,
-        data: {
-          url: "https://facebook.com",
-          status: "open",
-        },
       });
 
-      notification.onclick = (event) => {
-        event.preventDefault(); // prevent the browser from focusing the Notification's tab
-        window.open(
-          "http://localhost:4200/app/transaction/cashin?tid=6684b4d8b87d7c7ab2da8b71",
-          "_blank"
-        );
-      };
       // …
     } else if (Notification.permission === "default") {
       // We need to ask the user for permission
@@ -38,13 +27,6 @@ export class PushNotificationService {
         // If the user accepts, let's create a notification
         if (permission === "granted") {
           const notification = new Notification("Hi there permission!");
-          notification.onclick = (event) => {
-            event.preventDefault(); // prevent the browser from focusing the Notification's tab
-            window.open(
-              "http://localhost:4200/app/transaction/cashin?tid=6684b4d8b87d7c7ab2da8b71",
-              "_blank"
-            );
-          };
         }
       });
     }

@@ -2,18 +2,24 @@ import { Component, OnInit, isDevMode } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { InternetConnectionService } from "./shared/internet-connection/internet-connection.service";
 import { ImagePreloadService } from "./shared/services/image-preload.service";
+import { SwPush } from "@angular/service-worker";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public isOnline!: Boolean | null;
+  readonly VAPID_PUBLIC_KEY =
+    "BENFs5s5g4eYPr8DmBtmI7V46TAQhjv22N31JJVVNoicaefJcrM8ezT6XSvt4SUPqk2rt9JfzmuhzTCUr98DPNI";
 
   constructor(
     internetConnection: InternetConnectionService,
-    imagePreloadService: ImagePreloadService
+    imagePreloadService: ImagePreloadService,
+    private swPush: SwPush,
+    private http: HttpClient
   ) {
     // Subscribe to the internet connection status
     internetConnection.getConnectionStatus().subscribe((status) => {
@@ -39,5 +45,34 @@ export class AppComponent {
     ];
     // Preload the listed images
     imagePreloadService.preload(imagesToPreload);
+  }
+
+  ngOnInit(): void {
+    console.log("-----------this.swPush.isEnabled", this.swPush.isEnabled);
+    // if (this.swPush.isEnabled) {
+    this.swPush
+      .requestSubscription({
+        serverPublicKey: this.VAPID_PUBLIC_KEY,
+      })
+      .then((sub) => this.sendToServer(sub))
+      .catch((err) =>
+        console.error("Could not subscribe to notifications", err)
+      );
+
+    this.swPush.messages.subscribe((message) => {
+      console.log("Received a push message", message);
+    });
+
+    this.swPush.notificationClicks.subscribe((click) => {
+      console.log("Notification clicked", click);
+    });
+    // }
+  }
+
+  sendToServer(subscription: PushSubscription) {
+    // Send subscription to the server
+    return this.http
+      .post("http://localhost:3001/subscribe", subscription)
+      .subscribe((response) => console.log("Subscription sent to server"));
   }
 }

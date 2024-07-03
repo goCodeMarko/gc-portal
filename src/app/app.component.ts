@@ -3,7 +3,7 @@ import { environment } from "src/environments/environment";
 import { InternetConnectionService } from "./shared/internet-connection/internet-connection.service";
 import { ImagePreloadService } from "./shared/services/image-preload.service";
 import { SwPush } from "@angular/service-worker";
-import { HttpClient } from "@angular/common/http";
+import { HttpRequestService } from "./http-request/http-request.service";
 
 @Component({
   selector: "app-root",
@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
     internetConnection: InternetConnectionService,
     imagePreloadService: ImagePreloadService,
     private swPush: SwPush,
-    private http: HttpClient
+    private hrs: HttpRequestService
   ) {
     // Subscribe to the internet connection status
     internetConnection.getConnectionStatus().subscribe((status) => {
@@ -71,8 +71,16 @@ export class AppComponent implements OnInit {
 
   sendToServer(subscription: PushSubscription) {
     // Send subscription to the server
-    return this.http
-      .post("https://api.gcportal.space:444/subscribe", subscription)
-      .subscribe((response) => console.log("Subscription sent to server"));
+    this.hrs.request(
+      "post",
+      "serviceWorker/subscribe",
+      subscription,
+      async (data: any) => {
+        console.log(
+          "-----------------i am subscribed to PWA push notification"
+        );
+        console.log("-----------------data", data);
+      }
+    );
   }
 }

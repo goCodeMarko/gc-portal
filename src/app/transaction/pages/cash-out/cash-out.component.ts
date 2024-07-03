@@ -439,7 +439,6 @@ export class CashOutComponent implements OnInit, OnDestroy, AfterViewInit {
         { status: newStatus, type: 2 },
         async (data: any) => {
           if (data.success) {
-            this.pushNotificationService.notifyMe();
             // Notify other clients about the status update via WebSocket
             this.socket.sendMessage({
               type: "updateTransactionStatus",

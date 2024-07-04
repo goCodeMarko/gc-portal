@@ -12,14 +12,10 @@ import { HttpRequestService } from "./http-request/http-request.service";
 })
 export class AppComponent implements OnInit {
   public isOnline!: Boolean | null;
-  readonly VAPID_PUBLIC_KEY =
-    "BENFs5s5g4eYPr8DmBtmI7V46TAQhjv22N31JJVVNoicaefJcrM8ezT6XSvt4SUPqk2rt9JfzmuhzTCUr98DPNI";
 
   constructor(
     internetConnection: InternetConnectionService,
-    imagePreloadService: ImagePreloadService,
-    private swPush: SwPush,
-    private hrs: HttpRequestService
+    imagePreloadService: ImagePreloadService
   ) {
     // Subscribe to the internet connection status
     internetConnection.getConnectionStatus().subscribe((status) => {
@@ -47,40 +43,5 @@ export class AppComponent implements OnInit {
     imagePreloadService.preload(imagesToPreload);
   }
 
-  ngOnInit(): void {
-    console.log("-----------this.swPush.isEnabled", this.swPush.isEnabled);
-    if (this.swPush.isEnabled) {
-      this.swPush
-        .requestSubscription({
-          serverPublicKey: this.VAPID_PUBLIC_KEY,
-        })
-        .then((sub) => this.sendToServer(sub))
-        .catch((err) =>
-          console.error("Could not subscribe to notifications", err)
-        );
-
-      this.swPush.messages.subscribe((message) => {
-        console.log("Received a push message", message);
-      });
-
-      this.swPush.notificationClicks.subscribe((click) => {
-        console.log("Notification clicked", click);
-      });
-    }
-  }
-
-  sendToServer(subscription: PushSubscription) {
-    // Send subscription to the server
-    this.hrs.request(
-      "post",
-      "serviceWorker/subscribe",
-      subscription,
-      async (data: any) => {
-        console.log(
-          "-----------------i am subscribed to PWA push notification"
-        );
-        console.log("-----------------data", data);
-      }
-    );
-  }
+  ngOnInit(): void {}
 }

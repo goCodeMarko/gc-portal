@@ -46,16 +46,18 @@ export class HttpRequestService {
           );
 
       case "post":
-        return this.http
-          .post(`${environment.SERVER_URL}${endpoint}`, payload)
-          .subscribe(
-            (response) => {
-              return callback(response);
-            },
-            (error) => {
-              return callback(error.error);
-            }
-          );
+        const URL =
+          endpoint === "serviceWorker/subscribe"
+            ? environment.SERVER_URL_444
+            : environment.SERVER_URL;
+        return this.http.post(`${URL}${endpoint}`, payload).subscribe(
+          (response) => {
+            return callback(response);
+          },
+          (error) => {
+            return callback(error.error);
+          }
+        );
 
       case "put":
         return this.http

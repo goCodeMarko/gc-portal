@@ -9,6 +9,7 @@ import { SocketService } from "../shared/socket/socket.service";
 import { Subscription } from "rxjs";
 import { TransactionDetailsService } from "./shared/services/transaction-details/transaction-details.service";
 import * as _ from "lodash";
+import { SwPush } from "@angular/service-worker";
 
 interface ITransactionDetail {
   _id: string;
@@ -41,6 +42,9 @@ export class TransactionComponent implements OnInit {
   private routeSubscription: Subscription;
   public getTransactionLoading = false;
   public hideRouterOutlet = false;
+  readonly VAPID_PUBLIC_KEY =
+    "BENFs5s5g4eYPr8DmBtmI7V46TAQhjv22N31JJVVNoicaefJcrM8ezT6XSvt4SUPqk2rt9JfzmuhzTCUr98DPNI";
+
   constructor(
     private auth: AuthService,
     private hrs: HttpRequestService,
@@ -48,7 +52,8 @@ export class TransactionComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private socket: SocketService,
-    private transactionDetailsService: TransactionDetailsService
+    private transactionDetailsService: TransactionDetailsService,
+    private swPush: SwPush
   ) {
     this.socketSubscription = this.socket.onMessage().subscribe((message) => {
       if (message.type === "updateTransactionDetails") {
@@ -122,12 +127,47 @@ export class TransactionComponent implements OnInit {
 
   async ngOnInit(): Promise<any> {
     this.checkRole();
+
+    console.log("-----------this.swPush.isEnabled", this.swPush.isEnabled);
+    if (this.swPush.isEnabled) {
+      this.swPush
+        .requestSubscription({
+          serverPublicKey: this.VAPID_PUBLIC_KEY,
+        })
+        .then((sub) => this.sendToServer(sub))
+        .catch((err) =>
+          console.error("Could not subscribe to notifications", err)
+        );
+
+      this.swPush.messages.subscribe((message) => {
+        console.log("Received a push message", message);
+      });
+
+      this.swPush.notificationClicks.subscribe((click) => {
+        console.log("Notification clicked", click);
+      });
+    }
   }
 
   async ngOnDestroy() {
     this.socketSubscription.unsubscribe();
     this.transactionDetailsSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
+  }
+
+  sendToServer(subscription: PushSubscription) {
+    // Send subscription to the server
+    this.hrs.request(
+      "post",
+      "serviceWorker/subscribe",
+      subscription,
+      async (data: any) => {
+        console.log(
+          "-----------------i am subscribed to PWA push notification"
+        );
+        console.log("-----------------data", data);
+      }
+    );
   }
 
   fromRouterOutlet(component: any) {

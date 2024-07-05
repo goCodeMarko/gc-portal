@@ -156,6 +156,7 @@ export class TransactionComponent implements OnInit {
   }
 
   sendToServer(subscription: PushSubscription) {
+    console.log("---------subscription", subscription);
     // Send subscription to the server
     this.hrs.request(
       "post",

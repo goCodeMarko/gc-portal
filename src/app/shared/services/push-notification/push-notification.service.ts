@@ -8,14 +8,9 @@ export class PushNotificationService {
   constructor(private hrs: HttpRequestService) {}
 
   notifyMe() {
-    this.hrs.request(
-      "post",
-      "serviceWorker/subscribe",
-      {},
-      async (data: any) => {
-        console.log("-----------------sent", data);
-      }
-    );
+    this.hrs.request("post", "serviceWorker/notify", {}, async (data: any) => {
+      console.log("-----------------sent", data);
+    });
 
     console.log("window ", window);
     if (!("Notification" in window)) {

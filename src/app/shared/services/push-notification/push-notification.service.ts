@@ -1,12 +1,22 @@
 import { Injectable } from "@angular/core";
+import { HttpRequestService } from "src/app/http-request/http-request.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class PushNotificationService {
-  constructor() {}
+  constructor(private hrs: HttpRequestService) {}
 
   notifyMe() {
+    this.hrs.request(
+      "post",
+      "serviceWorker/subscribe",
+      {},
+      async (data: any) => {
+        console.log("-----------------sent", data);
+      }
+    );
+
     console.log("window ", window);
     if (!("Notification" in window)) {
       // Check if the browser supports notifications

@@ -1,7 +1,7 @@
 {
   "name": "GC Portal",
   "short_name": "GC Portal",
-  "theme_color": "#727fe9",
+  "theme_color": "#7684f1",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

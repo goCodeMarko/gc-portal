@@ -8,7 +8,7 @@ export class PushNotificationService {
   constructor(private hrs: HttpRequestService) {}
 
   notifyMe() {
-    this.hrs.request("post", "serviceWorker/notify", {}, async (data: any) => {
+    this.hrs.request("post", "company/notify", {}, async (data: any) => {
       console.log("-----------------sent", data);
     });
 

@@ -160,7 +160,7 @@ export class TransactionComponent implements OnInit {
     // Send subscription to the server
     this.hrs.request(
       "post",
-      "serviceWorker/subscribe",
+      "company/subscribe",
       subscription,
       async (data: any) => {
         console.log(

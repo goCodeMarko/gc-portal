@@ -556,10 +556,6 @@ export class CashInComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  x() {
-    this.pushNotificationService.notifyMe();
-  }
-
   sendRequest() {
     this.sendRequestBtnOnLoad = true;
     this.hrs.request(

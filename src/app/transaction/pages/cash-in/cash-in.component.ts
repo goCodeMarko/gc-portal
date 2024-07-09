@@ -157,7 +157,6 @@ export class CashInComponent implements OnInit, OnDestroy {
         }
 
         if (message.type === "newCashin") {
-          this.pushNotificationService.notifyMe();
           if (_.size(this.cashIns) === 3) this.cashIns.pop();
           if (_.size(this.cashIns) === 0) {
             this.currentPage = 1;

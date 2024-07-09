@@ -39,6 +39,7 @@ export class TransactionComponent implements OnInit {
   public pre = "REQUEST";
   private socketSubscription: Subscription;
   private transactionDetailsSubscription: Subscription;
+  private notificationSubscription!: Subscription;
   private routeSubscription: Subscription;
   public getTransactionLoading = false;
   public hideRouterOutlet = false;
@@ -116,6 +117,27 @@ export class TransactionComponent implements OnInit {
     );
     //end
 
+    if (this.swPush.isEnabled) {
+      this.swPush
+        .requestSubscription({
+          serverPublicKey: this.VAPID_PUBLIC_KEY,
+        })
+        .then((sub) => this.sendToServer(sub))
+        .catch((err) =>
+          console.error("Could not subscribe to notifications", err)
+        );
+
+      this.notificationSubscription = this.swPush.messages.subscribe(
+        (message) => {
+          console.log("Received a push message", message);
+        }
+      );
+
+      // this.swPush.notificationClicks.subscribe((click) => {
+      //   console.log("Notification clicked", click);
+      // });
+    }
+
     //It will change hte color of active button based on the current route
     const currentUrlWithoutQueryParams = this.router.url.split("?")[0];
     if (currentUrlWithoutQueryParams === "/app/transaction/cashin")
@@ -127,32 +149,13 @@ export class TransactionComponent implements OnInit {
 
   async ngOnInit(): Promise<any> {
     this.checkRole();
-
-    console.log("-----------this.swPush.isEnabled", this.swPush.isEnabled);
-    if (this.swPush.isEnabled) {
-      this.swPush
-        .requestSubscription({
-          serverPublicKey: this.VAPID_PUBLIC_KEY,
-        })
-        .then((sub) => this.sendToServer(sub))
-        .catch((err) =>
-          console.error("Could not subscribe to notifications", err)
-        );
-
-      this.swPush.messages.subscribe((message) => {
-        console.log("Received a push message", message);
-      });
-
-      this.swPush.notificationClicks.subscribe((click) => {
-        console.log("Notification clicked", click);
-      });
-    }
   }
 
   async ngOnDestroy() {
     this.socketSubscription.unsubscribe();
     this.transactionDetailsSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
+    this.notificationSubscription.unsubscribe();
   }
 
   sendToServer(subscription: PushSubscription) {

@@ -180,7 +180,6 @@ export class CashInComponent implements OnInit, OnDestroy {
                 message.data.fee_payment_is_gcash === "true";
               cashin.note = message.data.note;
               cashin.phone_number = message.data.phone_number;
-              cashin.snapshot = message.data.snapshot;
             }
             return { ...cashin };
           });

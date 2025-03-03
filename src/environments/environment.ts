@@ -3,5 +3,5 @@ export const environment = {
   env: "prod",
   SERVER_URL_444: "https://api.gcportal.space:444/api/",
   SERVER_URL: "https://api.gcportal.space/api/",
-  WEBSOCKET: "wss://api.gcportal.space/ws/",
+  WEBSOCKET: "https://api.gcportal.space:444/",
 };
